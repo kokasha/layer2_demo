@@ -1,0 +1,70 @@
+vrf {{ customer_vrf }}
+ description "L3VPN VRF for {{ customer_vrf }}"
+!
+ address-family ipv4 unicast
+  import route-target
+	 {{ vrf_import_rt }}
+  !
+  export route-target
+	 {{ vrf_export_rt }}
+  !
+ maximum prefix 5000 80
+ !
+!
+router bgp {{ AS_NUMBER }}
+!
+ vrf {{ customer_vrf }}
+  rd  {{ vrf_rd }}
+  label mode per-vrf
+  address-family ipv4 unicast
+   redistribute connected
+!
+
+!
+interface {{ interface }}.{{ circuit_vlan }}
+ description L3VPN | {{ customer_vrf }} | VLAN_{{ circuit_vlan }}
+  vrf {{ customer_vrf }}
+  ip address {{ vlan_interface_ip | ipaddr('address') }} {{ vlan_interface_ip | ipaddr('netmask')    }}
+  encapsulation dot1q {{ circuit_vlan }}
+!
+{%  if routing_protocols is defined %}
+{%    if routing_protocols == 'static' %}
+{%      set all_lan_subnets = lan_subnets.split(',') %}
+router static
+ vrf {{ customer_vrf }}
+  address-family ipv4 unicast
+{%      for prefix in all_lan_subnets %}
+   {{ prefix }} {{ peer_ip | ipaddr('address') }}
+{%      endfor%}
+  !
+!
+router bgp {{ AS_NUMBER }}
+!
+ vrf {{ customer_vrf }}
+  address-family ipv4 unicast
+   redistribute connected
+   redistribute static 
+   !
+ !
+!
+{%    endif %}
+{%    if routing_protocols == 'bgp' %}
+!
+router bgp {{ AS_NUMBER }}
+!
+ vrf {{ customer_vrf }}
+  address-family ipv4 unicast
+  neighbour {{ peer_ip | ipaddr('address') }}
+   remote-as {{ peer_remote_as }}
+   description "BGP Peer for {{ customer_vrf }} on {{ interface }}.{{ circuit_vlan }}"
+    address-family ipv4 unicast
+     route-policy ACCEPT-ALL in
+     route-policy ACCEPT-ALL out
+ !
+!
+route-policy ACCEPT-ALL
+  pass
+end-policy
+!
+{%    endif %}
+{%  endif %}

@@ -1,0 +1,74 @@
+- name: "Test NetBox modules"
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  collections:
+    - netbox.netbox
+  vars:
+    AS_NUMBER: '65001'
+    DEFAULT_VRF_PREFIX: '172.16.0.0/22'
+    vrf_id_range: "{{ range(101,200) | list }}"
+    netbox_url: http://192.168.0.188
+    netbox_token: 0123456789abcdef0123456789abcdef01234567
+    # customer_name: cust09
+    # vrf_prefix: '172.200.1.0/24'
+
+  tasks:
+    - name: FACT | Define VRF Name
+      set_fact:
+        new_vrf_name: "{{ customer_name }}_VRF"
+    
+
+    - name: Retrieve all VRFs Data from NetBox
+      set_fact:
+        netbox_vrfs: "{{ query('netbox.netbox.nb_lookup', 'vrfs',
+                        api_endpoint=netbox_url,
+                        token=netbox_token) | list }}"
+
+    - name: Build NetBox VRF Data
+      set_fact:
+        all_vrf_rds : "{{ netbox_vrfs | map(attribute='value.rd') | list }}"
+        all_vrf_names: "{{ netbox_vrfs | map(attribute='value.name') | list }}"
+
+    - name: Create New VRF
+      when: new_vrf_name not in all_vrf_names
+      block:
+        - name: Get All IDs for VRFs
+          set_fact:
+            vrf_ids: "{{ all_vrf_rds | map('regex_replace','\\d+:','') | map('int') | list }}"
+
+        - name: DATA | Get Next Available VLAN
+          set_fact:
+            next_vrf_id: "{{ vrf_id_range | difference(vrf_ids) | list | first }}"
+
+        - name: FACT | Next VRF ID
+          set_fact:
+            new_vrf_id: "{{ AS_NUMBER + ':' + next_vrf_id }}"
+
+        - name: Create new VRF
+          netbox_vrf:
+            netbox_url: "{{ netbox_url }}"
+            netbox_token: "{{ netbox_token }}"
+            data:
+              name: "{{ new_vrf_name }}"
+              rd: "{{ new_vrf_id }}"
+              enforce_unique: true
+              description: "L3VPN VRF for Customer {{ customer_name }}"
+              tags:
+                - "{{ new_vrf_name }}"
+              custom_fields:
+                import_rt: "{{ new_vrf_id }}"
+                export_rt: "{{ new_vrf_id }}"
+            state: present
+
+        - name: Allocate New Prefix for VRF
+          netbox_prefix:
+            netbox_url: "{{ netbox_url }}"
+            netbox_token: "{{ netbox_token }}"
+            data:
+              prefix: "{{ vrf_prefix if vrf_prefix != '' else DEFAULT_VRF_PREFIX }}"
+              vrf: "{{ new_vrf_name }}"
+              tags:
+                - "{{ new_vrf_name }}"
+                - vrf_parent_p2p
+            state: present

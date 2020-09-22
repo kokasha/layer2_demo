@@ -1,0 +1,58 @@
+---
+- name: Validate Interface is Present on the Device in NetBox
+  block:
+    - name: Check is Interface is in NetBox
+      set_fact:
+        _intf: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+                        api_endpoint=netbox_url,
+                        api_filter='name=' + interface + ' ' + 'device=' + node ,
+                        token=netbox_token) }}"
+
+    - name: Validate Interface is Present
+      assert:
+        that:
+          - _intf != []
+        fail_msg: "Interface {{ interface }} is not present on {{ node }}"
+        
+
+- name: Validate Input VLAN is Free on the Device
+  when: input_vlan is defined and input_vlan != ''
+  block:
+    - name: FACT | Setup the Subinterface
+      set_fact:
+        _subinteface: "{{ interface }}.{{ input_vlan }}"
+
+    - name: Get Subinterface Data From NetBox
+      set_fact:
+        _subintf: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+                        api_endpoint=netbox_url,
+                        api_filter='name=' + _subinteface + ' ' + 'device=' + node ,
+                        token=netbox_token) }}"
+
+
+    - name: Check is Subinterface (Interface + input_vla) is in NetBox
+      set_fact:
+        _subintf: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+                        api_endpoint=netbox_url,
+                        api_filter='name=' + _subinteface + ' ' + 'device=' + node ,
+                        token=netbox_token) }}"
+
+    - name: Validate No Interface is in Netbox
+      assert:
+        that:
+          - _subintf == []
+        fail_msg: "VLAN {{ input_vlan }} is Already Configured on {{ node }} on Interface {{ interface }}"
+
+- name: Validate Input LAN Circuits Are Correct
+  when: lan_subnets is defined and lan_subnets != ''
+  block:
+    - name: FACT | Build All lan Subnets
+      set_fact:
+        _all_lan_subnets: "{{ lan_subnets.split(',') }}"
+
+    - name: Validate All Subnets are Valid
+      assert:
+        that:
+          - item | ipaddr()
+        fail_msg: "{{ item }} is not a Valid IP Prefix"
+      loop: "{{ _all_lan_subnets }}"

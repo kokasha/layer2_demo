@@ -1,0 +1,29 @@
+- name: Update Survey in L3VPN Circuits Playbooks
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  collections:
+    - awx.awx
+  vars:
+    netbox_url: http://192.168.0.188
+    netbox_token: 0123456789abcdef0123456789abcdef01234567
+
+  tasks:
+    - name: DATA | Get All Devices and VRFs in NetBox
+      set_fact:
+        _netbox_devices: "{{ query('netbox.netbox.nb_lookup', 'devices',
+                        api_endpoint=netbox_url,
+                        token=netbox_token) | map(attribute='value.name') | list  }}"
+
+        _netbox_vrfs: "{{ query('netbox.netbox.nb_lookup', 'vrfs',
+                        api_endpoint=netbox_url,
+                        token=netbox_token) | map(attribute='value.name') | list  }}"
+
+    - name: Update Job Template
+      tower_job_template:
+        name: 'countrytell.l3vpn_deployment'
+        tower_config_file: 'tower_cli.cfg'
+        validate_certs: no
+        survey_spec: "{{ lookup('template','templates/l3vpn_survey.j2') }}"
+        survey_enabled: yes
+        state: present

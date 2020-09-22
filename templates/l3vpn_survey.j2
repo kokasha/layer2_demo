@@ -1,0 +1,85 @@
+{
+    "name": "L3VPN_Circuit_Survey",
+    "description": "Survey to Deploy new L3VPN Circuits",
+    "spec": [
+        {
+            "question_name": "VRF NAME",
+            "question_description": "Enter VRF Name for the new Circuit",
+            "required": true,
+            "type": "multiplechoice",
+            "variable": "customer_vrf",
+            "min": null,
+            "max": null,
+            "default": "",
+            "choices": "{% for v in _netbox_vrfs %}{% if loop.last %}{{ v }}{% else %}{{ v }}\n{% endif %}{% endfor %}"
+        },
+        {
+            "question_name": "NODE",
+            "question_description": "Select the Node to configure the L3VPN on",
+            "required": true,
+            "type": "multiplechoice",
+            "variable": "node",
+            "min": null,
+            "max": null,
+            "default": "",
+            "choices": "{% for device in _netbox_devices %}{% if loop.last %}{{ device }}{% else %}{{ device }}\n{% endif %}{% endfor %}"
+        },
+        {
+            "question_name": "Interface",
+            "question_description": "What is the Interface on the Node",
+            "required": true,
+            "type": "text",
+            "variable": "interface",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": "",
+            "new_question": true
+        },
+        {
+            "question_name": "CUSTOM VLAN",
+            "question_description": "(Optional) What is the Custom VLAN Required [if nothing is entered we will Get from NetBox]",
+            "required": false,
+            "type": "text",
+            "variable": "input_vlan",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": ""
+        },
+        {
+            "question_name": "Routing Protocol",
+            "question_description": "Which Routing Protocol Will be Used",
+            "required": true,
+            "type": "multiplechoice",
+            "variable": "routing_protocols",
+            "min": null,
+            "max": null,
+            "default": "",
+            "choices": "static\nbgp"
+        },
+        {
+            "question_name": "LAN Subnets",
+            "question_description": "In Case of Static Please Specify the LAN Subnets for Routing ( In case of multiple subnets please include them as x.x.x.x/y,a.a.a.a/y)",
+            "required": false,
+            "type": "text",
+            "variable": "lan_subnets",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": ""
+        },
+        {
+            "question_name": "BGP Peer AS Number",
+            "question_description": "If BGP is the Routing Procol What is the BGP AS Number for the Peer",
+            "required": false,
+            "type": "text",
+            "variable": "peer_remote_as",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": "",
+            "new_question": true
+        }
+    ]
+}

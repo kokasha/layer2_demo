@@ -1,0 +1,220 @@
+- name: Deploy New L3VPN Circuit
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  collections:
+    - netbox.netbox
+  vars:
+    AS_NUMBER: '65000'
+    l3vpn_vlan_range: "{{ range(100,200) | list }}"
+    netbox_url: http://192.168.0.188
+    netbox_token: 0123456789abcdef0123456789abcdef01234567
+    #interface: GigabitEthernet0/0/0/0
+
+
+  tasks:
+    - name: Input Data Validation from User
+      import_tasks: input_validation/validate_new_l3vpn_circuit.yml
+
+    - name: DATA | Set VLAN Group Name Variables
+      set_fact:
+        vlan_group_name: "{{ node }}_{{ interface }}"
+
+    - name: DATA | Get Site from Device
+      set_fact:
+        site: "{{ query('netbox.netbox.nb_lookup', 'devices',
+                        api_endpoint=netbox_url,
+                        api_filter='name=' + node ,
+                        token=netbox_token) | map(attribute='value.site.name') | list | first }}"
+
+    - name: DEBUG | Output Site ID
+      debug: var=site
+
+    - name: Ensure VLAN Group is Created
+      netbox_vlan_group:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ vlan_group_name }}"
+          site: "{{ site }}"
+        state: present
+      register: _vlan_group
+
+    - name: Get VLAN for the Circuit
+      when: input_vlan is undefined or input_vlan == ''
+      block:
+      - name: Get All Existing VLANs in VLAN Group
+        set_fact:
+          current_vlans: "{{ query('netbox.netbox.nb_lookup', 'vlans',
+                          api_endpoint=netbox_url,
+                          api_filter='group_id=' + _vlan_group.vlan_group.id|string,
+                          token=netbox_token) | map(attribute='value.vid') | list }}"
+
+      - name: DATA | Get Next Available VLAN
+        set_fact:
+          circuit_vlan: "{{ l3vpn_vlan_range | difference(current_vlans) | list | first }}"
+
+    - name: Set Circuit VLAN
+      set_fact:
+        circuit_vlan: "{{ input_vlan }}"
+      when: 
+        - input_vlan is defined 
+        - input_vlan != ''
+
+    - name: DEBUG | Output VLAN Allocated from NetBox
+      debug: var=circuit_vlan
+
+    - name: DATA | Set VLAN Name Variables
+      set_fact:
+        vlan_name: "{{ customer_vrf }}_VLAN_{{ circuit_vlan }}"
+
+    - name: Create vlan with all information
+      netbox_vlan:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ vlan_name }}"
+          vid: "{{ circuit_vlan }}"
+          site: "{{ site }}"
+          vlan_group: "{{ vlan_group_name }}"
+          status: Active
+          vlan_role: l3vpn_vlans
+          description: "L3VPN VLAN for {{ customer_vrf }} on {{ node }} Interface {{ interface }}"
+          tags:
+            - "{{ customer_vrf }}"
+        state: present
+
+    - name: Create interface as a trunk port
+      netbox_device_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          device: "{{ node }}"
+          name: "{{ interface }}.{{ circuit_vlan }}"
+          type: "virtual"
+          tagged_vlans:
+            - name: "{{ vlan_name }}"
+              site: "{{ site }}"
+          mode: Tagged
+        state: present
+
+    - name: Create New Prefix
+      netbox_prefix:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          parent: 172.16.0.0/22
+          prefix_length: 30
+          vrf: "{{ customer_vrf }}"
+          vlan:
+            name: "{{ vlan_name }}"
+            vlan_group: "{{ vlan_group_name }}"
+          tags:
+            - "{{ customer_vrf }}"
+        state: present
+        first_available: yes
+      register: new_vlan_prefix
+
+    - name: DATA | Set New Prefix
+      set_fact:
+        circuit_prefix: "{{ new_vlan_prefix.prefix.prefix }}"
+
+    - name: DEBUG | Output VLAN Prefix Allocated from NetBox
+      debug: var=circuit_prefix
+
+    - name: Attach A New IP Address on the VLAN
+      netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          prefix: "{{ circuit_prefix }}"
+          vrf: "{{ customer_vrf }}"
+          interface:
+            name: "{{ interface }}.{{ circuit_vlan }}"
+            device: "{{ node }}"
+          tags:
+            - "{{ customer_vrf }}"
+        state: new
+      register: vlan_ip
+
+    - name: Allocate IP Address for Peer Across P2P Link
+      netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          prefix: "{{ circuit_prefix }}"
+          vrf: "{{ customer_vrf }}"
+          interface:
+            name: "{{ interface }}.{{ circuit_vlan }}"
+            device: "{{ node }}"
+          tags:
+            - "{{ customer_vrf }}"
+        state: new
+      register: new_peer_ip
+
+    - name: DATA | Set VLAN IP and Peer IP
+      set_fact:
+        vlan_interface_ip: "{{ vlan_ip.ip_address.address }}"
+        peer_ip: "{{ new_peer_ip.ip_address.address }}"
+
+    - name: DEBUG | Output VLAN Interface IP
+      debug:
+        msg:
+          - "VLAN IP >> {{ vlan_interface_ip }}"
+          - "Peer IP >> {{ peer_ip }}" 
+
+    - name: Get VRF Details from NetBox
+      set_fact:
+        netbox_vrf: "{{ query('netbox.netbox.nb_lookup', 'vrfs',
+                        api_endpoint=netbox_url,
+                        api_filter='name=' + customer_vrf ,
+                        token=netbox_token) }}"
+
+    - name: FACT | Set all VRF Data
+      set_fact:
+        vrf_rd: "{{ netbox_vrf[0].value.rd }}"
+        vrf_import_rt: "{{ netbox_vrf[0].value.custom_fields.import_rt }}"
+        vrf_export_rt: "{{ netbox_vrf[0].value.custom_fields.export_rt }}"
+
+    - name: DEBUG | Output VRF Data
+      debug:
+        msg:
+          - "VRF RD: {{ vrf_rd }}"
+          - "VRF Import RT: {{ vrf_import_rt }}"
+          - "VRF Export RT: {{ vrf_export_rt }}"
+
+    - name: Build Interface VRF Configuration
+      set_fact:
+        vrf_config: "{{ lookup('template','templates/basic_vrf.j2') }}"
+    
+    - name: DEBUG | VRF Interface Configuration
+      debug: msg={{ vrf_config.split('\n') }}
+
+    - name: Create Dummy Config File
+      copy:
+        content: "{{ lookup('template','templates/basic_vrf.j2') }}"
+        dest: /var/tmp/vpn_config.txt
+      delegate_to: localhost
+      vars:
+        ansible_connection: local
+
+    # - name: Create Dummy Config File
+    #   template:
+    #     src: 'templates/basic_vrf.j2'
+    #     dest: /var/tmp/vpn_config.txt
+
+    # - name: Push Configuration to Device
+    #   iosxr_config:
+    #     src: "./vpn_config"
+    #   delegate_to: "{{ node }}"
+    #   vars:
+    #     ansible_connection: network_cli
+
+    - name: Delete Dummy Config File
+      file:
+        path: ./vpn_config
+        state: absent
+
+# - name: Push New Config to Device
+#   hosts: localhost
+  
