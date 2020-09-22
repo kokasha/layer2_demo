@@ -1,0 +1,69 @@
+global:
+    dns:
+      - 172.20.1.1
+      - 172.20.1.15
+    users:
+      # - username: admin
+      #   role: super-user
+      #   ssh_key: 'ansible_ssh_key.pub'
+      - username: ansible
+        passwd: 14161C180506262E757A60 # ansible123
+        hash: "$1$mR940Z9C$ipX9sLKTRDeljQXvWFfJm1"  # ansible123
+        role: super-user
+    root_pwd: "$1$ciI4raxU$XfCVzABJKdALim0aWVMql0"
+    p2p_prefix: 31
+    mtu: 1500
+    setup: isp  # varaible to control bgp setup (can be isp or dc)
+    core_subnet: 10.1.1.0/24
+    loopback_subnet: 10.100.1.0/24
+    mgmt_gw: 172.20.1.1
+    mgmt_prefixes:
+      - 192.168.0.0/24
+      - 10.8.0.0/24
+    bgp_asn: 65400
+    ospf_pid: 1
+    ospf_area: 0
+    netconf_port: 830
+
+fabric:
+  SPN-001.dc1:
+    ge-0/0/0: {peer: EDG-001.dc1, pport: ge-0/0/0, link_id: 1, prefix_id: 1}
+    ge-0/0/1: {peer: EDG-002.dc1, pport: ge-0/0/0, link_id: 2, prefix_id: 1}
+  SPN-002.dc1:
+    ge-0/0/0: {peer: EDG-001.dc1, pport: ge-0/0/1, link_id: 3, prefix_id: 1}
+    ge-0/0/1: {peer: EDG-002.dc1, pport: ge-0/0/1, link_id: 4, prefix_id: 1}
+  EDG-001.dc1:
+    ge-0/0/0: {peer: SPN-001.dc1, pport: ge-0/0/0, link_id: 1, prefix_id: 2}
+    ge-0/0/1: {peer: SPN-002.dc1, pport: ge-0/0/0, link_id: 3, prefix_id: 2}
+  EDG-002.dc1:
+    ge-0/0/0: {peer: SPN-001.dc1, pport: ge-0/0/1, link_id: 2, prefix_id: 2}
+    ge-0/0/1: {peer: SPN-002.dc1, pport: ge-0/0/1, link_id: 4, prefix_id: 2}
+
+lo_net:
+  SPN-001.dc1: {id: 101}
+  SPN-002.dc1: {id: 102}
+  EDG-001.dc1: {id: 103}
+  EDG-002.dc1: {id: 104}
+
+mgmt_net:
+  SPN-001.dc1: {port: em0, ip: 172.20.1.2/28}
+  SPN-002.dc1: {port: em0, ip: 172.20.1.3/28}
+  EDG-001.dc1: {port: em0, ip: 172.20.1.4/28}
+  EDG-002.dc1: {port: em0, ip: 172.20.1.5/28}
+
+bgp_topo:
+  rr: EDG-001.dc1
+  af:
+    - inet
+    - inet-vpn
+  peers:
+    EDG-001.dc1:
+      - SPN-001.dc1
+      - SPN-002.dc1
+      - EDG-002.dc1
+    SPN-001.dc1:
+      - EDG-001.dc1
+    SPN-002.dc1:
+      - EDG-001.dc1
+    EDG-002.dc1:
+      - EDG-001.dc1
