@@ -54,8 +54,8 @@
               rd: "{{ new_vrf_id }}"
               enforce_unique: true
               description: "L3VPN VRF for Customer {{ customer_name }}"
-              tags:
-                - "{{ new_vrf_name }}"
+              # tags:
+              #   - "{{ new_vrf_name }}"
               custom_fields:
                 import_rt: "{{ new_vrf_id }}"
                 export_rt: "{{ new_vrf_id }}"
@@ -68,7 +68,7 @@
             data:
               prefix: "{{ vrf_prefix if vrf_prefix != '' else DEFAULT_VRF_PREFIX }}"
               vrf: "{{ new_vrf_name }}"
-              tags:
-                - "{{ new_vrf_name }}"
-                - vrf_parent_p2p
+              # tags:
+              #   - "{{ new_vrf_name }}"
+              #   - vrf_parent_p2p
             state: present

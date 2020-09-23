@@ -202,6 +202,25 @@
       loop_control:
         label: "{{ item.port }}"
 
+    - name: Create new VRF
+      run_once: yes
+      tags: vrf
+      netbox_vrf:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "VRF101"
+          rd: "65001:101"
+          enforce_unique: true
+          description: "L3VPN VRF for Customer VRF101"
+          # tags:
+          #     - "VRF101"
+          custom_fields:
+            import_rt: "65001:101"
+            export_rt: "65001:101"
+        validate_certs: false
+        state: present
+
     # - name: Add New Device
     #   delegate_to: localhost
     #   netbox_device:

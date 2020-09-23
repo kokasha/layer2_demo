@@ -80,8 +80,8 @@
           status: Active
           vlan_role: l3vpn_vlans
           description: "L3VPN VLAN for {{ customer_vrf }} on {{ node }} Interface {{ interface }}"
-          tags:
-            - "{{ customer_vrf }}"
+          # tags:
+          #   - "{{ customer_vrf }}"
         state: present
 
     - name: Create interface as a trunk port
@@ -109,8 +109,8 @@
           vlan:
             name: "{{ vlan_name }}"
             vlan_group: "{{ vlan_group_name }}"
-          tags:
-            - "{{ customer_vrf }}"
+          # tags:
+          #   - "{{ customer_vrf }}"
         state: present
         first_available: yes
       register: new_vlan_prefix
@@ -132,8 +132,8 @@
           interface:
             name: "{{ interface }}.{{ circuit_vlan }}"
             device: "{{ node }}"
-          tags:
-            - "{{ customer_vrf }}"
+          # tags:
+          #   - "{{ customer_vrf }}"
         state: new
       register: vlan_ip
 
@@ -147,8 +147,8 @@
           interface:
             name: "{{ interface }}.{{ circuit_vlan }}"
             device: "{{ node }}"
-          tags:
-            - "{{ customer_vrf }}"
+          # tags:
+          #   - "{{ customer_vrf }}"
         state: new
       register: new_peer_ip
 
