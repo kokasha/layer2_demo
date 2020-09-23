@@ -19,6 +19,7 @@ author:
 description:
     - Apply patch files using the GNU patch tool.
 short_description: Apply patch files using the GNU patch tool
+version_added: "1.0.0"
 options:
   basedir:
     description:
@@ -49,7 +50,7 @@ options:
     default: present
   remote_src:
     description:
-      - If C(no), it will search for src at originating/master machine, if C(yes) it will
+      - If C(no), it will search for src at originating/controller machine, if C(yes) it will
         go to the remote/target machine for the C(src).
     type: bool
     default: no
@@ -71,6 +72,11 @@ options:
         line endings into LF.
       - Line endings of src and dest must match.
       - If set to C(no), C(patch) will replace CRLF in C(src) files on POSIX.
+    type: bool
+    default: no
+  ignore_whitespace:
+    description:
+      - Setting to C(yes) will ignore white space changes between patch and input..
     type: bool
     default: no
 notes:
@@ -115,13 +121,15 @@ def add_dry_run_option(opts):
         opts.append('--dry-run')
 
 
-def is_already_applied(patch_func, patch_file, basedir, dest_file=None, binary=False, strip=0, state='present'):
+def is_already_applied(patch_func, patch_file, basedir, dest_file=None, binary=False, ignore_whitespace=False, strip=0, state='present'):
     opts = ['--quiet', '--forward',
             "--strip=%s" % strip, "--directory='%s'" % basedir,
             "--input='%s'" % patch_file]
     add_dry_run_option(opts)
     if binary:
         opts.append('--binary')
+    if ignore_whitespace:
+        opts.append('--ignore-whitespace')
     if dest_file:
         opts.append("'%s'" % dest_file)
     if state == 'present':
@@ -131,7 +139,7 @@ def is_already_applied(patch_func, patch_file, basedir, dest_file=None, binary=F
     return rc == 0
 
 
-def apply_patch(patch_func, patch_file, basedir, dest_file=None, binary=False, strip=0, dry_run=False, backup=False, state='present'):
+def apply_patch(patch_func, patch_file, basedir, dest_file=None, binary=False, ignore_whitespace=False, strip=0, dry_run=False, backup=False, state='present'):
     opts = ['--quiet', '--forward', '--batch', '--reject-file=-',
             "--strip=%s" % strip, "--directory='%s'" % basedir,
             "--input='%s'" % patch_file]
@@ -139,6 +147,8 @@ def apply_patch(patch_func, patch_file, basedir, dest_file=None, binary=False, s
         add_dry_run_option(opts)
     if binary:
         opts.append('--binary')
+    if ignore_whitespace:
+        opts.append('--ignore-whitespace')
     if dest_file:
         opts.append("'%s'" % dest_file)
     if backup:
@@ -164,6 +174,7 @@ def main():
             #     since patch will create numbered copies, not strftime("%Y-%m-%d@%H:%M:%S~")
             backup=dict(type='bool', default=False),
             binary=dict(type='bool', default=False),
+            ignore_whitespace=dict(type='bool', default=False),
             state=dict(type='str', default='present', choices=['absent', 'present']),
         ),
         required_one_of=[['dest', 'basedir']],
@@ -196,9 +207,10 @@ def main():
     p.src = os.path.abspath(p.src)
 
     changed = False
-    if not is_already_applied(patch_func, p.src, p.basedir, dest_file=p.dest, binary=p.binary, strip=p.strip, state=p.state):
+    if not is_already_applied(patch_func, p.src, p.basedir, dest_file=p.dest, binary=p.binary,
+                              ignore_whitespace=p.ignore_whitespace, strip=p.strip, state=p.state):
         try:
-            apply_patch(patch_func, p.src, p.basedir, dest_file=p.dest, binary=p.binary, strip=p.strip,
+            apply_patch(patch_func, p.src, p.basedir, dest_file=p.dest, binary=p.binary, ignore_whitespace=p.ignore_whitespace, strip=p.strip,
                         dry_run=module.check_mode, backup=p.backup, state=p.state)
             changed = True
         except PatchError as e:

@@ -33,7 +33,6 @@ module: gcp_compute_target_https_proxy_info
 description:
 - Gather info for GCP TargetHttpsProxy
 short_description: Gather info for GCP TargetHttpsProxy
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -77,6 +77,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -142,8 +143,7 @@ resources:
       - Specifies the QUIC override policy for this resource. This determines whether
         the load balancer will attempt to negotiate QUIC with clients or not. Can
         specify one of NONE, ENABLE, or DISABLE. If NONE is specified, uses the QUIC
-        policy with no user overrides, which is equivalent to DISABLE. Not specifying
-        this field is equivalent to specifying NONE.
+        policy with no user overrides, which is equivalent to DISABLE.
       returned: success
       type: str
     sslCertificates:
@@ -171,7 +171,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

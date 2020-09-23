@@ -36,7 +36,7 @@ module: flatpak
 short_description: Manage flatpaks
 description:
 - Allows users to add or remove flatpaks.
-- See the M(flatpak_remote) module for managing flatpak remotes.
+- See the M(community.general.flatpak_remote) module for managing flatpak remotes.
 author:
 - John Kwiatkoski (@JayKayy)
 - Alexander Bethke (@oolongbrothers)
@@ -77,7 +77,7 @@ options:
     - The flatpak remote (repository) to install the flatpak from.
     - By default, C(flathub) is assumed, but you do need to add the flathub flatpak_remote before
       you can use this.
-    - See the M(flatpak_remote) module for managing flatpak remotes.
+    - See the M(community.general.flatpak_remote) module for managing flatpak remotes.
     type: str
     default: flathub
   state:
@@ -90,29 +90,29 @@ options:
 
 EXAMPLES = r'''
 - name: Install the spotify flatpak
-  flatpak:
+  community.general.flatpak:
     name:  https://s3.amazonaws.com/alexlarsson/spotify-repo/spotify.flatpakref
     state: present
 
 - name: Install the gedit flatpak package
-  flatpak:
+  community.general.flatpak:
     name: https://git.gnome.org/browse/gnome-apps-nightly/plain/gedit.flatpakref
     state: present
 
 - name: Install the gedit package from flathub for current user
-  flatpak:
+  community.general.flatpak:
     name: org.gnome.gedit
     state: present
     method: user
 
 - name: Install the Gnome Calendar flatpak from the gnome remote system-wide
-  flatpak:
+  community.general.flatpak:
     name: org.gnome.Calendar
     state: present
     remote: gnome
 
 - name: Remove the gedit flatpak
-  flatpak:
+  community.general.flatpak:
     name: org.gnome.gedit
     state: absent
 '''

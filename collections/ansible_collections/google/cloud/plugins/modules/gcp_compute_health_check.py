@@ -41,7 +41,6 @@ description:
   successfully to some number of consecutive probes, it is marked healthy again and
   can receive new connections.
 short_description: Creates a GCP HealthCheck
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -152,7 +151,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -171,7 +170,6 @@ options:
         - 'Some valid choices include: "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"'
         required: false
         type: str
-        version_added: '2.9'
   https_health_check:
     description:
     - A nested object resource.
@@ -214,7 +212,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -233,7 +231,6 @@ options:
         - 'Some valid choices include: "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"'
         required: false
         type: str
-        version_added: '2.9'
   tcp_health_check:
     description:
     - A nested object resource.
@@ -269,7 +266,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -288,7 +285,6 @@ options:
         - 'Some valid choices include: "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"'
         required: false
         type: str
-        version_added: '2.9'
   ssl_health_check:
     description:
     - A nested object resource.
@@ -324,7 +320,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -343,13 +339,11 @@ options:
         - 'Some valid choices include: "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"'
         required: false
         type: str
-        version_added: '2.9'
   http2_health_check:
     description:
     - A nested object resource.
     required: false
     type: dict
-    version_added: '2.10'
     suboptions:
       host:
         description:
@@ -387,7 +381,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -437,6 +431,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -574,8 +569,7 @@ httpHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -630,8 +624,7 @@ httpsHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -680,8 +673,7 @@ tcpHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -730,8 +722,7 @@ sslHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -786,8 +777,7 @@ http2HealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -895,8 +885,7 @@ def main():
                     port_specification=dict(type='str'),
                 ),
             ),
-        ),
-        mutually_exclusive=[['http2_health_check', 'http_health_check', 'https_health_check', 'ssl_health_check', 'tcp_health_check']],
+        )
     )
 
     if not module.params['scopes']:

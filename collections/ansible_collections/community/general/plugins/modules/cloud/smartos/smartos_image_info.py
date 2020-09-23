@@ -15,7 +15,7 @@ short_description: Get SmartOS image details.
 description:
     - Retrieve information about all installed images on SmartOS.
     - This module was called C(smartos_image_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(smartos_image_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.smartos_image_info) module no longer returns C(ansible_facts)!
 author: Adam Števko (@xen0l)
 options:
     filters:
@@ -28,20 +28,20 @@ options:
 
 EXAMPLES = '''
 - name: Return information about all installed images
-  smartos_image_info:
+  community.general.smartos_image_info:
   register: result
 
 - name: Return all private active Linux images
-  smartos_image_info:
+  community.general.smartos_image_info:
     filters: "os=linux state=active public=false"
   register: result
 
 - name: Show, how many clones does every image have
-  smartos_image_info:
+  community.general.smartos_image_info:
   register: result
 
 - name: Print information
-  debug:
+  ansible.builtin.debug:
     msg: "{{ result.smartos_images[item]['name'] }}-{{ result.smartos_images[item]['version'] }}
          has {{ result.smartos_images[item]['clones'] }} VM(s)"
   with_items: "{{ result.smartos_images.keys() | list }}"
@@ -50,7 +50,7 @@ EXAMPLES = '''
 # in ansible_facts['smartos_images'] and can be used as follows.
 # Note that this is deprecated and will stop working in community.general 3.0.0.
 - name: Print information
-  debug:
+  ansible.builtin.debug:
     msg: "{{ smartos_images[item]['name'] }}-{{ smartos_images[item]['version'] }}
          has {{ smartos_images[item]['clones'] }} VM(s)"
   with_items: "{{ smartos_images.keys() | list }}"

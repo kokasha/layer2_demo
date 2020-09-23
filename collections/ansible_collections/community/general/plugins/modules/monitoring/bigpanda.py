@@ -76,14 +76,14 @@ requirements: [ ]
 
 EXAMPLES = '''
 - name: Notify BigPanda about a deployment
-  bigpanda:
+  community.general.bigpanda:
     component: myapp
     version: '1.3'
     token: '{{ bigpanda_token }}'
     state: started
 
 - name: Notify BigPanda about a deployment
-  bigpanda:
+  community.general.bigpanda:
     component: myapp
     version: '1.3'
     token: '{{ bigpanda_token }}'
@@ -91,7 +91,7 @@ EXAMPLES = '''
 
 # If outside servers aren't reachable from your machine, use delegate_to and override hosts:
 - name: Notify BigPanda about a deployment
-  bigpanda:
+  community.general.bigpanda:
     component: myapp
     version: '1.3'
     token: '{{ bigpanda_token }}'
@@ -101,7 +101,7 @@ EXAMPLES = '''
   register: deployment
 
 - name: Notify BigPanda about a deployment
-  bigpanda:
+  community.general.bigpanda:
     component: '{{ deployment.component }}'
     version: '{{ deployment.version }}'
     token: '{{ deployment.token }}'
@@ -137,7 +137,7 @@ def main():
                                     deprecated_aliases=[dict(name='message', version='3.0.0',
                                                              collection_name='community.general')]),  # was Ansible 2.14
             source_system=dict(required=False, default='ansible'),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
             url=dict(required=False, default='https://api.bigpanda.io'),
         ),
         supports_check_mode=True,

@@ -33,7 +33,6 @@ module: gcp_sql_instance_info
 description:
 - Gather info for GCP Instance
 short_description: Gather info for GCP Instance
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -71,6 +70,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -414,6 +414,12 @@ resources:
             try to update this value.
           returned: success
           type: int
+        userLabels:
+          description:
+          - User-provided labels, represented as a dictionary where each label is
+            a single key value pair.
+          returned: success
+          type: dict
     gceZone:
       description:
       - The Compute Engine zone that the instance is currently serving from. This
@@ -426,12 +432,72 @@ resources:
       - The current serving state of the database instance.
       returned: success
       type: str
+    diskEncryptionConfiguration:
+      description:
+      - Disk encyption settings.
+      returned: success
+      type: complex
+      contains:
+        kmsKeyName:
+          description:
+          - The KMS key used to encrypt the Cloud SQL instance .
+          returned: success
+          type: str
+    diskEncryptionStatus:
+      description:
+      - Disk encyption status.
+      returned: success
+      type: complex
+      contains:
+        kmsKeyVersionName:
+          description:
+          - The KMS key version used to encrypt the Cloud SQL instance .
+          returned: success
+          type: str
+    serverCaCert:
+      description:
+      - SSL configuration.
+      returned: success
+      type: complex
+      contains:
+        cert:
+          description:
+          - PEM representation of the X.509 certificate.
+          returned: success
+          type: str
+        certSerialNumber:
+          description:
+          - Serial number, as extracted from the certificate.
+          returned: success
+          type: str
+        commonName:
+          description:
+          - User supplied name. Constrained to [a-zA-Z.-_ ]+.
+          returned: success
+          type: str
+        createTime:
+          description:
+          - The time when the certificate was created in RFC 3339 format, for example
+            2012-11-15T16:19:00.094Z.
+          returned: success
+          type: str
+        expirationTime:
+          description:
+          - The time when the certificate expires in RFC 3339 format, for example
+            2012-11-15T16:19:00.094Z.
+          returned: success
+          type: str
+        sha1Fingerprint:
+          description:
+          - SHA-1 fingerprint of the certificate.
+          returned: success
+          type: str
 '''
 
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

@@ -33,7 +33,6 @@ module: gcp_cloudscheduler_job_info
 description:
 - Gather info for GCP Job
 short_description: Gather info for GCP Job
-version_added: '2.9'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -76,6 +75,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -200,10 +200,10 @@ resources:
       contains:
         topicName:
           description:
-          - 'The full resource name for the Cloud Pub/Sub topic to which messages
-            will be published when a job is delivered. ~>**NOTE**: The topic name
-            must be in the same format as required by PubSub''s PublishRequest.name,
-            e.g. `projects/my-project/topics/my-topic`.'
+          - The full resource name for the Cloud Pub/Sub topic to which messages will
+            be published when a job is delivered. ~>**NOTE:** The topic name must
+            be in the same format as required by PubSub's PublishRequest.name, e.g.
+            `projects/my-project/topics/my-topic`.
           returned: success
           type: str
         data:
@@ -358,7 +358,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

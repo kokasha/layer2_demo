@@ -12,7 +12,7 @@ short_description: Retrieve information about one or more of the OneView SAN Man
 description:
     - Retrieve information about one or more of the SAN Managers from OneView
     - This module was called C(oneview_san_manager_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_san_manager_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_san_manager_info) module no longer returns C(ansible_facts)!
 requirements:
     - hpOneView >= 2.0.1
 author:
@@ -38,16 +38,16 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all SAN Managers
-  oneview_san_manager_info:
+  community.general.oneview_san_manager_info:
     config: /etc/oneview/oneview_config.json
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.san_managers }}"
 
 - name: Gather paginated, filtered and sorted information about SAN Managers
-  oneview_san_manager_info:
+  community.general.oneview_san_manager_info:
     config: /etc/oneview/oneview_config.json
     params:
       start: 0
@@ -57,17 +57,17 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.san_managers }}"
 
 - name: Gather information about a SAN Manager by provider display name
-  oneview_san_manager_info:
+  community.general.oneview_san_manager_info:
     config: /etc/oneview/oneview_config.json
     provider_display_name: Brocade Network Advisor
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.san_managers }}"
 '''
 

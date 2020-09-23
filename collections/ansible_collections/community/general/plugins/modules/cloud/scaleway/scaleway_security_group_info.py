@@ -33,11 +33,11 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Gather Scaleway security groups information
-  scaleway_security_group_info:
+  community.general.scaleway_security_group_info:
     region: par1
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.scaleway_security_group_info }}"
 '''
 

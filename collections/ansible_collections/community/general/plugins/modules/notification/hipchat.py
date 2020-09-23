@@ -66,12 +66,12 @@ author:
 
 EXAMPLES = '''
 - name: Send a message to a Hipchat room
-  hipchat:
+  community.general.hipchat:
     room: notif
     msg: Ansible task finished
 
 - name: Send a message to a Hipchat room using Hipchat API version 2
-  hipchat:
+  community.general.hipchat:
     api: https://api.hipchat.com/v2/
     token: OAUTH2_TOKEN
     room: notify
@@ -173,7 +173,7 @@ def main():
                                                   "purple", "gray", "random"]),
             msg_format=dict(default="text", choices=["text", "html"]),
             notify=dict(default=True, type='bool'),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
             api=dict(default=DEFAULT_URI),
         ),
         supports_check_mode=True

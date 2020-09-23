@@ -35,78 +35,82 @@ options:
         description:
             - Name of package to install/remove;
             - multiple names may be given, separated by commas
+        aliases: [pkg]
+        type: list
+        elements: str
     state:
         description:
             - Intended state of the package
         choices: [ 'present', 'absent' ]
         default: present
+        type: str
     update_cache:
         description:
           - Update repository database. Can be run with other steps or on it's own.
         type: bool
-        default: 'no'
+        default: no
     upgrade:
         description:
           - Upgrade main packages to their newer versions
         type: bool
-        default: 'no'
+        default: no
     full_upgrade:
         description:
           - Upgrade all packages to their newer versions
         type: bool
-        default: 'no'
+        default: no
     clean:
         description:
           - Clean packages cache
         type: bool
-        default: 'no'
+        default: no
     force:
         description:
           - Force package reinstall
         type: bool
-        default: 'no'
+        default: no
 '''
 
 EXAMPLES = '''
 - name: Install package foo
-  pkgin:
+  community.general.pkgin:
     name: foo
     state: present
 
 - name: Update cache and install foo package
-  pkgin:
+  community.general.pkgin:
     name: foo
     update_cache: yes
 
 - name: Remove package foo
-  pkgin:
+  community.general.pkgin:
     name: foo
     state: absent
 
 - name: Remove packages foo and bar
-  pkgin:
+  community.general.pkgin:
     name: foo,bar
     state: absent
 
 - name: Update repositories as a separate step
-  pkgin:
+  community.general.pkgin:
     update_cache: yes
 
 - name: Upgrade main packages (equivalent to pkgin upgrade)
-  pkgin:
+  community.general.pkgin:
     upgrade: yes
 
 - name: Upgrade all packages (equivalent to pkgin full-upgrade)
-  pkgin:
+  community.general.pkgin:
     full_upgrade: yes
 
 - name: Force-upgrade all packages (equivalent to pkgin -F full-upgrade)
-  pkgin:
+  community.general.pkgin:
     full_upgrade: yes
     force: yes
 
 - name: Clean packages cache (equivalent to pkgin clean)
-  pkgin:
+  community.general.pkgin:
     clean: yes
 '''
 
@@ -321,12 +325,12 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             state=dict(default="present", choices=["present", "absent"]),
-            name=dict(aliases=["pkg"], type='list'),
-            update_cache=dict(default='no', type='bool'),
-            upgrade=dict(default='no', type='bool'),
-            full_upgrade=dict(default='no', type='bool'),
-            clean=dict(default='no', type='bool'),
-            force=dict(default='no', type='bool')),
+            name=dict(aliases=["pkg"], type='list', elements='str'),
+            update_cache=dict(default=False, type='bool'),
+            upgrade=dict(default=False, type='bool'),
+            full_upgrade=dict(default=False, type='bool'),
+            clean=dict(default=False, type='bool'),
+            force=dict(default=False, type='bool')),
         required_one_of=[['name', 'update_cache', 'upgrade', 'full_upgrade', 'clean']],
         supports_check_mode=True)
 

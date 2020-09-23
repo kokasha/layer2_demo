@@ -7,7 +7,11 @@ __metaclass__ = type
 import os
 import pynetbox
 
-# Set nb variable to connec to Netbox and use the veriable in future calls
+# NOTE: If anything depends on specific versions of NetBox, can check INTEGRATION_TESTS in env
+# os.environ["INTEGRATION_TESTS"]
+
+
+# Set nb variable to connect to Netbox and use the veriable in future calls
 nb = pynetbox.api("http://localhost:32768", "0123456789abcdef0123456789abcdef01234567")
 
 
@@ -135,6 +139,7 @@ device_types = [
         "manufacturer": cisco_manu.id,
         "subdevice_role": False,
     },
+    {"model": "1841", "slug": "1841", "manufacturer": cisco_manu.id,},
 ]
 created_device_types = nb.dcim.device_types.create(device_types)
 ### Device type variables to be used later on
@@ -152,28 +157,45 @@ device_roles = [
         "color": "e91e63",
         "vm_role": True,
     },
+    {
+        "name": "Test VM Role 1",
+        "slug": "test-vm-role-1",
+        "color": "e91e65",
+        "vm_role": True,
+    },
 ]
 created_device_roles = nb.dcim.device_roles.create(device_roles)
 ### Device role variables to be used later on
 core_switch = nb.dcim.device_roles.get(slug="core-switch")
 
 
-## Create Racks
-racks = [{"name": "Test Rack", "slug": "test-rack", "site": test_site2.id}]
-created_racks = nb.dcim.racks.create(racks)
-test_rack = nb.dcim.racks.get(slug="test-rack")
-
-
 ## Create Rack Groups
 rack_groups = [
-    {"name": "Test Rack Group", "slug": "test-rack-group", "site": test_site.id}
+    {"name": "Test Rack Group", "slug": "test-rack-group", "site": test_site.id},
+    {"name": "Parent Rack Group", "slug": "parent-rack-group", "site": test_site.id},
 ]
 created_rack_groups = nb.dcim.rack_groups.create(rack_groups)
 
+### Create Rack Group Parent relationship
+created_rack_groups[0].parent = created_rack_groups[1]
+created_rack_groups[0].save()
 
 ## Create Rack Roles
 rack_roles = [{"name": "Test Rack Role", "slug": "test-rack-role", "color": "4287f5"}]
 created_rack_roles = nb.dcim.rack_roles.create(rack_roles)
+
+## Create Racks
+racks = [
+    {
+        "name": "Test Rack Site 2",
+        "site": test_site2.id,
+        "role": created_rack_roles[0].id,
+    },
+    {"name": "Test Rack", "site": test_site.id, "group": created_rack_groups[0].id},
+]
+created_racks = nb.dcim.racks.create(racks)
+test_rack = nb.dcim.racks.get(name="Test Rack")  # racks don't have slugs
+test_rack_site2 = nb.dcim.racks.get(name="Test Rack Site 2")
 
 
 ## Create Devices
@@ -190,13 +212,14 @@ devices = [
         "device_type": cisco_test.id,
         "device_role": core_switch.id,
         "site": test_site.id,
+        "rack": test_rack.id,
     },
     {
         "name": "R1-Device",
         "device_type": cisco_test.id,
         "device_role": core_switch.id,
         "site": test_site2.id,
-        "rack": test_rack.id,
+        "rack": test_rack_site2.id,
     },
     {
         "name": "Test Nexus One",
@@ -315,25 +338,21 @@ created_virtual_machines_intfs = nb.virtualization.interfaces.create(
 
 
 ## Create Services
-
-### Netbox 2.6 uses id int instead of string
-protocol_tcp = "tcp" if os.environ["INTEGRATION_TESTS"] == "latest" else 6
-
 services = [
-    {"device": test100.id, "name": "ssh", "port": 22, "protocol": protocol_tcp},
+    {"device": test100.id, "name": "ssh", "port": 22, "protocol": "tcp"},
     {
         "device": test100.id,
         "name": "http",
         "port": 80,
-        "protocol": protocol_tcp,
+        "protocol": "tcp",
         "ipaddresses": [created_ip_addresses[0].id, created_ip_addresses[1].id],
     },
-    {"device": nexus.id, "name": "telnet", "port": 23, "protocol": protocol_tcp},
+    {"device": nexus.id, "name": "telnet", "port": 23, "protocol": "tcp"},
     {
         "virtual_machine": test_spaces_vm.id,
         "name": "ssh",
         "port": 22,
-        "protocol": protocol_tcp,
+        "protocol": "tcp",
     },
 ]
 created_services = nb.ipam.services.create(services)

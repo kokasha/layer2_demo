@@ -37,7 +37,6 @@ description:
   applied to them, which may be used to reference them during pod scheduling. They
   may also be resized up or down, to accommodate the workload.
 short_description: Creates a GCP NodePool
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -158,7 +157,6 @@ options:
         elements: dict
         required: false
         type: list
-        version_added: '2.9'
         suboptions:
           accelerator_count:
             description:
@@ -176,21 +174,18 @@ options:
           If unspecified, the default disk type is 'pd-standard' .
         required: false
         type: str
-        version_added: '2.9'
       min_cpu_platform:
         description:
         - Minimum CPU platform to be used by this instance. The instance may be scheduled
           on the specified or newer CPU platform .
         required: false
         type: str
-        version_added: '2.9'
       taints:
         description:
         - List of kubernetes taints to be applied to each node.
         elements: dict
         required: false
         type: list
-        version_added: '2.9'
         suboptions:
           key:
             description:
@@ -207,6 +202,29 @@ options:
             - Effect for taint.
             required: false
             type: str
+      shielded_instance_config:
+        description:
+        - Shielded Instance options.
+        required: false
+        type: dict
+        suboptions:
+          enable_secure_boot:
+            description:
+            - Defines whether the instance has Secure Boot enabled.
+            - Secure Boot helps ensure that the system only runs authentic software
+              by verifying the digital signature of all boot components, and halting
+              the boot process if signature verification fails.
+            required: false
+            type: bool
+          enable_integrity_monitoring:
+            description:
+            - Defines whether the instance has integrity monitoring enabled.
+            - Enables monitoring and attestation of the boot integrity of the instance.
+            - The attestation is performed against the integrity policy baseline.
+              This baseline is initially derived from the implicitly trusted boot
+              image when the instance is created.
+            required: false
+            type: bool
   initial_node_count:
     description:
     - The initial node count for the pool. You must ensure that your Compute Engine
@@ -219,7 +237,6 @@ options:
     - The version of the Kubernetes of this node.
     required: false
     type: str
-    version_added: '2.8'
   autoscaling:
     description:
     - Autoscaler configuration for this NodePool. Autoscaler is enabled only if a
@@ -276,7 +293,6 @@ options:
       on a node in the node pool.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       max_pods_per_node:
         description:
@@ -289,7 +305,6 @@ options:
     elements: dict
     required: false
     type: list
-    version_added: '2.9'
     suboptions:
       code:
         description:
@@ -316,7 +331,6 @@ options:
     aliases:
     - region
     - zone
-    version_added: '2.8'
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -348,6 +362,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -528,6 +543,29 @@ config:
           - Effect for taint.
           returned: success
           type: str
+    shieldedInstanceConfig:
+      description:
+      - Shielded Instance options.
+      returned: success
+      type: complex
+      contains:
+        enableSecureBoot:
+          description:
+          - Defines whether the instance has Secure Boot enabled.
+          - Secure Boot helps ensure that the system only runs authentic software
+            by verifying the digital signature of all boot components, and halting
+            the boot process if signature verification fails.
+          returned: success
+          type: bool
+        enableIntegrityMonitoring:
+          description:
+          - Defines whether the instance has integrity monitoring enabled.
+          - Enables monitoring and attestation of the boot integrity of the instance.
+          - The attestation is performed against the integrity policy baseline. This
+            baseline is initially derived from the implicitly trusted boot image when
+            the instance is created.
+          returned: success
+          type: bool
 initialNodeCount:
   description:
   - The initial node count for the pool. You must ensure that your Compute Engine
@@ -695,6 +733,9 @@ def main():
                     disk_type=dict(type='str'),
                     min_cpu_platform=dict(type='str'),
                     taints=dict(type='list', elements='dict', options=dict(key=dict(type='str'), value=dict(type='str'), effect=dict(type='str'))),
+                    shielded_instance_config=dict(
+                        type='dict', options=dict(enable_secure_boot=dict(type='bool'), enable_integrity_monitoring=dict(type='bool'))
+                    ),
                 ),
             ),
             initial_node_count=dict(required=True, type='int'),
@@ -926,6 +967,7 @@ class NodePoolConfig(object):
                 u'diskType': self.request.get('disk_type'),
                 u'minCpuPlatform': self.request.get('min_cpu_platform'),
                 u'taints': NodePoolTaintsArray(self.request.get('taints', []), self.module).to_request(),
+                u'shieldedInstanceConfig': NodePoolShieldedinstanceconfig(self.request.get('shielded_instance_config', {}), self.module).to_request(),
             }
         )
 
@@ -946,6 +988,7 @@ class NodePoolConfig(object):
                 u'diskType': self.request.get(u'diskType'),
                 u'minCpuPlatform': self.request.get(u'minCpuPlatform'),
                 u'taints': NodePoolTaintsArray(self.request.get(u'taints', []), self.module).from_response(),
+                u'shieldedInstanceConfig': NodePoolShieldedinstanceconfig(self.request.get(u'shieldedInstanceConfig', {}), self.module).from_response(),
             }
         )
 
@@ -1002,6 +1045,25 @@ class NodePoolTaintsArray(object):
 
     def _response_from_item(self, item):
         return remove_nones_from_dict({u'key': item.get(u'key'), u'value': item.get(u'value'), u'effect': item.get(u'effect')})
+
+
+class NodePoolShieldedinstanceconfig(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict(
+            {u'enableSecureBoot': self.request.get('enable_secure_boot'), u'enableIntegrityMonitoring': self.request.get('enable_integrity_monitoring')}
+        )
+
+    def from_response(self):
+        return remove_nones_from_dict(
+            {u'enableSecureBoot': self.request.get(u'enableSecureBoot'), u'enableIntegrityMonitoring': self.request.get(u'enableIntegrityMonitoring')}
+        )
 
 
 class NodePoolAutoscaling(object):

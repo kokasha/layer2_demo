@@ -30,7 +30,7 @@ author:
 options:
   auth_token:
     description:
-      - Packet api token. You can also supply it in env var C(PACKET_API_TOKEN).
+      - Packet API token. You can also supply it in env var C(PACKET_API_TOKEN).
 
   count:
     description:
@@ -134,7 +134,7 @@ notes:
 '''
 
 EXAMPLES = '''
-# All the examples assume that you have your Packet api token in env var PACKET_API_TOKEN.
+# All the examples assume that you have your Packet API token in env var PACKET_API_TOKEN.
 # You can also pass it to the auth_token parameter of the module instead.
 
 # Creating devices
@@ -142,7 +142,7 @@ EXAMPLES = '''
 - name: Create 1 device
   hosts: localhost
   tasks:
-  - packet_device:
+  - community.general.packet_device:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       hostnames: myserver
       tags: ci-xyz
@@ -151,13 +151,13 @@ EXAMPLES = '''
       facility: sjc1
 
 # Create the same device and wait until it is in state "active", (when it's
-# ready for other API operations). Fail if the devices in not "active" in
+# ready for other API operations). Fail if the device is not "active" in
 # 10 minutes.
 
 - name: Create device and wait up to 10 minutes for active state
   hosts: localhost
   tasks:
-  - packet_device:
+  - community.general.packet_device:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       hostnames: myserver
       operating_system: ubuntu_16_04
@@ -169,7 +169,7 @@ EXAMPLES = '''
 - name: Create 3 ubuntu devices called server-01, server-02 and server-03
   hosts: localhost
   tasks:
-  - packet_device:
+  - community.general.packet_device:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       hostnames: server-%02d
       count: 3
@@ -181,7 +181,7 @@ EXAMPLES = '''
   hosts: localhost
   tasks:
   - name: Create 3 devices and register their facts
-    packet_device:
+    community.general.packet_device:
       hostnames: [coreos-one, coreos-two, coreos-three]
       operating_system: coreos_stable
       plan: baremetal_0
@@ -208,7 +208,7 @@ EXAMPLES = '''
     register: newhosts
 
   - name: Wait for ssh
-    wait_for:
+    ansible.builtin.wait_for:
       delay: 1
       host: "{{ item.public_ipv4 }}"
       port: 22
@@ -222,7 +222,7 @@ EXAMPLES = '''
 - name: Remove 3 devices by uuid
   hosts: localhost
   tasks:
-  - packet_device:
+  - community.general.packet_device:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       state: absent
       device_ids:

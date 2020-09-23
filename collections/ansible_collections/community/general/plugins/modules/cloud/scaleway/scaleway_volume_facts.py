@@ -13,7 +13,7 @@ module: scaleway_volume_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favour of C(_info) module.
-  alternative: Use M(scaleway_volume_info) instead.
+  alternative: Use M(community.general.scaleway_volume_info) instead.
 short_description: Gather facts about the Scaleway volumes available.
 description:
   - Gather facts about the Scaleway volumes available.
@@ -37,7 +37,7 @@ options:
 
 EXAMPLES = r'''
 - name: Gather Scaleway volumes facts
-  scaleway_volume_facts:
+  community.general.scaleway_volume_facts:
     region: par1
 '''
 

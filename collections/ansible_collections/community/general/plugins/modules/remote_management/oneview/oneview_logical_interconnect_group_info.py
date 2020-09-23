@@ -13,7 +13,7 @@ short_description: Retrieve information about one or more of the OneView Logical
 description:
     - Retrieve information about one or more of the Logical Interconnect Groups from OneView
     - This module was called C(oneview_logical_interconnect_group_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_logical_interconnect_group_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_logical_interconnect_group_info) module no longer returns C(ansible_facts)!
 requirements:
     - hpOneView >= 2.0.1
 author:
@@ -32,7 +32,7 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all Logical Interconnect Groups
-  oneview_logical_interconnect_group_info:
+  community.general.oneview_logical_interconnect_group_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -41,11 +41,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.logical_interconnect_groups }}"
 
 - name: Gather paginated, filtered and sorted information about Logical Interconnect Groups
-  oneview_logical_interconnect_group_info:
+  community.general.oneview_logical_interconnect_group_info:
     params:
       start: 0
       count: 3
@@ -59,11 +59,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.logical_interconnect_groups }}"
 
 - name: Gather information about a Logical Interconnect Group by name
-  oneview_logical_interconnect_group_info:
+  community.general.oneview_logical_interconnect_group_info:
     name: logical interconnect group name
     hostname: 172.16.101.48
     username: administrator
@@ -73,7 +73,7 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.logical_interconnect_groups }}"
 '''
 

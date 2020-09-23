@@ -15,10 +15,11 @@ from pprint import pformat
 
 from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase
-from ansible.parsing.splitter import parse_kv
+from ansible.parsing.splitter import parse_kv, split_args
 from ansible.utils.display import Display
 
 import pynetbox
+import requests
 
 __metaclass__ = type
 
@@ -195,7 +196,7 @@ class LookupModule(LookupBase):
 
         netbox_api_token = kwargs.get("token")
         netbox_api_endpoint = kwargs.get("api_endpoint")
-        netbox_ssl_verify = kwargs.get("validate_certs")
+        netbox_ssl_verify = kwargs.get("validate_certs", True)
         netbox_private_key_file = kwargs.get("key_file")
         netbox_api_filter = kwargs.get("api_filter")
         netbox_raw_return = kwargs.get("raw_data")
@@ -204,12 +205,15 @@ class LookupModule(LookupBase):
             terms = [terms]
 
         try:
+            session = requests.Session()
+            session.verify = netbox_ssl_verify
+
             netbox = pynetbox.api(
                 netbox_api_endpoint,
                 token=netbox_api_token if netbox_api_token else None,
-                ssl_verify=netbox_ssl_verify,
                 private_key_file=netbox_private_key_file,
             )
+            netbox.http_session = session
         except FileNotFoundError:
             raise AnsibleError(
                 "%s cannot be found. Please make sure file exists."
@@ -230,7 +234,16 @@ class LookupModule(LookupBase):
             )
 
             if netbox_api_filter:
-                filter = parse_kv(netbox_api_filter)
+                args_split = split_args(netbox_api_filter)
+                args = [parse_kv(x) for x in args_split]
+                filter = {}
+                for arg in args:
+                    for k, v in arg.items():
+                        if k not in filter:
+                            filter[k] = list()
+                            filter[k].append(v)
+                        else:
+                            filter[k].append(v)
 
                 Display().vvvv("filter is %s" % filter)
 

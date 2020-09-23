@@ -52,8 +52,8 @@ options:
 notes:
     - Please note that the C(easy_install) module can only install Python
       libraries. Thus this module is not able to remove libraries. It is
-      generally recommended to use the M(pip) module which you can first install
-      using M(easy_install).
+      generally recommended to use the M(ansible.builtin.pip) module which you can first install
+      using M(community.general.easy_install).
     - Also note that I(virtualenv) must be installed on the remote host if the
       C(virtualenv) parameter is specified.
 requirements: [ "virtualenv" ]
@@ -62,12 +62,12 @@ author: "Matt Wright (@mattupstate)"
 
 EXAMPLES = '''
 - name: Install or update pip
-  easy_install:
+  community.general.easy_install:
     name: pip
     state: latest
 
 - name: Install Bottle into the specified virtualenv
-  easy_install:
+  community.general.easy_install:
     name: bottle
     virtualenv: /webapps/myapp/venv
 '''
@@ -128,7 +128,7 @@ def main():
                    choices=['present', 'latest'],
                    type='str'),
         virtualenv=dict(default=None, required=False),
-        virtualenv_site_packages=dict(default='no', type='bool'),
+        virtualenv_site_packages=dict(default=False, type='bool'),
         virtualenv_command=dict(default='virtualenv', required=False),
         executable=dict(default='easy_install', required=False),
     )

@@ -33,11 +33,11 @@ options:
 
 EXAMPLES = r'''
 - name: Gather Scaleway volumes information
-  scaleway_volume_info:
+  community.general.scaleway_volume_info:
     region: par1
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.scaleway_volume_info }}"
 '''
 

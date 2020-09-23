@@ -24,7 +24,9 @@
 # INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# pylint: skip-file
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
 
 import re
 import shlex
@@ -36,15 +38,9 @@ from ansible.module_utils.parsing.convert_bool import (
 )
 from ansible.module_utils.six import string_types, text_type
 from ansible.module_utils.six.moves import zip
-
-
-def to_list(val):
-    if isinstance(val, (list, tuple)):
-        return list(val)
-    elif val is not None:
-        return [val]
-    else:
-        return list()
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+)
 
 
 class FailedConditionsError(Exception):

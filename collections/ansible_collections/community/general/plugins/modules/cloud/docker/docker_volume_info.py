@@ -37,16 +37,16 @@ requirements:
 
 EXAMPLES = '''
 - name: Get infos on volume
-  docker_volume_info:
+  community.general.docker_volume_info:
     name: mydata
   register: result
 
 - name: Does volume exist?
-  debug:
+  ansible.builtin.debug:
     msg: "The volume {{ 'exists' if result.exists else 'does not exist' }}"
 
 - name: Print information about volume
-  debug:
+  ansible.builtin.debug:
     var: result.volume
   when: result.exists
 '''

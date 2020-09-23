@@ -10,7 +10,8 @@
     netbox_token: "0123456789abcdef0123456789abcdef01234567"
     data:
       name: "R1"
-      device_type: "Cisco Test"
+      device_type:
+        id: "1"
       device_role: "Core Switch"
       site: "Test Site"
       status: "Staged"
@@ -62,6 +63,11 @@
     data:
       name: "R1"
       serial: "FXS1001"
+      local_context_data:
+        bgp_as: "65412"
+      virtual_chassis: "Test Nexus One"
+      vc_position: 2
+      vc_priority: 15
     state: present
   register: test_three
 
@@ -70,12 +76,20 @@
     that:
       - test_three is changed
       - test_three['diff']['after']['serial'] == "FXS1001"
+      - test_three['diff']['after']['local_context_data']["bgp_as"] == "65412"
+      - test_three['diff']['after']['virtual_chassis'] == 1
+      - test_three['diff']['after']['vc_position'] == 2
+      - test_three['diff']['after']['vc_priority'] == 15
       - test_three['device']['name'] == "R1"
       - test_three['device']['device_role'] == 1
       - test_three['device']['device_type'] == 1
       - test_three['device']['site'] == 1
       - test_three['device']['status'] == "staged"
       - test_three['device']['serial'] == "FXS1001"
+      - test_three['device']['local_context_data']["bgp_as"] == "65412"
+      - test_three['device']['virtual_chassis'] == 1
+      - test_three['device']['vc_position'] == 2
+      - test_three['device']['vc_priority'] == 15
       - test_three['msg'] == "device R1 updated"
 
 - name: "3.1 - Update device name using query_params"
@@ -100,6 +114,7 @@
       - test_three_dot_one['device']['site'] == 1
       - test_three_dot_one['device']['status'] == "staged"
       - test_three_dot_one['device']['serial'] == "FXS1001"
+      - test_three_dot_one['device']['local_context_data']["bgp_as"] == "65412"
       - test_three_dot_one['msg'] == "device R1-changed-name updated"
 
 - name: "4 - Create device with tags and assign to rack"
@@ -108,10 +123,10 @@
     netbox_token: "0123456789abcdef0123456789abcdef01234567"
     data:
       name: "TestR1"
-      device_type: "Arista Test"
+      device_type: "1841"
       device_role: "Core Switch"
       site: "Test Site2"
-      rack: "Test Rack"
+      rack: "Test Rack Site 2"
       position: 35
       face: "Front"
       tags:
@@ -129,7 +144,7 @@
       - test_four['diff']['after']['state'] == "present"
       - test_four['device']['name'] == "TestR1"
       - test_four['device']['device_role'] == 1
-      - test_four['device']['device_type'] == 2
+      - test_four['device']['device_type'] == 5
       - test_four['device']['site'] == 2
       - test_four['device']['status'] == "active"
       - test_four['device']['rack'] == 1
@@ -204,7 +219,8 @@
     netbox_token: "0123456789abcdef0123456789abcdef01234567"
     data:
       name: ""
-      device_type: "Cisco Test"
+      device_type:
+        id: 1
       device_role: "Core Switch"
       site: "Test Site"
       status: "Staged"

@@ -42,7 +42,6 @@ description:
   a new internal IP address, either by Compute Engine or by you. External IP addresses
   can be either ephemeral or static.
 short_description: Creates a GCP Address
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -66,13 +65,11 @@ options:
     type: str
   address_type:
     description:
-    - The type of address to reserve, either INTERNAL or EXTERNAL.
-    - If unspecified, defaults to EXTERNAL.
+    - The type of address to reserve.
     - 'Some valid choices include: "INTERNAL", "EXTERNAL"'
     required: false
     default: EXTERNAL
     type: str
-    version_added: '2.7'
   description:
     description:
     - An optional description of this resource.
@@ -96,16 +93,13 @@ options:
     - 'Some valid choices include: "GCE_ENDPOINT"'
     required: false
     type: str
-    version_added: '2.10'
   network_tier:
     description:
-    - 'The networking tier used for configuring this address. This field can take
-      the following values: PREMIUM or STANDARD. If this field is not specified, it
-      is assumed to be PREMIUM.'
+    - The networking tier used for configuring this address. If this field is not
+      specified, it is assumed to be PREMIUM.
     - 'Some valid choices include: "PREMIUM", "STANDARD"'
     required: false
     type: str
-    version_added: '2.8'
   subnetwork:
     description:
     - The URL of the subnetwork in which to reserve the address. If an IP address
@@ -119,7 +113,6 @@ options:
       }}"'
     required: false
     type: dict
-    version_added: '2.7'
   region:
     description:
     - URL of the region where the regional address resides.
@@ -157,6 +150,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -200,8 +194,7 @@ address:
   type: str
 addressType:
   description:
-  - The type of address to reserve, either INTERNAL or EXTERNAL.
-  - If unspecified, defaults to EXTERNAL.
+  - The type of address to reserve.
   returned: success
   type: str
 creationTimestamp:
@@ -238,9 +231,8 @@ purpose:
   type: str
 networkTier:
   description:
-  - 'The networking tier used for configuring this address. This field can take the
-    following values: PREMIUM or STANDARD. If this field is not specified, it is assumed
-    to be PREMIUM.'
+  - The networking tier used for configuring this address. If this field is not specified,
+    it is assumed to be PREMIUM.
   returned: success
   type: str
 subnetwork:

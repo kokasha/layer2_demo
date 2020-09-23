@@ -29,9 +29,11 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = '''
-- debug: msg="the value of foo.txt is {{ lookup('gcp_storage_file',
-    bucket='gcp-bucket', src='mydir/foo.txt', project='project-name',
-    auth_kind='serviceaccount', service_account_file='/tmp/myserviceaccountfile.json') }}"
+- ansible.builtin.debug:
+    msg: |
+         the value of foo.txt is {{ lookup('community.general.gcp_storage_file',
+         bucket='gcp-bucket', src='mydir/foo.txt', project='project-name',
+         auth_kind='serviceaccount', service_account_file='/tmp/myserviceaccountfile.json') }}
 '''
 
 RETURN = '''
@@ -141,5 +143,5 @@ class GcpFileLookup():
 class LookupModule(LookupBase):
     def run(self, terms, variables=None, **kwargs):
         if not HAS_GOOGLE_CLOUD_COLLECTION:
-            raise AnsibleError("community.general.gcp_storage_files needs a supported version of the google.cloud collection installed")
+            raise AnsibleError("community.general.gcp_storage_file needs a supported version of the google.cloud collection installed")
         return GcpFileLookup().run(terms, variables=variables, **kwargs)

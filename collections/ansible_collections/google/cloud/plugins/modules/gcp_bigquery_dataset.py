@@ -33,7 +33,6 @@ module: gcp_bigquery_dataset
 description:
 - Datasets allow you to organize and control access to your tables.
 short_description: Creates a GCP Dataset
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -76,8 +75,7 @@ options:
         - Describes the rights granted to the user specified by the other member of
           the access object. Primitive, Predefined and custom roles are supported.
           Predefined roles that have equivalent primitive roles are swapped by the
-          API to their Primitive counterparts, and will show a diff post-create. See
-          [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
+          API to their Primitive counterparts. See [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
         required: false
         type: str
       special_group:
@@ -168,7 +166,6 @@ options:
       the default partition expiration time indicated by this property.'
     required: false
     type: int
-    version_added: '2.9'
   description:
     description:
     - A user-friendly description of the dataset.
@@ -209,7 +206,6 @@ options:
       key.
     required: false
     type: dict
-    version_added: '2.10'
     suboptions:
       kms_key_name:
         description:
@@ -249,12 +245,26 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
     - This should not be set unless you know what you're doing.
     - This only alters the User Agent string for any API requests.
     type: str
+notes:
+- 'API Reference: U(https://cloud.google.com/bigquery/docs/reference/rest/v2/datasets)'
+- 'Datasets Intro: U(https://cloud.google.com/bigquery/docs/datasets-intro)'
+- for authentication, you can set service_account_file using the C(gcp_service_account_file)
+  env variable.
+- for authentication, you can set service_account_contents using the C(GCP_SERVICE_ACCOUNT_CONTENTS)
+  env variable.
+- For authentication, you can set service_account_email using the C(GCP_SERVICE_ACCOUNT_EMAIL)
+  env variable.
+- For authentication, you can set auth_kind using the C(GCP_AUTH_KIND) env variable.
+- For authentication, you can set scopes using the C(GCP_SCOPES) env variable.
+- Environment variables values will only be used if the playbook values are not set.
+- The I(service_account_email) and I(service_account_file) options are mutually exclusive.
 '''
 
 EXAMPLES = '''
@@ -297,7 +307,7 @@ access:
       - Describes the rights granted to the user specified by the other member of
         the access object. Primitive, Predefined and custom roles are supported. Predefined
         roles that have equivalent primitive roles are swapped by the API to their
-        Primitive counterparts, and will show a diff post-create. See [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
+        Primitive counterparts. See [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
       returned: success
       type: str
     specialGroup:

@@ -34,7 +34,6 @@ description:
 - A named resource representing the stream of messages from a single, specific topic,
   to be delivered to the subscribing application.
 short_description: Creates a GCP Subscription
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -69,7 +68,6 @@ options:
     - A set of key/value label pairs to assign to this Subscription.
     required: false
     type: dict
-    version_added: '2.8'
   push_config:
     description:
     - If push delivery is used with this subscription, this field is used to configure
@@ -84,7 +82,6 @@ options:
           header in the HTTP request for every pushed message.
         required: false
         type: dict
-        version_added: '2.10'
         suboptions:
           service_account_email:
             description:
@@ -160,7 +157,6 @@ options:
     required: false
     default: 604800s
     type: str
-    version_added: '2.8'
   retain_acked_messages:
     description:
     - Indicates whether to retain acknowledged messages. If `true`, then messages
@@ -168,7 +164,6 @@ options:
       until they fall out of the messageRetentionDuration window.
     required: false
     type: bool
-    version_added: '2.8'
   expiration_policy:
     description:
     - A policy that specifies the conditions for this subscription's expiration.
@@ -179,7 +174,6 @@ options:
       value for expirationPolicy.ttl is 1 day.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       ttl:
         description:
@@ -190,6 +184,41 @@ options:
         - Example - "3.5s".
         required: true
         type: str
+  dead_letter_policy:
+    description:
+    - A policy that specifies the conditions for dead lettering messages in this subscription.
+      If dead_letter_policy is not set, dead lettering is disabled.
+    - The Cloud Pub/Sub service account associated with this subscriptions's parent
+      project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+      must have permission to Acknowledge() messages on this subscription.
+    required: false
+    type: dict
+    suboptions:
+      dead_letter_topic:
+        description:
+        - The name of the topic to which dead letter messages should be published.
+        - Format is `projects/{project}/topics/{topic}`.
+        - The Cloud Pub/Sub service account associated with the enclosing subscription's
+          parent project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+          must have permission to Publish() to this topic.
+        - The operation will fail if the topic does not exist.
+        - Users should ensure that there is a subscription attached to this topic
+          since messages published to a topic with no subscriptions are lost.
+        required: false
+        type: str
+      max_delivery_attempts:
+        description:
+        - The maximum number of delivery attempts for any message. The value must
+          be between 5 and 100.
+        - The number of delivery attempts is defined as 1 + (the sum of number of
+          NACKs and number of times the acknowledgement deadline has been exceeded
+          for the message).
+        - A NACK is any call to ModifyAckDeadline with a 0 deadline. Note that client
+          libraries may automatically extend ack_deadlines.
+        - This field will be honored on a best effort basis.
+        - If this parameter is 0, a default value of 5 is used.
+        required: false
+        type: int
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -221,6 +250,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -393,6 +423,41 @@ expirationPolicy:
       - Example - "3.5s".
       returned: success
       type: str
+deadLetterPolicy:
+  description:
+  - A policy that specifies the conditions for dead lettering messages in this subscription.
+    If dead_letter_policy is not set, dead lettering is disabled.
+  - The Cloud Pub/Sub service account associated with this subscriptions's parent
+    project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+    must have permission to Acknowledge() messages on this subscription.
+  returned: success
+  type: complex
+  contains:
+    deadLetterTopic:
+      description:
+      - The name of the topic to which dead letter messages should be published.
+      - Format is `projects/{project}/topics/{topic}`.
+      - The Cloud Pub/Sub service account associated with the enclosing subscription's
+        parent project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+        must have permission to Publish() to this topic.
+      - The operation will fail if the topic does not exist.
+      - Users should ensure that there is a subscription attached to this topic since
+        messages published to a topic with no subscriptions are lost.
+      returned: success
+      type: str
+    maxDeliveryAttempts:
+      description:
+      - The maximum number of delivery attempts for any message. The value must be
+        between 5 and 100.
+      - The number of delivery attempts is defined as 1 + (the sum of number of NACKs
+        and number of times the acknowledgement deadline has been exceeded for the
+        message).
+      - A NACK is any call to ModifyAckDeadline with a 0 deadline. Note that client
+        libraries may automatically extend ack_deadlines.
+      - This field will be honored on a best effort basis.
+      - If this parameter is 0, a default value of 5 is used.
+      returned: success
+      type: int
 '''
 
 ################################################################################
@@ -436,6 +501,7 @@ def main():
             message_retention_duration=dict(default='604800s', type='str'),
             retain_acked_messages=dict(type='bool'),
             expiration_policy=dict(type='dict', options=dict(ttl=dict(required=True, type='str'))),
+            dead_letter_policy=dict(type='dict', options=dict(dead_letter_topic=dict(type='str'), max_delivery_attempts=dict(type='int'))),
         )
     )
 
@@ -496,6 +562,8 @@ def updateMask(request, response):
         update_mask.append('retainAckedMessages')
     if request.get('expirationPolicy') != response.get('expirationPolicy'):
         update_mask.append('expirationPolicy')
+    if request.get('deadLetterPolicy') != response.get('deadLetterPolicy'):
+        update_mask.append('deadLetterPolicy')
     return ','.join(update_mask)
 
 
@@ -514,6 +582,7 @@ def resource_to_request(module):
         u'messageRetentionDuration': module.params.get('message_retention_duration'),
         u'retainAckedMessages': module.params.get('retain_acked_messages'),
         u'expirationPolicy': SubscriptionExpirationpolicy(module.params.get('expiration_policy', {}), module).to_request(),
+        u'deadLetterPolicy': SubscriptionDeadletterpolicy(module.params.get('dead_letter_policy', {}), module).to_request(),
     }
     return_vals = {}
     for k, v in request.items():
@@ -587,6 +656,7 @@ def response_to_hash(module, response):
         u'messageRetentionDuration': response.get(u'messageRetentionDuration'),
         u'retainAckedMessages': response.get(u'retainAckedMessages'),
         u'expirationPolicy': SubscriptionExpirationpolicy(response.get(u'expirationPolicy', {}), module).from_response(),
+        u'deadLetterPolicy': SubscriptionDeadletterpolicy(response.get(u'deadLetterPolicy', {}), module).from_response(),
     }
 
 
@@ -673,6 +743,25 @@ class SubscriptionExpirationpolicy(object):
 
     def from_response(self):
         return remove_nones_from_dict({u'ttl': self.request.get(u'ttl')})
+
+
+class SubscriptionDeadletterpolicy(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict(
+            {u'deadLetterTopic': self.request.get('dead_letter_topic'), u'maxDeliveryAttempts': self.request.get('max_delivery_attempts')}
+        )
+
+    def from_response(self):
+        return remove_nones_from_dict(
+            {u'deadLetterTopic': self.request.get(u'deadLetterTopic'), u'maxDeliveryAttempts': self.request.get(u'maxDeliveryAttempts')}
+        )
 
 
 if __name__ == '__main__':

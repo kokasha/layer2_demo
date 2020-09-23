@@ -13,7 +13,7 @@ module: purefa_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favor of C(_info) module.
-  alternative: Use M(purefa_info) instead.
+  alternative: Use M(purestorage.flasharray.purefa_info) instead.
 short_description: Collect facts from Pure Storage FlashArray
 description:
   - Collect facts information from a Pure Storage Flasharray running the
@@ -40,12 +40,12 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Collect default set of facts
-  purefa_facts:
+  community.general.purefa_facts:
     fa_url: 10.10.10.2
     api_token: e31060a7-21fc-e277-6240-25983c6c4592
 
 - name: Collect configuration and capacity facts
-  purefa_facts:
+  community.general.purefa_facts:
     gather_subset:
       - config
       - capacity
@@ -53,7 +53,7 @@ EXAMPLES = r'''
     api_token: e31060a7-21fc-e277-6240-25983c6c4592
 
 - name: Collect all facts
-  purefa_facts:
+  community.general.purefa_facts:
     gather_subset:
       - all
     fa_url: 10.10.10.2

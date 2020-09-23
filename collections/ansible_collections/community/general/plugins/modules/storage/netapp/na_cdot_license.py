@@ -20,7 +20,7 @@ author: Sumit Kumar (@timuster) <sumit4@netapp.com>
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: Updated modules released with increased functionality
-  alternative: Use M(na_ontap_license) instead.
+  alternative: Use M(netapp.ontap.na_ontap_license) instead.
 
 description:
 - Add or remove licenses on NetApp ONTAP.
@@ -96,7 +96,7 @@ options:
 
 EXAMPLES = """
 - name: Add licenses
-  na_cdot_license:
+  community.general.na_cdot_license:
     hostname: "{{ netapp_hostname }}"
     username: "{{ netapp_username }}"
     password: "{{ netapp_password }}"
@@ -110,7 +110,7 @@ EXAMPLES = """
       flexclone: #################
 
 - name: Remove licenses
-  na_cdot_license:
+  community.general.na_cdot_license:
     hostname: "{{ netapp_hostname }}"
     username: "{{ netapp_username }}"
     password: "{{ netapp_password }}"

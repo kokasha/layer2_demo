@@ -12,6 +12,8 @@ group_by:
   - site
   - tenant
   - rack
+  - rack_group
+  - rack_role
   - tag
   - role
   - device_type
@@ -22,3 +24,4 @@ group_by:
   - cluster_group
   - cluster_type
   - is_virtual
+  - services

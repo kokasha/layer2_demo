@@ -15,6 +15,11 @@
     },
     "Test_Rack": {
         "hosts": [
+            "TestDeviceR1"
+        ]
+    },
+    "Test_Rack_Site_2": {
+        "hosts": [
             "R1-Device"
         ]
     },
@@ -28,11 +33,16 @@
                     "cisco-test"
                 ],
                 "is_virtual": false,
+                "local_context_data": [
+                    null
+                ],
                 "manufacturers": [
                     "cisco"
                 ],
+                "rack_groups": [],
+                "rack_role": "test-rack-role",
                 "racks": [
-                    "Test Rack"
+                    "Test Rack Site 2"
                 ],
                 "regions": [],
                 "sites": [
@@ -48,6 +58,9 @@
                     "nexus-parent"
                 ],
                 "is_virtual": false,
+                "local_context_data": [
+                    null
+                ],
                 "manufacturers": [
                     "cisco"
                 ],
@@ -64,6 +77,9 @@
                 "cluster": "Test Cluster 2",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [],
                 "tags": []
             },
@@ -75,8 +91,18 @@
                     "cisco-test"
                 ],
                 "is_virtual": false,
+                "local_context_data": [
+                    null
+                ],
                 "manufacturers": [
                     "cisco"
+                ],
+                "rack_groups": [
+                    "test-rack-group",
+                    "parent-rack-group"
+                ],
+                "racks": [
+                    "Test Rack"
                 ],
                 "regions": [
                     "test-region",
@@ -95,6 +121,13 @@
                     "cisco-test"
                 ],
                 "is_virtual": false,
+                "local_context_data": [
+                    {
+                        "ntp_servers": [
+                            "pool.ntp.org"
+                        ]
+                    }
+                ],
                 "manufacturers": [
                     "cisco"
                 ],
@@ -115,6 +148,9 @@
                 "cluster_group": "test-cluster-group",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [
                     "test-region",
                     "parent-region"
@@ -129,6 +165,9 @@
                 "cluster_group": "test-cluster-group",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [
                     "test-region",
                     "parent-region"
@@ -143,6 +182,9 @@
                 "cluster_group": "test-cluster-group",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [
                     "test-region",
                     "parent-region"
@@ -157,6 +199,9 @@
                 "cluster_group": "test-cluster-group",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [
                     "test-region",
                     "parent-region"
@@ -170,6 +215,9 @@
                 "cluster": "Test Cluster 2",
                 "cluster_type": "test-cluster-type",
                 "is_virtual": true,
+                "local_context_data": [
+                    null
+                ],
                 "regions": [],
                 "tags": []
             }
@@ -180,15 +228,19 @@
             "Test_Cluster",
             "Test_Cluster_2",
             "Test_Rack",
+            "Test_Rack_Site_2",
             "cisco",
             "cisco_test",
             "core_switch",
             "is_virtual",
             "nexus_parent",
             "other_region",
+            "parent_rack_group",
             "parent_region",
             "test_cluster_group",
             "test_cluster_type",
+            "test_rack_group",
+            "test_rack_role",
             "test_site2",
             "ungrouped"
         ]
@@ -231,6 +283,11 @@
             "Test Nexus One"
         ]
     },
+    "parent_rack_group": {
+        "hosts": [
+            "TestDeviceR1"
+        ]
+    },
     "parent_region": {
         "children": [
             "test_region"
@@ -252,6 +309,16 @@
             "test102-vm",
             "test103-vm",
             "test104-vm"
+        ]
+    },
+    "test_rack_group": {
+        "hosts": [
+            "TestDeviceR1"
+        ]
+    },
+    "test_rack_role": {
+        "hosts": [
+            "R1-Device"
         ]
     },
     "test_region": {

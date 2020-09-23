@@ -40,10 +40,10 @@ fabric:
     ge-0/0/1: {peer: SPN-002.dc1, pport: ge-0/0/1, link_id: 4, prefix_id: 2}
 
 lo_net:
-  SPN-001.dc1: {id: 101}
-  SPN-002.dc1: {id: 102}
-  EDG-001.dc1: {id: 103}
-  EDG-002.dc1: {id: 104}
+  SPN-001.dc1: {id: 101, interface: lo0.0}
+  SPN-002.dc1: {id: 102, interface: lo0.0}
+  EDG-001.dc1: {id: 103, interface: lo0.0}
+  EDG-002.dc1: {id: 104, interface: lo0.0}
 
 mgmt_net:
   SPN-001.dc1: {port: em0, ip: 172.20.1.2/28}
@@ -67,3 +67,29 @@ bgp_topo:
       - EDG-001.dc1
     EDG-002.dc1:
       - EDG-001.dc1
+
+netbox_data:
+  SPN-001.dc1:
+    role: spine
+    site: dc1
+    model: vMX
+    vendor: juniper
+    os: junos
+  SPN-002.dc1:
+    role: spine
+    site: dc1
+    model: vMX
+    vendor: juniper
+    os: junos
+  EDG-001.dc1:
+    role: edge
+    site: dc1
+    model: vMX
+    vendor: juniper
+    os: junos
+  EDG-002.dc1:
+    role: edge
+    site: dc1
+    model: vMX
+    vendor: juniper
+    os: junos

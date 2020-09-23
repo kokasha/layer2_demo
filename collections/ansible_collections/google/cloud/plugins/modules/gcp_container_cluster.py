@@ -33,7 +33,6 @@ module: gcp_container_cluster
 description:
 - A Google Container Engine cluster.
 short_description: Creates a GCP Cluster
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -179,7 +178,6 @@ options:
         elements: dict
         required: false
         type: list
-        version_added: '2.9'
         suboptions:
           accelerator_count:
             description:
@@ -197,14 +195,12 @@ options:
           If unspecified, the default disk type is 'pd-standard' .
         required: false
         type: str
-        version_added: '2.9'
       min_cpu_platform:
         description:
         - Minimum CPU platform to be used by this instance. The instance may be scheduled
           on the specified or newer CPU platform.
         required: false
         type: str
-        version_added: '2.9'
       taints:
         description:
         - List of kubernetes taints to be applied to each node.
@@ -213,7 +209,6 @@ options:
         elements: dict
         required: false
         type: list
-        version_added: '2.9'
         suboptions:
           key:
             description:
@@ -232,6 +227,29 @@ options:
               "NO_EXECUTE"'
             required: false
             type: str
+      shielded_instance_config:
+        description:
+        - Shielded Instance options.
+        required: false
+        type: dict
+        suboptions:
+          enable_secure_boot:
+            description:
+            - Defines whether the instance has Secure Boot enabled.
+            - Secure Boot helps ensure that the system only runs authentic software
+              by verifying the digital signature of all boot components, and halting
+              the boot process if signature verification fails.
+            required: false
+            type: bool
+          enable_integrity_monitoring:
+            description:
+            - Defines whether the instance has integrity monitoring enabled.
+            - Enables monitoring and attestation of the boot integrity of the instance.
+            - The attestation is performed against the integrity policy baseline.
+              This baseline is initially derived from the implicitly trusted boot
+              image when the instance is created.
+            required: false
+            type: bool
   master_auth:
     description:
     - The authentication information for accessing the master endpoint.
@@ -257,7 +275,6 @@ options:
           is issued.
         required: false
         type: dict
-        version_added: '2.9'
         suboptions:
           issue_client_certificate:
             description:
@@ -294,7 +311,6 @@ options:
     - Configuration for a private cluster.
     required: false
     type: dict
-    version_added: '2.8'
     suboptions:
       enable_private_nodes:
         description:
@@ -330,7 +346,6 @@ options:
       .
     required: false
     type: bool
-    version_added: '2.9'
   addons_config:
     description:
     - Configurations for the various addons available to run in the cluster.
@@ -373,7 +388,6 @@ options:
           for the nodes.
         required: false
         type: dict
-        version_added: '2.9'
         suboptions:
           disabled:
             description:
@@ -394,20 +408,17 @@ options:
     type: list
     aliases:
     - nodeLocations
-    version_added: '2.9'
   resource_labels:
     description:
     - The resource labels for the cluster to use to annotate any related Google Compute
       Engine resources.
     required: false
     type: dict
-    version_added: '2.9'
   legacy_abac:
     description:
     - Configuration for the legacy ABAC authorization mode.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       enabled:
         description:
@@ -422,7 +433,6 @@ options:
     - Configuration options for the NetworkPolicy feature.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       provider:
         description:
@@ -442,7 +452,6 @@ options:
     - Only honored if cluster created with IP Alias support.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       max_pods_per_node:
         description:
@@ -454,7 +463,6 @@ options:
     - Configuration for controlling how IPs are allocated in the cluster.
     required: false
     type: dict
-    version_added: '2.9'
     suboptions:
       use_ip_aliases:
         description:
@@ -523,12 +531,17 @@ options:
         - Set to /netmask (e.g. /14) to have a range chosen with a specific netmask.
         required: false
         type: str
+  initial_cluster_version:
+    description:
+    - The software version of the master endpoint and kubelets used in the cluster
+      when it was first created. The version can be upgraded over time.
+    required: false
+    type: str
   master_authorized_networks_config:
     description:
     - Configuration for controlling how IPs are allocated in the cluster.
     required: false
     type: dict
-    version_added: '2.10'
     suboptions:
       enabled:
         description:
@@ -558,7 +571,6 @@ options:
     - Configuration for the BinaryAuthorization feature.
     required: false
     type: dict
-    version_added: '2.10'
     suboptions:
       enabled:
         description:
@@ -572,7 +584,6 @@ options:
     type: str
     aliases:
     - zone
-    version_added: '2.8'
   kubectl_path:
     description:
     - The path that the kubectl config file will be written to.
@@ -581,14 +592,12 @@ options:
     - This requires the PyYaml library.
     required: false
     type: str
-    version_added: '2.9'
   kubectl_context:
     description:
     - The name of the context for the kubectl config file. Will default to the cluster
       name.
     required: false
     type: str
-    version_added: '2.9'
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -620,6 +629,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -820,6 +830,29 @@ nodeConfig:
           - Effect for taint.
           returned: success
           type: str
+    shieldedInstanceConfig:
+      description:
+      - Shielded Instance options.
+      returned: success
+      type: complex
+      contains:
+        enableSecureBoot:
+          description:
+          - Defines whether the instance has Secure Boot enabled.
+          - Secure Boot helps ensure that the system only runs authentic software
+            by verifying the digital signature of all boot components, and halting
+            the boot process if signature verification fails.
+          returned: success
+          type: bool
+        enableIntegrityMonitoring:
+          description:
+          - Defines whether the instance has integrity monitoring enabled.
+          - Enables monitoring and attestation of the boot integrity of the instance.
+          - The attestation is performed against the integrity policy baseline. This
+            baseline is initially derived from the implicitly trusted boot image when
+            the instance is created.
+          returned: success
+          type: bool
 masterAuth:
   description:
   - The authentication information for accessing the master endpoint.
@@ -1328,6 +1361,9 @@ def main():
                     disk_type=dict(type='str'),
                     min_cpu_platform=dict(type='str'),
                     taints=dict(type='list', elements='dict', options=dict(key=dict(type='str'), value=dict(type='str'), effect=dict(type='str'))),
+                    shielded_instance_config=dict(
+                        type='dict', options=dict(enable_secure_boot=dict(type='bool'), enable_integrity_monitoring=dict(type='bool'))
+                    ),
                 ),
             ),
             master_auth=dict(
@@ -1375,6 +1411,7 @@ def main():
                     tpu_ipv4_cidr_block=dict(type='str'),
                 ),
             ),
+            initial_cluster_version=dict(type='str'),
             master_authorized_networks_config=dict(
                 type='dict',
                 options=dict(
@@ -1458,6 +1495,7 @@ def resource_to_request(module):
         u'networkPolicy': ClusterNetworkpolicy(module.params.get('network_policy', {}), module).to_request(),
         u'defaultMaxPodsConstraint': ClusterDefaultmaxpodsconstraint(module.params.get('default_max_pods_constraint', {}), module).to_request(),
         u'ipAllocationPolicy': ClusterIpallocationpolicy(module.params.get('ip_allocation_policy', {}), module).to_request(),
+        u'initialClusterVersion': module.params.get('initial_cluster_version'),
         u'masterAuthorizedNetworksConfig': ClusterMasterauthorizednetworksconfig(
             module.params.get('master_authorized_networks_config', {}), module
         ).to_request(),
@@ -1658,9 +1696,7 @@ class Kubectl(object):
 
         return {
             'apiVersion': 'v1',
-            'clusters': [
-                {'name': context, 'cluster': {'certificate-authority-data': str(self.fetch['masterAuth']['clusterCaCertificate']), 'server': endpoint,}}
-            ],
+            'clusters': [{'name': context, 'cluster': {'certificate-authority-data': str(self.fetch['masterAuth']['clusterCaCertificate'])}}],
             'contexts': [{'name': context, 'context': {'cluster': context, 'user': context}}],
             'current-context': context,
             'kind': 'Config',
@@ -1723,6 +1759,7 @@ class ClusterNodeconfig(object):
                 u'diskType': self.request.get('disk_type'),
                 u'minCpuPlatform': self.request.get('min_cpu_platform'),
                 u'taints': ClusterTaintsArray(self.request.get('taints', []), self.module).to_request(),
+                u'shieldedInstanceConfig': ClusterShieldedinstanceconfig(self.request.get('shielded_instance_config', {}), self.module).to_request(),
             }
         )
 
@@ -1743,6 +1780,7 @@ class ClusterNodeconfig(object):
                 u'diskType': self.request.get(u'diskType'),
                 u'minCpuPlatform': self.request.get(u'minCpuPlatform'),
                 u'taints': ClusterTaintsArray(self.request.get(u'taints', []), self.module).from_response(),
+                u'shieldedInstanceConfig': ClusterShieldedinstanceconfig(self.request.get(u'shieldedInstanceConfig', {}), self.module).from_response(),
             }
         )
 
@@ -1799,6 +1837,25 @@ class ClusterTaintsArray(object):
 
     def _response_from_item(self, item):
         return remove_nones_from_dict({u'key': item.get(u'key'), u'value': item.get(u'value'), u'effect': item.get(u'effect')})
+
+
+class ClusterShieldedinstanceconfig(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict(
+            {u'enableSecureBoot': self.request.get('enable_secure_boot'), u'enableIntegrityMonitoring': self.request.get('enable_integrity_monitoring')}
+        )
+
+    def from_response(self):
+        return remove_nones_from_dict(
+            {u'enableSecureBoot': self.request.get(u'enableSecureBoot'), u'enableIntegrityMonitoring': self.request.get(u'enableIntegrityMonitoring')}
+        )
 
 
 class ClusterMasterauth(object):

@@ -115,7 +115,7 @@ options:
       - "If data is to be copied onto the PVC using the Containerized Data Importer you can specify the source of
         the data (along with any additional configuration) as well as it's format."
       - "Valid source types are: blank, http, s3, registry, pvc and upload. The last one requires using the
-        M(kubevirt_cdi_upload) module to actually perform an upload."
+        M(community.general.kubevirt_cdi_upload) module to actually perform an upload."
       - "Source data format is specified using the optional I(content_type). Valid options are C(kubevirt)
         (default; raw image) and C(archive) (tar.gz)."
       - "This uses the DataVolume source syntax:
@@ -148,7 +148,7 @@ requirements:
 
 EXAMPLES = '''
 - name: Create a PVC and import data from an external source
-  kubevirt_pvc:
+  community.general.kubevirt_pvc:
     name: pvc1
     namespace: default
     size: 100Mi
@@ -161,7 +161,7 @@ EXAMPLES = '''
       #content_type: archive
 
 - name: Create a PVC as a clone from a different PVC
-  kubevirt_pvc:
+  community.general.kubevirt_pvc:
     name: pvc2
     namespace: default
     size: 100Mi
@@ -173,7 +173,7 @@ EXAMPLES = '''
         name: source-pvc
 
 - name: Create a PVC ready for data upload
-  kubevirt_pvc:
+  community.general.kubevirt_pvc:
     name: pvc3
     namespace: default
     size: 100Mi
@@ -184,7 +184,7 @@ EXAMPLES = '''
     # You need the kubevirt_cdi_upload module to actually upload something
 
 - name: Create a PVC with a blank raw image
-  kubevirt_pvc:
+  community.general.kubevirt_pvc:
     name: pvc4
     namespace: default
     size: 100Mi
@@ -194,7 +194,7 @@ EXAMPLES = '''
       blank: yes
 
 - name: Create a PVC and fill it with data from a container
-  kubevirt_pvc:
+  community.general.kubevirt_pvc:
     name: pvc5
     namespace: default
     size: 100Mi

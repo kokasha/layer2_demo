@@ -35,11 +35,11 @@ options:
 
 EXAMPLES = r'''
 - name: Gather Scaleway images information
-  scaleway_image_info:
+  community.general.scaleway_image_info:
     region: par1
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.scaleway_image_info }}"
 '''
 

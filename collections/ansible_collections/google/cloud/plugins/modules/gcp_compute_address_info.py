@@ -33,7 +33,6 @@ module: gcp_compute_address_info
 description:
 - Gather info for GCP Address
 short_description: Gather info for GCP Address
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   region:
     description:
     - URL of the region where the regional address resides.
@@ -83,6 +83,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -128,8 +129,7 @@ resources:
       type: str
     addressType:
       description:
-      - The type of address to reserve, either INTERNAL or EXTERNAL.
-      - If unspecified, defaults to EXTERNAL.
+      - The type of address to reserve.
       returned: success
       type: str
     creationTimestamp:
@@ -166,9 +166,8 @@ resources:
       type: str
     networkTier:
       description:
-      - 'The networking tier used for configuring this address. This field can take
-        the following values: PREMIUM or STANDARD. If this field is not specified,
-        it is assumed to be PREMIUM.'
+      - The networking tier used for configuring this address. If this field is not
+        specified, it is assumed to be PREMIUM.
       returned: success
       type: str
     subnetwork:
@@ -203,7 +202,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

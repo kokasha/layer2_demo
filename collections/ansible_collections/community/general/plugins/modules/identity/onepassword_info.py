@@ -25,11 +25,11 @@ notes:
       data could be stored in clear text on disk or in a database.
 short_description: Gather items from 1Password
 description:
-    - M(onepassword_info) wraps the C(op) command line utility to fetch data about one or more 1Password items.
+    - M(community.general.onepassword_info) wraps the C(op) command line utility to fetch data about one or more 1Password items.
     - A fatal error occurs if any of the items being searched for can not be found.
     - Recommend using with the C(no_log) option to avoid logging the values of the secrets being retrieved.
     - This module was called C(onepassword_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(onepassword_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.onepassword_info) module no longer returns C(ansible_facts)!
       You must now use the C(register) option to use the facts in other tasks.
 options:
     search_terms:
@@ -60,7 +60,8 @@ options:
     auto_login:
         type: dict
         description:
-            - A dictionary containing authentication details. If this is set, M(onepassword_info) will attempt to sign in to 1Password automatically.
+            - A dictionary containing authentication details. If this is set, M(community.general.onepassword_info)
+              will attempt to sign in to 1Password automatically.
             - Without this option, you must have already logged in via the 1Password CLI before running Ansible.
             - It is B(highly) recommended to store 1Password credentials in an Ansible Vault. Ensure that the key used to encrypt
               the Ansible Vault is equal to or greater in strength than the 1Password master password.
@@ -98,7 +99,7 @@ options:
 EXAMPLES = '''
 # Gather secrets from 1Password, assuming there is a 'password' field:
 - name: Get a password
-  onepassword_info:
+  community.general.onepassword_info:
     search_terms: My 1Password item
   delegate_to: localhost
   register: my_1password_item
@@ -106,7 +107,7 @@ EXAMPLES = '''
 
 # Gather secrets from 1Password, with more advanced search terms:
 - name: Get a password
-  onepassword_info:
+  community.general.onepassword_info:
     search_terms:
       - name:    My 1Password item
         field:   Custom field name       # optional, defaults to 'password'
@@ -120,7 +121,7 @@ EXAMPLES = '''
 # fields. In the first 'password' is fetched, as a field name is not specified (default behaviour) and in the
 # second, 'Custom field name' is fetched, as that is specified explicitly.
 - name: Get a password
-  onepassword_info:
+  community.general.onepassword_info:
     search_terms:
       - My 1Password item                # 'name' is optional when passing a simple string...
       - name: My Other 1Password item    # ...but it can also be set for consistency
@@ -134,7 +135,7 @@ EXAMPLES = '''
   no_log: true                           # Don't want to log the secrets to the console!
 
 - name: Debug a password (for example)
-  debug:
+  ansible.builtin.debug:
     msg: "{{ my_1password_item['onepassword']['My 1Password item'] }}"
 '''
 

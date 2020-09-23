@@ -147,10 +147,10 @@ DOCUMENTATION = '''
         aliases: [ oc_verify_ssl ]
 '''
 
-from ansible_collections.community.general.plugins.connection.kubectl import Connection as KubectlConnection
+from ansible_collections.community.kubernetes.plugins.connection.kubectl import Connection as KubectlConnection
 
 
-CONNECTION_TRANSPORT = 'oc'
+CONNECTION_TRANSPORT = 'community.general.oc'
 
 CONNECTION_OPTIONS = {
     'oc_container': '-c',

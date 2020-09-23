@@ -34,7 +34,6 @@ description:
 - Represents a TargetTcpProxy resource, which is used by one or more global forwarding
   rule to route incoming TCP requests to a Backend service.
 short_description: Creates a GCP TargetTcpProxy
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -66,8 +65,7 @@ options:
     type: str
   proxy_header:
     description:
-    - Specifies the type of proxy header to append before sending data to the backend,
-      either NONE or PROXY_V1. The default is NONE.
+    - Specifies the type of proxy header to append before sending data to the backend.
     - 'Some valid choices include: "NONE", "PROXY_V1"'
     required: false
     type: str
@@ -112,6 +110,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -214,8 +213,7 @@ name:
   type: str
 proxyHeader:
   description:
-  - Specifies the type of proxy header to append before sending data to the backend,
-    either NONE or PROXY_V1. The default is NONE.
+  - Specifies the type of proxy header to append before sending data to the backend.
   returned: success
   type: str
 service:

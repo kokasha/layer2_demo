@@ -15,7 +15,7 @@ short_description: Retrieves facts about docker network
 
 description:
   - Retrieves facts about a docker network.
-  - Essentially returns the output of C(docker network inspect <name>), similar to what M(docker_network)
+  - Essentially returns the output of C(docker network inspect <name>), similar to what M(community.general.docker_network)
     returns for a non-absent network.
 
 
@@ -41,16 +41,16 @@ requirements:
 
 EXAMPLES = '''
 - name: Get infos on network
-  docker_network_info:
+  community.general.docker_network_info:
     name: mydata
   register: result
 
 - name: Does network exist?
-  debug:
+  ansible.builtin.debug:
     msg: "The network {{ 'exists' if result.exists else 'does not exist' }}"
 
 - name: Print information about network
-  debug:
+  ansible.builtin.debug:
     var: result.network
   when: result.exists
 '''

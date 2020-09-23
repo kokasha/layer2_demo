@@ -8,7 +8,9 @@
                 "interfaces": [],
                 "is_virtual": false,
                 "manufacturer": "cisco",
-                "rack": "Test Rack",
+                "rack": "Test Rack Site 2",
+                "rack_groups": [],
+                "rack_role": "test-rack-role",
                 "regions": [],
                 "role": "core-switch",
                 "services": [],
@@ -240,6 +242,11 @@
                 "interfaces": [],
                 "is_virtual": false,
                 "manufacturer": "cisco",
+                "rack": "Test Rack",
+                "rack_groups": [
+                    "test-rack-group",
+                    "parent-rack-group"
+                ],
                 "regions": [
                     "test-region",
                     "parent-region"
@@ -366,6 +373,11 @@
                     }
                 ],
                 "is_virtual": false,
+                "local_context_data": {
+                    "ntp_servers": [
+                        "pool.ntp.org"
+                    ]
+                },
                 "manufacturer": "cisco",
                 "regions": [
                     "test-region",
@@ -728,9 +740,16 @@
             "is_virtual",
             "manufacturer_cisco",
             "rack_Test_Rack",
+            "rack_Test_Rack_Site_2",
+            "rack_group_parent_rack_group",
+            "rack_group_test_rack_group",
+            "rack_role_test_rack_role",
             "region_other_region",
             "region_parent_region",
             "role_core_switch",
+            "service_http",
+            "service_ssh",
+            "service_telnet",
             "site_test_site2",
             "ungrouped"
         ]
@@ -799,6 +818,26 @@
     },
     "rack_Test_Rack": {
         "hosts": [
+            "TestDeviceR1"
+        ]
+    },
+    "rack_Test_Rack_Site_2": {
+        "hosts": [
+            "R1-Device"
+        ]
+    },
+    "rack_group_parent_rack_group": {
+        "hosts": [
+            "TestDeviceR1"
+        ]
+    },
+    "rack_group_test_rack_group": {
+        "hosts": [
+            "TestDeviceR1"
+        ]
+    },
+    "rack_role_test_rack_role": {
+        "hosts": [
             "R1-Device"
         ]
     },
@@ -818,6 +857,22 @@
             "Test Nexus One",
             "TestDeviceR1",
             "test100"
+        ]
+    },
+    "service_ssh": {
+        "hosts": [
+            "Test VM With Spaces",
+            "test100"
+        ]
+    },
+    "service_http": {
+        "hosts": [
+            "test100"
+        ]
+    },
+    "service_telnet": {
+        "hosts": [
+            "Test Nexus One"
         ]
     },
     "site_test_site": {

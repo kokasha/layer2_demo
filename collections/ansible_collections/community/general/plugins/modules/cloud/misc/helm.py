@@ -12,7 +12,7 @@ DOCUMENTATION = '''
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.14
   why: For more details https://github.com/ansible/ansible/issues/61546.
-  alternative: Use M(helm) in the community.kubernetes collection instead.
+  alternative: Use M(community.kubernetes.helm) instead.
 module: helm
 short_description: Manages Kubernetes packages with the Helm package manager
 author: "Flavio Percoco (@flaper87)"
@@ -61,7 +61,7 @@ RETURN = ''' # '''
 
 EXAMPLES = '''
 - name: Install helm chart
-  helm:
+  community.general.helm:
     host: localhost
     chart:
       name: memcached
@@ -74,13 +74,13 @@ EXAMPLES = '''
     namespace: default
 
 - name: Uninstall helm chart
-  helm:
+  community.general.helm:
     host: localhost
     state: absent
     name: my-memcached
 
 - name: Install helm chart from a git repo
-  helm:
+  community.general.helm:
     host: localhost
     chart:
       source:
@@ -93,7 +93,7 @@ EXAMPLES = '''
       foo: "bar"
 
 - name: Install helm chart from a git repo specifying path
-  helm:
+  community.general.helm:
     host: localhost
     chart:
       source:

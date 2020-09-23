@@ -12,7 +12,7 @@ module: na_ontap_gather_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favour of C(_info) module.
-  alternative: Use M(na_ontap_info) instead.
+  alternative: Use M(netapp.ontap.na_ontap_info) instead.
 author: Piotr Olczak (@dprts) <polczak@redhat.com>
 extends_documentation_fragment:
 - community.general._netapp.na_ontap
@@ -49,22 +49,22 @@ options:
 
 EXAMPLES = '''
 - name: Get NetApp info (Password Authentication)
-  na_ontap_gather_facts:
+  community.general.na_ontap_gather_facts:
     state: info
     hostname: "na-vsim"
     username: "admin"
     password: "admins_password"
-- debug:
+- ansible.builtin.debug:
     var: ontap_facts
 - name: Limit Fact Gathering to Aggregate Information
-  na_ontap_gather_facts:
+  community.general.na_ontap_gather_facts:
     state: info
     hostname: "na-vsim"
     username: "admin"
     password: "admins_password"
     gather_subset: "aggregate_info"
 - name: Limit Fact Gathering to Volume and Lun Information
-  na_ontap_gather_facts:
+  community.general.na_ontap_gather_facts:
     state: info
     hostname: "na-vsim"
     username: "admin"
@@ -73,7 +73,7 @@ EXAMPLES = '''
       - volume_info
       - lun_info
 - name: Gather all facts except for volume and lun information
-  na_ontap_gather_facts:
+  community.general.na_ontap_gather_facts:
     state: info
     hostname: "na-vsim"
     username: "admin"

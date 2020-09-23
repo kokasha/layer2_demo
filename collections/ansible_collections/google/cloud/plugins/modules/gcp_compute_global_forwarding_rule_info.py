@@ -33,7 +33,6 @@ module: gcp_compute_global_forwarding_rule_info
 description:
 - Gather info for GCP GlobalForwardingRule
 short_description: Gather info for GCP GlobalForwardingRule
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -77,6 +77,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -153,15 +154,13 @@ resources:
       type: str
     IPProtocol:
       description:
-      - The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP,
-        AH, SCTP or ICMP. When the load balancing scheme is INTERNAL_SELF_MANAGED,
-        only TCP is valid.
+      - The IP protocol to which this rule applies. When the load balancing scheme
+        is INTERNAL_SELF_MANAGED, only TCP is valid.
       returned: success
       type: str
     ipVersion:
       description:
       - The IP Version that will be used by this global forwarding rule.
-      - Valid options are IPV4 or IPV6.
       returned: success
       type: str
     loadBalancingScheme:
@@ -267,7 +266,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

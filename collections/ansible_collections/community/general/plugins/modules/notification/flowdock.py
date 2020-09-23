@@ -78,7 +78,7 @@ requirements: [ ]
 
 EXAMPLES = '''
 - name: Send a message to a flowdock
-  flowdock:
+  community.general.flowdock:
     type: inbox
     token: AAAAAA
     from_address: user@example.com
@@ -87,7 +87,7 @@ EXAMPLES = '''
     subject: test subject
 
 - name: Send a message to a flowdock
-  flowdock:
+  community.general.flowdock:
     type: chat
     token: AAAAAA
     external_user_name: testuser
@@ -120,7 +120,7 @@ def main():
             project=dict(required=False),
             tags=dict(required=False),
             link=dict(required=False),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
         ),
         supports_check_mode=True
     )

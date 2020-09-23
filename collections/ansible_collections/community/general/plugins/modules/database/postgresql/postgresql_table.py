@@ -106,13 +106,13 @@ notes:
 - PostgreSQL allows to create columnless table, so columns param is optional.
 - Unlogged tables are available from PostgreSQL server version 9.1.
 seealso:
-- module: postgresql_sequence
-- module: postgresql_idx
-- module: postgresql_info
-- module: postgresql_tablespace
-- module: postgresql_owner
-- module: postgresql_privs
-- module: postgresql_copy
+- module: community.general.postgresql_sequence
+- module: community.general.postgresql_idx
+- module: community.general.postgresql_info
+- module: community.general.postgresql_tablespace
+- module: community.general.postgresql_owner
+- module: community.general.postgresql_privs
+- module: community.general.postgresql_copy
 - name: CREATE TABLE reference
   description: Complete reference of the CREATE TABLE command documentation.
   link: https://www.postgresql.org/docs/current/sql-createtable.html
@@ -134,14 +134,14 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Create tbl2 in the acme database with the DDL like tbl1 with testuser as an owner
-  postgresql_table:
+  community.general.postgresql_table:
     db: acme
     name: tbl2
     like: tbl1
     owner: testuser
 
 - name: Create tbl2 in the acme database and tablespace ssd with the DDL like tbl1 including comments and indexes
-  postgresql_table:
+  community.general.postgresql_table:
     db: acme
     table: tbl2
     like: tbl1
@@ -149,7 +149,7 @@ EXAMPLES = r'''
     tablespace: ssd
 
 - name: Create test_table with several columns in ssd tablespace with fillfactor=10 and autovacuum_analyze_threshold=1
-  postgresql_table:
+  community.general.postgresql_table:
     name: test_table
     columns:
     - id bigserial primary key
@@ -161,44 +161,44 @@ EXAMPLES = r'''
     - autovacuum_analyze_threshold=1
 
 - name: Create an unlogged table in schema acme
-  postgresql_table:
+  community.general.postgresql_table:
     name: acme.useless_data
     columns: waste_id int
     unlogged: true
 
 - name: Rename table foo to bar
-  postgresql_table:
+  community.general.postgresql_table:
     table: foo
     rename: bar
 
 - name: Rename table foo from schema acme to bar
-  postgresql_table:
+  community.general.postgresql_table:
     name: acme.foo
     rename: bar
 
 - name: Set owner to someuser
-  postgresql_table:
+  community.general.postgresql_table:
     name: foo
     owner: someuser
 
 - name: Change tablespace of foo table to new_tablespace and set owner to new_user
-  postgresql_table:
+  community.general.postgresql_table:
     name: foo
     tablespace: new_tablespace
     owner: new_user
 
 - name: Truncate table foo
-  postgresql_table:
+  community.general.postgresql_table:
     name: foo
     truncate: yes
 
 - name: Drop table foo from schema acme
-  postgresql_table:
+  community.general.postgresql_table:
     name: acme.foo
     state: absent
 
 - name: Drop table bar cascade
-  postgresql_table:
+  community.general.postgresql_table:
     name: bar
     state: absent
     cascade: yes

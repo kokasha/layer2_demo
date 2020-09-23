@@ -66,15 +66,18 @@ options:
   part_start:
     description:
     - Where the partition will start as offset from the beginning of the disk,
-      that is, the "distance" from the start of the disk.
+      that is, the "distance" from the start of the disk. Negative numbers
+      specify distance from the end of the disk.
     - The distance can be specified with all the units supported by parted
       (except compat) and it is case sensitive, e.g. C(10GiB), C(15%).
+    - Using negative values may require setting of C(fs_type) (see notes).
     type: str
     default: 0%
-  part_end :
+  part_end:
     description:
     - Where the partition will end as offset from the beginning of the disk,
-      that is, the "distance" from the start of the disk.
+      that is, the "distance" from the start of the disk. Negative numbers
+      specify distance from the end of the disk.
     - The distance can be specified with all the units supported by parted
       (except compat) and it is case sensitive, e.g. C(10GiB), C(15%).
     type: str
@@ -96,6 +99,7 @@ options:
   fs_type:
     description:
      - If specified and the partition does not exist, will set filesystem type to given partition.
+     - Parameter optional, but see notes below about negative negative C(part_start) values.
     type: str
     version_added: '0.2.0'
 notes:
@@ -103,6 +107,9 @@ notes:
     installed on the system is before version 3.1, the module queries the kernel
     through C(/sys/) to obtain disk information. In this case the units CHS and
     CYL are not supported.
+  - Negative C(part_start) start values were rejected if C(fs_type) was not given.
+    This bug was fixed in parted 3.2.153. If you want to use negative C(part_start),
+    specify C(fs_type) as well or make sure your system contains newer parted.
 '''
 
 RETURN = r'''
@@ -153,40 +160,48 @@ partition_info:
 
 EXAMPLES = r'''
 - name: Create a new ext4 primary partition
-  parted:
+  community.general.parted:
     device: /dev/sdb
     number: 1
     state: present
     fs_type: ext4
 
 - name: Remove partition number 1
-  parted:
+  community.general.parted:
     device: /dev/sdb
     number: 1
     state: absent
 
 - name: Create a new primary partition with a size of 1GiB
-  parted:
+  community.general.parted:
     device: /dev/sdb
     number: 1
     state: present
     part_end: 1GiB
 
 - name: Create a new primary partition for LVM
-  parted:
+  community.general.parted:
     device: /dev/sdb
     number: 2
     flags: [ lvm ]
     state: present
     part_start: 1GiB
 
+- name: Create a new primary partition with a size of 1GiB at disk's end
+  community.general.parted:
+    device: /dev/sdb
+    number: 3
+    state: present
+    fs_type: ext3
+    part_start: -1GiB
+
 # Example on how to read info and reuse it in subsequent task
 - name: Read device information (always use unit when probing)
-  parted: device=/dev/sdb unit=MiB
+  community.general.parted: device=/dev/sdb unit=MiB
   register: sdb_info
 
 - name: Remove all partitions from disk
-  parted:
+  community.general.parted:
     device: /dev/sdb
     number: '{{ item.num }}'
     state: absent
@@ -208,9 +223,9 @@ parted_units = units_si + units_iec + ['s', '%', 'cyl', 'chs', 'compact']
 
 def parse_unit(size_str, unit=''):
     """
-    Parses a string containing a size of information
+    Parses a string containing a size or boundary information
     """
-    matches = re.search(r'^([\d.]+)([\w%]+)?$', size_str)
+    matches = re.search(r'^(-?[\d.]+)([\w%]+)?$', size_str)
     if matches is None:
         # "<cylinder>,<head>,<sector>" format
         matches = re.search(r'^(\d+),(\d+),(\d+)$', size_str)

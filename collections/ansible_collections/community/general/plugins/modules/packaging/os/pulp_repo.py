@@ -21,26 +21,27 @@ options:
     description:
       - Whether or not to add the export distributor to new C(rpm) repositories.
     type: bool
-    default: 'no'
+    default: no
   feed:
     description:
       - Upstream feed URL to receive updates from.
+    type: str
   force_basic_auth:
     description:
-      - httplib2, the library used by the M(uri) module only sends
+      - httplib2, the library used by the M(ansible.builtin.uri) module only sends
         authentication information when a webservice responds to an initial
         request with a 401 status. Since some basic auth services do not
         properly send a 401, logins will fail. This option forces the sending of
         the Basic authentication header upon initial request.
     type: bool
-    default: 'no'
+    default: no
   generate_sqlite:
     description:
       - Boolean flag to indicate whether sqlite files should be generated during
         a repository publish.
     required: false
     type: bool
-    default: 'no'
+    default: no
   feed_ca_cert:
     description:
       - CA certificate string used to validate the feed source SSL certificate.
@@ -73,60 +74,69 @@ options:
     description:
       - Name of the repo to add or remove. This correlates to repo-id in Pulp.
     required: true
+    type: str
+    aliases: [ repo ]
   proxy_host:
     description:
       - Proxy url setting for the pulp repository importer. This is in the
         format scheme://host.
     required: false
     default: null
+    type: str
   proxy_port:
     description:
       - Proxy port setting for the pulp repository importer.
     required: false
     default: null
+    type: str
   proxy_username:
     description:
       - Proxy username for the pulp repository importer.
     required: false
     default: null
+    type: str
   proxy_password:
     description:
       - Proxy password for the pulp repository importer.
     required: false
     default: null
+    type: str
   publish_distributor:
     description:
       - Distributor to use when state is C(publish). The default is to
         publish all distributors.
+    type: str
   pulp_host:
     description:
       - URL of the pulp server to connect to.
-    default: http://127.0.0.1
+    default: https://127.0.0.1
+    type: str
   relative_url:
     description:
-      - Relative URL for the local repository.
-    required: true
+      - Relative URL for the local repository. It's required when state=present.
+    type: str
   repo_type:
     description:
       - Repo plugin type to use (i.e. C(rpm), C(docker)).
     default: rpm
+    type: str
   repoview:
     description:
       - Whether to generate repoview files for a published repository. Setting
         this to "yes" automatically activates `generate_sqlite`.
     required: false
     type: bool
-    default: 'no'
+    default: no
   serve_http:
     description:
       - Make the repo available over HTTP.
     type: bool
-    default: 'no'
+    default: no
   serve_https:
     description:
       - Make the repo available over HTTPS.
     type: bool
-    default: 'yes'
+    default: yes
   state:
     description:
       - The repo state. A state of C(sync) will queue a sync of the repo.
@@ -134,6 +144,7 @@ options:
         C(publish) will use the repository's distributor to publish the content.
     default: present
     choices: [ "present", "absent", "sync", "publish" ]
+    type: str
   url_password:
     description:
       - The password for use in HTTP basic authentication to the pulp API.
@@ -147,12 +158,12 @@ options:
       - If C(no), SSL certificates will not be validated. This should only be
         used on personally controlled sites using self-signed certificates.
     type: bool
-    default: 'yes'
+    default: yes
   wait_for_completion:
     description:
       - Wait for asynchronous tasks to complete before returning.
     type: bool
-    default: 'no'
+    default: no
 notes:
   - This module can currently only create distributors and importers on rpm
     repositories. Contributions to support other repo types are welcome.
@@ -162,13 +173,13 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Create a new repo with name 'my_repo'
-  pulp_repo:
+  community.general.pulp_repo:
     name: my_repo
     relative_url: my/repo
     state: present
 
 - name: Create a repo with a feed and a relative URL
-  pulp_repo:
+  community.general.pulp_repo:
     name: my_centos_updates
     repo_type: rpm
     feed: http://mirror.centos.org/centos/6/updates/x86_64/
@@ -179,7 +190,7 @@ EXAMPLES = '''
     state: present
 
 - name: Remove a repo from the pulp server
-  pulp_repo:
+  community.general.pulp_repo:
     name: my_old_repo
     repo_type: rpm
     state: absent

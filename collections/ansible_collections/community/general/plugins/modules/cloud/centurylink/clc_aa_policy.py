@@ -58,14 +58,14 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Create an Anti Affinity Policy
-      clc_aa_policy:
+      community.general.clc_aa_policy:
         name: Hammer Time
         location: UK3
         state: present
       register: policy
 
-    - name: debug
-      debug:
+    - name: Debug
+      ansible.builtin.debug:
         var: policy
 
 ---
@@ -75,14 +75,14 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Delete an Anti Affinity Policy
-      clc_aa_policy:
+      community.general.clc_aa_policy:
         name: Hammer Time
         location: UK3
         state: absent
       register: policy
 
     - name: Debug
-      debug:
+      ansible.builtin.debug:
         var: policy
 '''
 

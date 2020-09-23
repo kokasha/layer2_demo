@@ -33,7 +33,6 @@ module: gcp_compute_router
 description:
 - Represents a Router resource.
 short_description: Creates a GCP Router
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -88,7 +87,6 @@ options:
       advertise_mode:
         description:
         - User-specified flag to indicate which mode to use for advertisement.
-        - 'Valid values of this enum field are: DEFAULT, CUSTOM .'
         - 'Some valid choices include: "DEFAULT", "CUSTOM"'
         required: false
         default: DEFAULT
@@ -161,6 +159,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -257,7 +256,6 @@ bgp:
     advertiseMode:
       description:
       - User-specified flag to indicate which mode to use for advertisement.
-      - 'Valid values of this enum field are: DEFAULT, CUSTOM .'
       returned: success
       type: str
     advertisedGroups:

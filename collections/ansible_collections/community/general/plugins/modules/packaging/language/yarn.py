@@ -76,38 +76,38 @@ requirements:
 
 EXAMPLES = '''
 - name: Install "imagemin" node.js package.
-  yarn:
+  community.general.yarn:
     name: imagemin
     path: /app/location
 
 - name: Install "imagemin" node.js package on version 5.3.1
-  yarn:
+  community.general.yarn:
     name: imagemin
     version: '5.3.1'
     path: /app/location
 
 - name: Install "imagemin" node.js package globally.
-  yarn:
+  community.general.yarn:
     name: imagemin
     global: yes
 
 - name: Remove the globally-installed package "imagemin".
-  yarn:
+  community.general.yarn:
     name: imagemin
     global: yes
     state: absent
 
 - name: Install "imagemin" node.js package from custom registry.
-  yarn:
+  community.general.yarn:
     name: imagemin
     registry: 'http://registry.mysite.com'
 
 - name: Install packages based on package.json.
-  yarn:
+  community.general.yarn:
     path: /app/location
 
 - name: Update all packages in package.json to their latest version.
-  yarn:
+  community.general.yarn:
     path: /app/location
     state: latest
 '''
@@ -243,7 +243,7 @@ class Yarn(object):
             return installed, missing
 
         for dep in dependencies:
-            name, version = dep['name'].split('@')
+            name, version = dep['name'].rsplit('@', 1)
             installed.append(name)
 
         if self.name not in installed:
@@ -274,6 +274,9 @@ class Yarn(object):
         if err:
             self.module.fail_json(msg=err)
 
+        if not cmd_result:
+            return outdated
+
         outdated_packages_data = cmd_result.splitlines()[1]
 
         data = json.loads(outdated_packages_data)
@@ -295,13 +298,13 @@ def main():
         name=dict(default=None),
         path=dict(default=None, type='path'),
         version=dict(default=None),
-        production=dict(default='no', type='bool'),
+        production=dict(default=False, type='bool'),
         executable=dict(default=None, type='path'),
         registry=dict(default=None),
         state=dict(default='present', choices=['present', 'absent', 'latest']),
         ignore_scripts=dict(default=False, type='bool'),
     )
-    arg_spec['global'] = dict(default='no', type='bool')
+    arg_spec['global'] = dict(default=False, type='bool')
     module = AnsibleModule(
         argument_spec=arg_spec,
         supports_check_mode=True

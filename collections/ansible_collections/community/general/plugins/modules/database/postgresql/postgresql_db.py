@@ -67,6 +67,7 @@ options:
     - The format of the backup will be detected based on the target name.
     - Supported compression formats for dump and restore include C(.pgc), C(.bz2), C(.gz) and C(.xz)
     - Supported formats for dump and restore include C(.sql) and C(.tar)
+    - "Restore program is selected by target file format: C(.tar) and C(.pgc) are handled by pg_restore, other with pgsql."
     type: str
     choices: [ absent, dump, present, restore ]
     default: present
@@ -77,7 +78,7 @@ options:
     type: path
   target_opts:
     description:
-    - Further arguments for pg_dump or pg_restore.
+    - Additional arguments for pg_dump or restore program (pg_restore or psql, depending on target's format).
     - Used when I(state) is C(dump) or C(restore).
     type: str
   maintenance_db:
@@ -123,9 +124,9 @@ seealso:
 - name: pg_restore reference
   description: Complete reference of pg_restore documentation.
   link: https://www.postgresql.org/docs/current/app-pgrestore.html
-- module: postgresql_tablespace
-- module: postgresql_info
-- module: postgresql_ping
+- module: community.general.postgresql_tablespace
+- module: community.general.postgresql_info
+- module: community.general.postgresql_ping
 notes:
 - State C(dump) and C(restore) don't require I(psycopg2) since version 2.8.
 author: "Ansible Core Team"
@@ -136,12 +137,12 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Create a new database with name "acme"
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
 
 # Note: If a template different from "template0" is specified, encoding and locale settings must match those of the template.
 - name: Create a new database with name "acme" and specific encoding and locale # settings.
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     encoding: UTF-8
     lc_collate: de_DE.UTF-8
@@ -150,38 +151,38 @@ EXAMPLES = r'''
 
 # Note: Default limit for the number of concurrent connections to a specific database is "-1", which means "unlimited"
 - name: Create a new database with name "acme" which has a limit of 100 concurrent connections
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     conn_limit: "100"
 
 - name: Dump an existing database to a file
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     state: dump
     target: /tmp/acme.sql
 
 - name: Dump an existing database to a file excluding the test table
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     state: dump
     target: /tmp/acme.sql
     dump_extra_args: --exclude-table=test
 
 - name: Dump an existing database to a file (with compression)
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     state: dump
     target: /tmp/acme.sql.gz
 
 - name: Dump a single schema for an existing database
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     state: dump
     target: /tmp/acme.sql
     target_opts: "-n public"
 
 - name: Dump only table1 and table2 from the acme database
-  postgresql_db:
+  community.general.postgresql_db:
     name: acme
     state: dump
     target: /tmp/table1_table2.sql
@@ -191,7 +192,7 @@ EXAMPLES = r'''
 # the tablespace will be changed to foo. Access to the database will be locked
 # until the copying of database files is finished.
 - name: Create a new database called foo in tablespace bar
-  postgresql_db:
+  community.general.postgresql_db:
     name: foo
     tablespace: bar
 '''

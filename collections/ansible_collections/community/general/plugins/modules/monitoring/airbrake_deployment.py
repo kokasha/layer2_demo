@@ -48,9 +48,15 @@ options:
     type: str
   revision:
     description:
-      - A hash, number, tag, or other identifier showing what revision was deployed
+      - A hash, number, tag, or other identifier showing what revision from version control was deployed
     required: false
     type: str
+  version:
+    description:
+      - A string identifying what version was deployed
+    required: false
+    type: str
+    version_added: '1.0.0'
   url:
     description:
       - Optional URL to submit the notification to. Use to send notifications to Airbrake-compliant tools like Errbit.
@@ -75,12 +81,21 @@ requirements: []
 
 EXAMPLES = '''
 - name: Notify airbrake about an app deployment
-  airbrake_deployment:
+  community.general.airbrake_deployment:
     project_id: '12345'
     project_key: 'AAAAAA'
     environment: staging
     user: ansible
     revision: '4.2'
+
+- name: Notify airbrake about an app deployment, using git hash as revision
+  community.general.airbrake_deployment:
+    project_id: '12345'
+    project_key: 'AAAAAA'
+    environment: staging
+    user: ansible
+    revision: 'e54dd3a01f2c421b558ef33b5f79db936e2dcf15'
+    version: '0.2.0'
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -96,15 +111,16 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            token=dict(required=False, no_log=True),
-            project_id=dict(required=False, no_log=True),
-            project_key=dict(required=False, no_log=True),
-            environment=dict(required=True),
-            user=dict(required=False),
-            repo=dict(required=False),
-            revision=dict(required=False),
-            url=dict(required=False, default='https://api.airbrake.io/api/v4/projects/'),
-            validate_certs=dict(default='yes', type='bool'),
+            token=dict(required=False, no_log=True, type='str'),
+            project_id=dict(required=False, no_log=True, type='str'),
+            project_key=dict(required=False, no_log=True, type='str'),
+            environment=dict(required=True, type='str'),
+            user=dict(required=False, type='str'),
+            repo=dict(required=False, type='str'),
+            revision=dict(required=False, type='str'),
+            version=dict(required=False, type='str'),
+            url=dict(required=False, default='https://api.airbrake.io/api/v4/projects/', type='str'),
+            validate_certs=dict(default=True, type='bool'),
         ),
         supports_check_mode=True,
         required_together=[('project_id', 'project_key')],
@@ -119,6 +135,7 @@ def main():
         module.exit_json(changed=True)
 
     if module.params["token"]:
+        # v2 API documented at https://airbrake.io/docs/legacy-xml-api/#tracking-deploys
         if module.params["environment"]:
             params["deploy[rails_env]"] = module.params["environment"]
 
@@ -130,6 +147,8 @@ def main():
 
         if module.params["revision"]:
             params["deploy[scm_revision]"] = module.params["revision"]
+
+        # version not supported in v2 API; omit
 
         module.deprecate("Parameter 'token' is deprecated since community.general 0.2.0. Please remove "
                          "it and use 'project_id' and 'project_key' instead",
@@ -148,6 +167,7 @@ def main():
         response, info = fetch_url(module, url, data=data)
 
     if module.params["project_id"] and module.params["project_key"]:
+        # v4 API documented at https://airbrake.io/docs/api/#create-deploy-v4
         if module.params["environment"]:
             params["environment"] = module.params["environment"]
 
@@ -159,6 +179,9 @@ def main():
 
         if module.params["revision"]:
             params["revision"] = module.params["revision"]
+
+        if module.params["version"]:
+            params["version"] = module.params["version"]
 
         # Build deploy url
         url = module.params.get('url') + module.params["project_id"] + '/deploys?key=' + module.params["project_key"]

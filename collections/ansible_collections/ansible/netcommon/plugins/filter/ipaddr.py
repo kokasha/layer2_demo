@@ -62,22 +62,21 @@ def _first_last(v):
 
 def _6to4_query(v, vtype, value):
     if v.version == 4:
-
         if v.size == 1:
             ipconv = str(v.ip)
         elif v.size > 1:
             if v.ip != v.network:
                 ipconv = str(v.ip)
             else:
-                ipconv = False
+                return False
 
-        if ipaddr(ipconv, "public"):
+        if ipaddr(ipconv, "public") or ipaddr(ipconv, "private"):
             numbers = list(map(int, ipconv.split(".")))
 
         try:
             return "2002:{:02x}{:02x}:{:02x}{:02x}::1/48".format(*numbers)
         except Exception:
-            return False
+            pass
 
     elif v.version == 6:
         if vtype == "address":
@@ -87,8 +86,8 @@ def _6to4_query(v, vtype, value):
             if v.ip != v.network:
                 if ipaddr(str(v.ip), "2002::/16"):
                     return value
-            else:
-                return False
+
+    return False
 
 
 def _ip_query(v):
@@ -98,12 +97,9 @@ def _ip_query(v):
         # /31 networks in netaddr have no broadcast address
         if v.ip != v.network or not v.broadcast:
             return str(v.ip)
-
-
-def _gateway_query(v):
-    if v.size > 1:
-        if v.ip != v.network:
-            return str(v.ip) + "/" + str(v.prefixlen)
+        # For the first IPv6 address in a network, netaddr will return it as a network address, despite it being a valid host address.
+        elif v.version == 6 and v.ip == v.network:
+            return str(v.ip)
 
 
 def _address_prefix_query(v):
@@ -136,7 +132,7 @@ def _cidr_lookup_query(v, iplist, value):
 
 def _first_usable_query(v, vtype):
     if vtype == "address":
-        "Does it make sense to raise an error"
+        # Does it make sense to raise an error
         raise errors.AnsibleFilterError("Not a network address")
     elif vtype == "network":
         if v.size == 2:
@@ -149,7 +145,7 @@ def _host_query(v):
     if v.size == 1:
         return str(v)
     elif v.size > 1:
-        if v.ip != v.network:
+        if v.ip != v.network or not v.broadcast:
             return str(v.ip) + "/" + str(v.prefixlen)
 
 
@@ -180,16 +176,6 @@ def _ip_netmask_query(v):
             return str(v.ip) + " " + str(v.netmask)
 
 
-"""
-def _ip_wildcard_query(v):
-    if v.size == 2:
-        return str(v.ip) + ' ' + str(v.hostmask)
-    elif v.size > 1:
-        if v.ip != v.network:
-            return str(v.ip) + ' ' + str(v.hostmask)
-"""
-
-
 def _ipv4_query(v, value):
     if v.version == 6:
         try:
@@ -209,7 +195,7 @@ def _ipv6_query(v, value):
 
 def _last_usable_query(v, vtype):
     if vtype == "address":
-        "Does it make sense to raise an error"
+        # Does it make sense to raise an error
         raise errors.AnsibleFilterError("Not a network address")
     elif vtype == "network":
         if v.size > 1:
@@ -254,11 +240,6 @@ def _network_query(v):
     return str(v.network)
 
 
-def _network_id_query(v):
-    """Return the network of a given IP or subnet"""
-    return str(v.network)
-
-
 def _network_netmask_query(v):
     return str(v.network) + " " + str(v.netmask)
 
@@ -269,7 +250,7 @@ def _network_wildcard_query(v):
 
 def _next_usable_query(v, vtype):
     if vtype == "address":
-        "Does it make sense to raise an error"
+        # Does it make sense to raise an error
         raise errors.AnsibleFilterError("Not a network address")
     elif vtype == "network":
         if v.size > 1:
@@ -304,7 +285,7 @@ def _prefix_query(v):
 
 def _previous_usable_query(v, vtype):
     if vtype == "address":
-        "Does it make sense to raise an error"
+        # Does it make sense to raise an error
         raise errors.AnsibleFilterError("Not a network address")
     elif vtype == "network":
         if v.size > 1:
@@ -321,19 +302,21 @@ def _private_query(v, value):
 
 def _public_query(v, value):
     v_ip = netaddr.IPAddress(str(v.ip))
-    if (
-        v_ip.is_unicast()
-        and not v_ip.is_private()
-        and not v_ip.is_loopback()
-        and not v_ip.is_netmask()
-        and not v_ip.is_hostmask()
+    if all(
+        [
+            v_ip.is_unicast(),
+            not v_ip.is_private(),
+            not v_ip.is_loopback(),
+            not v_ip.is_netmask(),
+            not v_ip.is_hostmask(),
+        ]
     ):
         return value
 
 
 def _range_usable_query(v, vtype):
     if vtype == "address":
-        "Does it make sense to raise an error"
+        # Does it make sense to raise an error
         raise errors.AnsibleFilterError("Not a network address")
     elif vtype == "network":
         if v.size > 1:
@@ -517,12 +500,12 @@ def ipaddr(value, query="", version=False, alias="ipaddr"):
         "cidr": _cidr_query,
         "cidr_lookup": _cidr_lookup_query,
         "first_usable": _first_usable_query,
-        "gateway": _gateway_query,  # deprecate
-        "gw": _gateway_query,  # deprecate
+        "gateway": _address_prefix_query,  # deprecate
+        "gw": _address_prefix_query,  # deprecate
         "host": _host_query,
         "host/prefix": _address_prefix_query,  # deprecate
         "hostmask": _hostmask_query,
-        "hostnet": _gateway_query,  # deprecate
+        "hostnet": _address_prefix_query,  # deprecate
         "int": _int_query,
         "ip": _ip_query,
         "ip/prefix": _ip_prefix_query,
@@ -539,7 +522,7 @@ def ipaddr(value, query="", version=False, alias="ipaddr"):
         "next_usable": _next_usable_query,
         "netmask": _netmask_query,
         "network": _network_query,
-        "network_id": _network_id_query,
+        "network_id": _network_query,
         "network/prefix": _subnet_query,
         "network_netmask": _network_netmask_query,
         "network_wildcard": _network_wildcard_query,
@@ -550,7 +533,7 @@ def ipaddr(value, query="", version=False, alias="ipaddr"):
         "public": _public_query,
         "range_usable": _range_usable_query,
         "revdns": _revdns_query,
-        "router": _gateway_query,  # deprecate
+        "router": _address_prefix_query,  # deprecate
         "size": _size_query,
         "size_usable": _size_usable_query,
         "subnet": _subnet_query,
@@ -565,24 +548,15 @@ def ipaddr(value, query="", version=False, alias="ipaddr"):
 
     vtype = None
 
-    if not value:
-        return False
-
-    elif value is True:
-        return False
-
     # Check if value is a list and parse each element
-    elif isinstance(value, (list, tuple, types.GeneratorType)):
+    if isinstance(value, (list, tuple, types.GeneratorType)):
+        _ret = [ipaddr(element, str(query), version) for element in value]
+        return [item for item in _ret if item]
 
-        _ret = []
-        for element in value:
-            if ipaddr(element, str(query), version):
-                _ret.append(ipaddr(element, str(query), version))
-
-        if _ret:
-            return _ret
-        else:
-            return list()
+    elif not value or value is True:
+        raise errors.AnsibleFilterError(
+            "{0!r} is not a valid IP address or network".format(value)
+        )
 
     # Check if value is a number and convert it to an IP address
     elif str(value).isdigit():
@@ -880,7 +854,7 @@ def nthhost(value, query=""):
     try:
         nth = int(query)
         if value.size > nth:
-            return value[nth]
+            return str(value[nth])
 
     except ValueError:
         return False
@@ -961,6 +935,8 @@ def _address_normalizer(value):
         vtype = ipaddr(value, "type")
         if vtype == "address" or vtype == "network":
             v = ipaddr(value, "subnet")
+        else:
+            return False
     except Exception:
         return False
 
@@ -1086,7 +1062,7 @@ def slaac(value, query=""):
     except Exception:
         return False
 
-    return eui.ipv6(value.network)
+    return str(eui.ipv6(value.network))
 
 
 # ---- HWaddr / MAC address filters ----
@@ -1113,6 +1089,7 @@ def hwaddr(value, query="", alias="hwaddr"):
     try:
         v = netaddr.EUI(value)
     except Exception:
+        v = None
         if query and query != "bool":
             raise errors.AnsibleFilterError(
                 alias + ": not a hardware address: %s" % value
@@ -1127,8 +1104,6 @@ def hwaddr(value, query="", alias="hwaddr"):
         raise errors.AnsibleFilterError(
             alias + ": unknown filter type: %s" % query
         )
-
-    return False
 
 
 def macaddr(value, query=""):

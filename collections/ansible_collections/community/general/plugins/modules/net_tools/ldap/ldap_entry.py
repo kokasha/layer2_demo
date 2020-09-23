@@ -17,7 +17,7 @@ short_description: Add or remove LDAP entries.
 description:
   - Add or remove LDAP entries. This module only asserts the existence or
     non-existence of an LDAP entry, not its attributes. To assert the
-    attribute values of an entry, see M(ldap_attr).
+    attribute values of an entry, see M(community.general.ldap_attr).
 notes:
   - The default authentication settings will attempt to use a SASL EXTERNAL
     bind over a UNIX domain socket. This works well with the default Ubuntu
@@ -37,7 +37,7 @@ options:
     description:
       - If I(state=present), attributes necessary to create an entry. Existing
         entries are never modified. To assert specific attribute values on an
-        existing entry, use M(ldap_attr) module instead.
+        existing entry, use M(community.general.ldap_attr) module instead.
   objectClass:
     description:
       - If I(state=present), value or list of values to use when creating
@@ -56,12 +56,12 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: Make sure we have a parent entry for users
-  ldap_entry:
+  community.general.ldap_entry:
     dn: ou=users,dc=example,dc=com
     objectClass: organizationalUnit
 
 - name: Make sure we have an admin user
-  ldap_entry:
+  community.general.ldap_entry:
     dn: cn=admin,dc=example,dc=com
     objectClass:
       - simpleSecurityObject
@@ -71,7 +71,7 @@ EXAMPLES = """
       userPassword: "{SSHA}tabyipcHzhwESzRaGA7oQ/SDoBZQOGND"
 
 - name: Get rid of an old entry
-  ldap_entry:
+  community.general.ldap_entry:
     dn: ou=stuff,dc=example,dc=com
     state: absent
     server_uri: ldap://localhost/
@@ -89,7 +89,7 @@ EXAMPLES = """
 #
 # In the example below, 'args' is a task keyword, passed at the same level as the module
 - name: Get rid of an old entry
-  ldap_entry:
+  community.general.ldap_entry:
     dn: ou=stuff,dc=example,dc=com
     state: absent
   args: "{{ ldap_auth }}"

@@ -139,7 +139,7 @@ options:
     description:
       - User-defined key/value metadata.
       - Label operations in this module apply to the docker swarm cluster.
-        Use M(docker_node) module to add/modify/remove swarm node labels.
+        Use M(community.general.docker_node) module to add/modify/remove swarm node labels.
       - Requires API version >= 1.32.
     type: dict
   signing_ca_cert:
@@ -165,7 +165,7 @@ options:
     description:
       - If set, generate a key and use it to lock data stored on the managers.
       - Docker default value is C(no).
-      - M(docker_swarm_info) can be used to retrieve the unlock key.
+      - M(community.general.docker_swarm_info) can be used to retrieve the unlock key.
     type: bool
   rotate_worker_token:
     description: Rotate the worker join token.
@@ -190,37 +190,37 @@ author:
 EXAMPLES = '''
 
 - name: Init a new swarm with default parameters
-  docker_swarm:
+  community.general.docker_swarm:
     state: present
 
 - name: Update swarm configuration
-  docker_swarm:
+  community.general.docker_swarm:
     state: present
     election_tick: 5
 
 - name: Add nodes
-  docker_swarm:
+  community.general.docker_swarm:
     state: join
     advertise_addr: 192.168.1.2
     join_token: SWMTKN-1--xxxxx
     remote_addrs: [ '192.168.1.1:2377' ]
 
 - name: Leave swarm for a node
-  docker_swarm:
+  community.general.docker_swarm:
     state: absent
 
 - name: Remove a swarm manager
-  docker_swarm:
+  community.general.docker_swarm:
     state: absent
     force: true
 
 - name: Remove node from swarm
-  docker_swarm:
+  community.general.docker_swarm:
     state: remove
     node_id: mynode
 
 - name: Inspect swarm
-  docker_swarm:
+  community.general.docker_swarm:
     state: inspect
   register: swarm_info
 '''
@@ -627,7 +627,7 @@ def main():
     )
 
     required_if = [
-        ('state', 'join', ['advertise_addr', 'remote_addrs', 'join_token']),
+        ('state', 'join', ['remote_addrs', 'join_token']),
         ('state', 'remove', ['node_id'])
     ]
 

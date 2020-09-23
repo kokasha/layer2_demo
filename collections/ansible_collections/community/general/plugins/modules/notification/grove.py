@@ -48,7 +48,7 @@ author: "Jonas Pfenniger (@zimbatm)"
 
 EXAMPLES = '''
 - name: Sends a notification to a grove.io channel
-  grove:
+  community.general.grove:
     channel_token: 6Ph62VBBJOccmtTPZbubiPzdrhipZXtg
     service: my-app
     message: 'deployed {{ target }}'
@@ -91,7 +91,7 @@ def main():
             service=dict(type='str', default='ansible'),
             url=dict(type='str', default=None),
             icon_url=dict(type='str', default=None),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
         )
     )
 

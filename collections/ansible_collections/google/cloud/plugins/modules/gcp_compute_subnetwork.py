@@ -49,7 +49,6 @@ description:
   private IP addresses. You can isolate portions of the network, even entire subnets,
   using firewall rules.
 short_description: Creates a GCP Subnetwork
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -107,7 +106,6 @@ options:
     elements: dict
     required: false
     type: list
-    version_added: '2.8'
     suboptions:
       range_name:
         description:
@@ -132,7 +130,7 @@ options:
     type: bool
   region:
     description:
-    - URL of the GCP region for this subnetwork.
+    - The GCP region for this subnetwork.
     required: true
     type: str
   project:
@@ -166,6 +164,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -289,7 +288,7 @@ privateIpGoogleAccess:
   type: bool
 region:
   description:
-  - URL of the GCP region for this subnetwork.
+  - The GCP region for this subnetwork.
   returned: success
   type: str
 '''

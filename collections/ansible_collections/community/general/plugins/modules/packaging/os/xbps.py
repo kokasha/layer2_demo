@@ -22,29 +22,34 @@ options:
     name:
         description:
             - Name of the package to install, upgrade, or remove.
+        aliases: [pkg,package]
+        type: list
+        elements: str
     state:
         description:
             - Desired state of the package.
         default: "present"
         choices: ["present", "absent", "latest"]
+        type: str
     recurse:
         description:
             - When removing a package, also remove its dependencies, provided
               that they are not required by other packages and were not
               explicitly installed by a user.
         type: bool
-        default: 'no'
+        default: no
     update_cache:
         description:
             - Whether or not to refresh the master package lists. This can be
               run as part of a package installation or as a separate step.
+        aliases: ['update-cache']
         type: bool
-        default: 'yes'
+        default: yes
     upgrade:
         description:
             - Whether or not to upgrade whole system
         type: bool
-        default: 'no'
+        default: no
     upgrade_xbps:
         description:
             - Whether or not to upgrade the xbps package when necessary.
@@ -53,31 +58,37 @@ options:
               Thus when this option is set to C(no),
               upgrades and installations will fail when xbps is not up to date.
         type: bool
-        default: 'yes'
+        default: yes
         version_added: '0.2.0'
+    force:
+        description:
+            - This option doesn't have any effect and is deprecated, it will be
+              removed in 3.0.0.
+        type: bool
+        default: no
 '''
 
 EXAMPLES = '''
 - name: Install package foo (automatically updating the xbps package if needed)
-  xbps: name=foo state=present
+  community.general.xbps: name=foo state=present
 
 - name: Upgrade package foo
-  xbps: name=foo state=latest update_cache=yes
+  community.general.xbps: name=foo state=latest update_cache=yes
 
 - name: Remove packages foo and bar
-  xbps: name=foo,bar state=absent
+  community.general.xbps: name=foo,bar state=absent
 
 - name: Recursively remove package foo
-  xbps: name=foo state=absent recurse=yes
+  community.general.xbps: name=foo state=absent recurse=yes
 
 - name: Update package cache
-  xbps: update_cache=yes
+  community.general.xbps: update_cache=yes
 
 - name: Upgrade packages
-  xbps: upgrade=yes
+  community.general.xbps: upgrade=yes
 
 - name: Install a package, failing if the xbps package is out of date
-  xbps:
+  community.general.xbps:
     name: foo
     state: present
     upgrade_xbps: no
@@ -272,12 +283,12 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            name=dict(default=None, aliases=['pkg', 'package'], type='list'),
+            name=dict(default=None, aliases=['pkg', 'package'], type='list', elements='str'),
             state=dict(default='present', choices=['present', 'installed',
                                                    'latest', 'absent',
                                                    'removed']),
             recurse=dict(default=False, type='bool'),
-            force=dict(default=False, type='bool'),
+            force=dict(default=False, type='bool', removed_in_version='3.0.0', removed_from_collection='community.general'),
             upgrade=dict(default=False, type='bool'),
             update_cache=dict(default=True, aliases=['update-cache'],
                               type='bool'),

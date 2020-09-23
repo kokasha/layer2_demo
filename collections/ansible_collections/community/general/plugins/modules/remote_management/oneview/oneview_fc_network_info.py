@@ -12,7 +12,7 @@ short_description: Retrieve the information about one or more of the OneView Fib
 description:
     - Retrieve the information about one or more of the Fibre Channel Networks from OneView.
     - This module was called C(oneview_fc_network_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_fc_network_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_fc_network_info) module no longer returns C(ansible_facts)!
 requirements:
     - hpOneView >= 2.0.1
 author:
@@ -32,16 +32,16 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all Fibre Channel Networks
-  oneview_fc_network_info:
+  community.general.oneview_fc_network_info:
     config: /etc/oneview/oneview_config.json
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.fc_networks }}"
 
 - name: Gather paginated, filtered and sorted information about Fibre Channel Networks
-  oneview_fc_network_info:
+  community.general.oneview_fc_network_info:
     config: /etc/oneview/oneview_config.json
     params:
       start: 1
@@ -50,17 +50,17 @@ EXAMPLES = '''
       filter: 'fabricType=FabricAttach'
   delegate_to: localhost
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.fc_networks }}"
 
 - name: Gather information about a Fibre Channel Network by name
-  oneview_fc_network_info:
+  community.general.oneview_fc_network_info:
     config: /etc/oneview/oneview_config.json
     name: network name
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.fc_networks }}"
 '''
 

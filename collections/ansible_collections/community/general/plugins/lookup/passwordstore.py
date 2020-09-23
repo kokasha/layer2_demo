@@ -57,33 +57,34 @@ DOCUMENTATION = '''
 EXAMPLES = """
 # Debug is used for examples, BAD IDEA to show passwords on screen
 - name: Basic lookup. Fails if example/test doesn't exist
-  debug:
-    msg: "{{ lookup('passwordstore', 'example/test')}}"
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.passwordstore', 'example/test')}}"
 
 - name: Create pass with random 16 character password. If password exists just give the password
-  debug:
+  ansible.builtin.debug:
     var: mypassword
   vars:
-    mypassword: "{{ lookup('passwordstore', 'example/test create=true')}}"
+    mypassword: "{{ lookup('community.general.passwordstore', 'example/test create=true')}}"
 
 - name: Different size password
-  debug:
-    msg: "{{ lookup('passwordstore', 'example/test create=true length=42')}}"
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.passwordstore', 'example/test create=true length=42')}}"
 
 - name: Create password and overwrite the password if it exists. As a bonus, this module includes the old password inside the pass file
-  debug:
-    msg: "{{ lookup('passwordstore', 'example/test create=true overwrite=true')}}"
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.passwordstore', 'example/test create=true overwrite=true')}}"
 
 - name: Create an alphanumeric password
-  debug: msg="{{ lookup('passwordstore', 'example/test create=true nosymbols=true') }}"
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.passwordstore', 'example/test create=true nosymbols=true') }}"
 
 - name: Return the value for user in the KV pair user, username
-  debug:
-    msg: "{{ lookup('passwordstore', 'example/test subkey=user')}}"
+  ansible.builtin.debug:
+    msg: "{{ lookup('community.general.passwordstore', 'example/test subkey=user')}}"
 
 - name: Return the entire password file content
-  set_fact:
-    passfilecontent: "{{ lookup('passwordstore', 'example/test returnall=true')}}"
+  ansible.builtin.set_fact:
+    passfilecontent: "{{ lookup('community.general.passwordstore', 'example/test returnall=true')}}"
 """
 
 RETURN = """

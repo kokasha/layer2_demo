@@ -25,7 +25,9 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# pylint: skip-file
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
 
 # Networking tools for network modules only
 
@@ -130,7 +132,8 @@ def to_lines(stdout):
 
 
 def transform_commands(module):
-    transform = ComplexList(
+    transform = EntityCollection(
+        module,
         dict(
             command=dict(key=True),
             output=dict(),
@@ -140,7 +143,6 @@ def transform_commands(module):
             sendonly=dict(type="bool", default=False),
             check_all=dict(type="bool", default=False),
         ),
-        module,
     )
 
     return transform(module.params["commands"])
@@ -148,6 +150,15 @@ def transform_commands(module):
 
 def sort_list(val):
     if isinstance(val, list):
+        if isinstance(val[0], dict):
+            sorted_keys = [tuple(sorted(dict_.keys())) for dict_ in val]
+            # All keys should be identical
+            if len(set(sorted_keys)) != 1:
+                raise ValueError("dictionaries do not match")
+
+            return sorted(
+                val, key=lambda d: tuple(d[k] for k in sorted_keys[0])
+            )
         return sorted(val)
     return val
 
@@ -307,14 +318,9 @@ class EntityCollection(Entity):
         ]
 
 
-# these two are for backwards compatibility and can be removed once all of the
-# modules that use them are updated
-class ComplexDict(Entity):
-    def __init__(self, attrs, module, *args, **kwargs):
-        super(ComplexDict, self).__init__(module, attrs, *args, **kwargs)
-
-
 class ComplexList(EntityCollection):
+    """Alternate name for EntityCollection for backwards compatibility"""
+
     def __init__(self, attrs, module, *args, **kwargs):
         super(ComplexList, self).__init__(module, attrs, *args, **kwargs)
 

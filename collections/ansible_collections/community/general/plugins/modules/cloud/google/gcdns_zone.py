@@ -24,7 +24,7 @@ requirements:
 deprecated:
     removed_in: 2.0.0  # was Ansible 2.12
     why: Updated modules released with increased functionality
-    alternative: Use M(gcp_dns_managed_zone) instead.
+    alternative: Use M(google.cloud.gcp_dns_managed_zone) instead.
 options:
     state:
         description:
@@ -61,7 +61,7 @@ options:
         description:
             - The Google Cloud Platform project ID to use.
 notes:
-    - See also M(gcdns_record).
+    - See also M(community.general.gcdns_record).
     - Zones that are newly created must still be set up with a domain registrar
       before they can be used.
 '''
@@ -69,15 +69,15 @@ notes:
 EXAMPLES = '''
 # Basic zone creation example.
 - name: Create a basic zone with the minimum number of parameters.
-  gcdns_zone: zone=example.com
+  community.general.gcdns_zone: zone=example.com
 
 # Zone removal example.
 - name: Remove a zone.
-  gcdns_zone: zone=example.com state=absent
+  community.general.gcdns_zone: zone=example.com state=absent
 
 # Zone creation with description
 - name: Creating a zone with a description
-  gcdns_zone: zone=example.com description="This is an awesome zone"
+  community.general.gcdns_zone: zone=example.com description="This is an awesome zone"
 '''
 
 RETURN = '''

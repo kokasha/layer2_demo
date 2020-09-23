@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
 import json
 
 from copy import deepcopy
@@ -137,7 +140,7 @@ def sanitize_xml(data):
     tree = fromstring(
         to_bytes(deepcopy(data), errors="surrogate_then_replace")
     )
-    for element in tree.getiterator():
+    for element in tree.iter():
         # remove attributes
         attribute = element.attrib
         if attribute:

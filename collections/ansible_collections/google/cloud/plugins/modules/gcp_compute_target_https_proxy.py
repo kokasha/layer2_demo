@@ -34,7 +34,6 @@ description:
 - Represents a TargetHttpsProxy resource, which is used by one or more global forwarding
   rule to route incoming HTTPS requests to a URL map.
 short_description: Creates a GCP TargetHttpsProxy
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -69,12 +68,10 @@ options:
     - Specifies the QUIC override policy for this resource. This determines whether
       the load balancer will attempt to negotiate QUIC with clients or not. Can specify
       one of NONE, ENABLE, or DISABLE. If NONE is specified, uses the QUIC policy
-      with no user overrides, which is equivalent to DISABLE. Not specifying this
-      field is equivalent to specifying NONE.
+      with no user overrides, which is equivalent to DISABLE.
     - 'Some valid choices include: "NONE", "ENABLE", "DISABLE"'
     required: false
     type: str
-    version_added: '2.7'
   ssl_certificates:
     description:
     - A list of SslCertificate resources that are used to authenticate connections
@@ -94,7 +91,6 @@ options:
       }}"'
     required: false
     type: dict
-    version_added: '2.8'
   url_map:
     description:
     - A reference to the UrlMap resource that defines the mapping from URL to the
@@ -137,6 +133,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -283,8 +280,7 @@ quicOverride:
   - Specifies the QUIC override policy for this resource. This determines whether
     the load balancer will attempt to negotiate QUIC with clients or not. Can specify
     one of NONE, ENABLE, or DISABLE. If NONE is specified, uses the QUIC policy with
-    no user overrides, which is equivalent to DISABLE. Not specifying this field is
-    equivalent to specifying NONE.
+    no user overrides, which is equivalent to DISABLE.
   returned: success
   type: str
 sslCertificates:

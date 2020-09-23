@@ -245,19 +245,6 @@ releases:
       - terraform module - fixes usage for providers not supporting workspaces
       - yarn - Return correct values when running yarn in check mode (https://github.com/ansible-collections/community.general/pull/153).
       - yarn - handle no version when installing module by name (https://github.com/ansible/ansible/issues/55097)
-      - zabbix_action - arguments ``event_source`` and ``esc_period`` no longer required
-        when ``state=absent``
-      - zabbix_host - fixed inventory_mode key error, which occurs with Zabbix 4.4.1
-        or more (https://github.com/ansible/ansible/issues/65304).
-      - zabbix_host - was not possible to update a host where visible_name was not
-        set in zabbix
-      - zabbix_mediatype - Fixed to support zabbix 4.4 or more and python3 (https://github.com/ansible/ansible/pull/67693)
-      - zabbix_template - fixed error when providing empty ``link_templates`` to the
-        module (see https://github.com/ansible/ansible/issues/66417)
-      - zabbix_template - fixed invalid (non-importable) output provided by exporting
-        XML (see https://github.com/ansible/ansible/issues/66466)
-      - zabbix_user - Fixed an issue where module failed with zabbix 4.4 or above
-        (see https://github.com/ansible/ansible/pull/67475)
       - zfs_delegate_admin - add missing choices diff/hold/release to the permissions
         parameter (https://github.com/ansible-collections/community.general/pull/278)
       deprecated_features:
@@ -297,10 +284,6 @@ releases:
       - redfish_config, redfish_command - Behavior to modify the first System, Mananger,
         or Chassis resource when multiple are present is deprecated. Use the new ``resource_id``
         option to specify target resource to modify.
-      - zabbix_proxy - deprecates ``interface`` sub-options ``type`` and ``main``
-        when proxy type is set to passive via ``status=passive``. Make sure these
-        suboptions are removed from your playbook as they were never supported by
-        Zabbix in the first place.
       major_changes:
       - docker_container - the ``network_mode`` option will be set by default to the
         name of the first network in ``networks`` if at least one network is given
@@ -312,8 +295,6 @@ releases:
         whose default value will change from ``compatibility`` to ``no_defaults``.
         Set to an explicit value to avoid deprecation warnings.
       - gitlab_user - no longer requires ``name``, ``email`` and ``password`` arguments
-        when ``state=absent``.
-      - zabbix_action - no longer requires ``esc_period`` and ``event_source`` arguments
         when ``state=absent``.
       minor_changes:
       - A new filter ``to_time_unit`` with specializations ``to_milliseconds``, ``to_seconds``,
@@ -495,24 +476,6 @@ releases:
         paths to multiple configuration files (https://github.com/ansible-collections/community.general/pull/394).
       - terraform - Adds option ``variables_files`` for multiple var-files (https://github.com/ansible-collections/community.general/issues/224).
       - ufw - accept ``interface_in`` and ``interface_out`` as parameters.
-      - zabbix_action - allow str values for ``esc_period`` options (https://github.com/ansible/ansible/pull/66841).
-      - zabbix_host - now supports configuring user macros and host tags on the managed
-        host (see https://github.com/ansible/ansible/pull/66777)
-      - zabbix_host_info - ``host_name`` based search results now include host groups.
-      - zabbix_hostmacro - ``macro_name`` now accepts macros in zabbix native format
-        as well (e.g. ``{$MACRO}``)
-      - zabbix_hostmacro - ``macro_value`` is no longer required when ``state=absent``
-      - zabbix_proxy - ``interface`` sub-options ``type`` and ``main`` are now deprecated
-        and will be removed in community.general 3.0.0. Also, the values passed to
-        ``interface`` are now checked for correct types and unexpected keys.
-      - zabbix_proxy - added option proxy_address for comma-delimited list of IP/CIDR
-        addresses or DNS names to accept active proxy requests from
-      - zabbix_template - add new option omit_date to remove date from exported/dumped
-        template (https://github.com/ansible/ansible/pull/67302)
-      - zabbix_template - adding new update rule templateLinkage.deleteMissing for
-        newer zabbix versions (https://github.com/ansible/ansible/pull/66747).
-      - zabbix_template_info - add new option omit_date to remove date from exported/dumped
-        template (https://github.com/ansible/ansible/pull/67302)
       - zypper - Added ``allow_vendor_change`` and ``replacefiles`` zypper options
         (https://github.com/ansible-collections/community.general/issues/381)
       release_summary: 'This is the first proper release of the ``community.general``
@@ -680,10 +643,8 @@ releases:
     - 63629-postgresql_db_pgc_support.yaml
     - 63887-docker_swarm_service-sort-lists-when-checking-changes.yml
     - 63903-ufw.yaml
-    - 63969-zabbix_action_argsfix.yml
     - 63990-replace-deprecated-basic-functions.yml
     - 64007-postgresql_db_allow_user_name_with_dots.yml
-    - 64032-zabbix_template_fix_return_XML_as_a_string_even_python3.yml
     - 64059-mysql_user_fix_password_comparison.yaml
     - 64288-fix-hashi-vault-kv-v2.yaml
     - 64371-postgresql_privs-always-reports-as-changed-when-using-default_privs.yml
@@ -704,7 +665,6 @@ releases:
     - 65164-postgres_use_query_params_with_cursor.yml
     - 65223-postgresql_db-exception-added.yml
     - 65238-fix_pacman_stdout_parsing.yml
-    - 65304-fix_zabbix_host_inventory_mode_key_error.yml
     - 65310-postgresql_owner_use_query_params.yml
     - 65372-misc-context-manager.yml
     - 65387-homebrew_check_mode_option.yml
@@ -726,13 +686,11 @@ releases:
     - 65894-redfish-bios-attributes.yaml
     - 65903-postgresql_privs_sort_lists_with_none_elements.yml
     - 65993-restart-docker_container-on-restart-policy-updates.yaml
-    - 66026-zabbix_host_info.yml
     - 66048-mysql_add_master_data_parameter.yml
     - 66060-redfish-new-resource-id-option.yaml
     - 66144-docker_container-removal-timeout.yml
     - 66151-docker_swarm_service-healthcheck-start-period.yml
     - 66157-postgresql-create-unique-indexes.yml
-    - 66247-zabbix_proxy-address-field.yaml
     - 66252-mysql_replication_fail_on_error.yml
     - 66268-cyberarkpassword-fix-invalid-attr.yaml
     - 66322-moved_line_causing_terraform_output_suppression.yml
@@ -740,26 +698,20 @@ releases:
     - 66357-support-changing-fetch_url-settings-for-rundeck-modules.yaml
     - 66382-docker_container-port-range.yml
     - 66398-pamd_fix-attributeerror-when-removing-first-line.yml
-    - 66463-zabbix_template-fix-error-linktemplate-and-importdump.yml
     - 66592_ipa_encoding_fix.yml
     - 66599-docker-healthcheck.yml
     - 66600-docker_container-volumes.yml
     - 66688-mysql_db_add_skip_lock_tables_option.yml
     - 66711-postgresql_user_add_comment_parameter.yml
     - 66717-postgresql_db_add_dump_extra_args_param.yml
-    - 66747-zabbix_template-newupdaterule-deletemissinglinkedtemplate.yml
-    - 66777-zabbix_host_tags_macros_support.yml
     - 66801-mysql_user_priv_can_be_dict.yml
     - 66806-mysql_variables_not_support_variables_with_dot.yml
     - 66807-redhat_subscription-no-default-quantity.yaml
-    - 66837-zabbix-proxy-interface.yml
-    - 66841-zabbix_action-allowstrfor-esc_period.yml
     - 66914-purefa_user_string.yaml
     - 66929-pmrun-quote-entire-success-command-string.yml
     - 66957-scaleway-jsonify-only-for-json-requests.yml
     - 66974-mysql_user_doesnt_support_privs_with_underscore.yml
     - 67046-postgresql_modules_make_params_required.yml
-    - 67302-zabbix_template_info-add-omit_date-field.yml
     - 67337-fix-proxysql-mysql-cursor.yaml
     - 67353-docker_login-permissions.yml
     - 67418-postgresql_set_converts_value_to_uppercase.yml
@@ -767,7 +719,6 @@ releases:
     - 67464-postgresql_info_add_collecting_subscription_info.yml
     - 67614-postgresql_info_add_collecting_publication_info.yml
     - 67655-scaleway_compute-get-image-instead-loop-on-list.yml
-    - 67693-zabbix_mediatype.yml
     - 67747-mysql_db_add_dump_extra_args_param.yml
     - 67767-mysql_db_fix_bug_introduced_by_56721.yml
     - 67832-run_powershell_modules_on_windows_containers.yml
@@ -786,7 +737,6 @@ releases:
     - firewalld-version-0_7_0.yml
     - firewalld_zone_target.yml
     - fix-oc-conn-plugin-envvar.yml
-    - fix_zabbix_host_visible_name.yml
     - gitlab-project-variable-variable-type.yml
     - gitlab_project_variable.yml
     - ldap-params-removal.yml
@@ -805,8 +755,6 @@ releases:
     - solaris_zone_name_fix.yml
     - syslogger-disable-check-mode.yaml
     - xml-deprecated-functions.yml
-    - zabbix-hostmacro.yml
-    - zabbix_user-mediatype-error.yml
     modules:
     - description: Override a debian package's version of a file
       name: dpkg_divert
@@ -905,3 +853,254 @@ releases:
         name: lmdb_kv
         namespace: null
     release_date: '2020-06-20'
+  1.0.0:
+    changes:
+      breaking_changes:
+      - log_plays callback - add missing information to the logs generated by the
+        callback plugin. This changes the log message format (https://github.com/ansible-collections/community.general/pull/442).
+      - 'pkgng - passing ``name: *`` with ``state: absent`` will no longer remove
+        every installed package from the system. It is now a noop. (https://github.com/ansible-collections/community.general/pull/569).'
+      - 'pkgng - passing ``name: *`` with ``state: latest`` or ``state: present``
+        will no longer install every package from the configured package repositories.
+        Instead, ``name: *, state: latest`` will upgrade all already-installed packages,
+        and ``name: *, state: present`` is a noop. (https://github.com/ansible-collections/community.general/pull/569).'
+      bugfixes:
+      - aix_filesystem - fix issues with ismount module_util pathing for Ansible 2.9
+        (https://github.com/ansible-collections/community.general/pull/567).
+      - consul_kv lookup - fix ``ANSIBLE_CONSUL_URL`` environment variable handling
+        (https://github.com/ansible/ansible/issues/51960).
+      - consul_kv lookup - fix arguments handling (https://github.com/ansible-collections/community.general/pull/303).
+      - digital_ocean_tag_info - fix crash when querying for an individual tag (https://github.com/ansible-collections/community.general/pull/615).
+      - doas become plugin - address a bug with the parameters handling that was breaking
+        the plugin in community.general when ``become_flags`` and ``become_user``
+        were not explicitly specified (https://github.com/ansible-collections/community.general/pull/704).
+      - docker_compose - add a condition to prevent service startup if parameter ``stopped``
+        is true. Otherwise, the service will be started on each play and stopped again
+        immediately due to the ``stopped`` parameter and breaks the idempotency of
+        the module (https://github.com/ansible-collections/community.general/issues/532).
+      - docker_compose - disallow usage of the parameters ``stopped`` and ``restarted``
+        at the same time. This breaks also the idempotency (https://github.com/ansible-collections/community.general/issues/532).
+      - docker_container - use Config MacAddress by default instead of Networks. Networks
+        MacAddress is empty in some cases (https://github.com/ansible/ansible/issues/70206).
+      - docker_container - various error fixes in string handling for Python 2 to
+        avoid crashes when non-ASCII characters are used in strings (https://github.com/ansible-collections/community.general/issues/640).
+      - docker_swarm - removes ``advertise_addr`` from list of required arguments
+        when ``state`` is ``"join"`` (https://github.com/ansible-collections/community.general/issues/439).
+      - dzdo become plugin - address a bug with the parameters handling that was breaking
+        the plugin in community.general when ``become_user`` was not explicitly specified
+        (https://github.com/ansible-collections/community.general/pull/708).
+      - filesystem - resizefs of xfs filesystems is fixed. Filesystem needs to be
+        mounted.
+      - jenkins_plugin - replace MD5 checksum verification with SHA1 due to MD5 being
+        disabled on systems with FIPS-only algorithms enabled (https://github.com/ansible/ansible/issues/34304).
+      - jira - improve error message handling (https://github.com/ansible-collections/community.general/pull/311).
+      - jira - improve error message handling with multiple errors (https://github.com/ansible-collections/community.general/pull/707).
+      - kubevirt - Add aliases 'interface_name' for network_name (https://github.com/ansible/ansible/issues/55641).
+      - nmcli - fix idempotetency when modifying an existing connection (https://github.com/ansible-collections/community.general/issues/481).
+      - osx_defaults - fix handling negative integers (https://github.com/ansible-collections/community.general/issues/134).
+      - pacman - treat package names containing .zst as package files during installation
+        (https://www.archlinux.org/news/now-using-zstandard-instead-of-xz-for-package-compression/,
+        https://github.com/ansible-collections/community.general/pull/650).
+      - pbrun become plugin - address a bug with the parameters handling that was
+        breaking the plugin in community.general when ``become_user`` was not explicitly
+        specified (https://github.com/ansible-collections/community.general/pull/708).
+      - postgresql_privs - fix crash when set privileges on schema with hyphen in
+        the name (https://github.com/ansible-collections/community.general/issues/656).
+      - postgresql_set - only display a warning about restarts, when restarting is
+        needed (https://github.com/ansible-collections/community.general/pull/651).
+      - redfish_info, redfish_config, redfish_command - Fix Redfish response payload
+        decode on Python 3.5 (https://github.com/ansible-collections/community.general/issues/686)
+      - selective - mark task failed correctly (https://github.com/ansible/ansible/issues/63767).
+      - snmp_facts - skip ``EndOfMibView`` values (https://github.com/ansible/ansible/issues/49044).
+      - yarn - fixed an index out of range error when no outdated packages where returned
+        by yarn executable (see https://github.com/ansible-collections/community.general/pull/474).
+      - yarn - fixed an too many values to unpack error when scoped packages are installed
+        (see https://github.com/ansible-collections/community.general/pull/474).
+      deprecated_features:
+      - The ldap_attr module has been deprecated and will be removed in a later release;
+        use ldap_attrs instead.
+      - xbps - the ``force`` option never had any effect. It is now deprecated, and
+        will be removed in 3.0.0 (https://github.com/ansible-collections/community.general/pull/568).
+      minor_changes:
+      - Add the ``gcpubsub``, ``gcpubsub_info`` and ``gcpubsub_facts`` (to be removed
+        in 3.0.0) modules. These were originally in community.general, but removed
+        on the assumption that they have been moved to google.cloud. Since this turned
+        out to be incorrect, we re-added them for 1.0.0.
+      - Add the deprecated ``gcp_backend_service``, ``gcp_forwarding_rule`` and ``gcp_healthcheck``
+        modules, which will be removed in 2.0.0. These were originally in community.general,
+        but removed on the assumption that they have been moved to google.cloud. Since
+        this turned out to be incorrect, we re-added them for 1.0.0.
+      - The collection is now actively tested in CI with the latest Ansible 2.9 release.
+      - airbrake_deployment - add ``version`` param; clarified docs on ``revision``
+        param (https://github.com/ansible-collections/community.general/pull/583).
+      - apk - added ``no_cache`` option (https://github.com/ansible-collections/community.general/pull/548).
+      - firewalld - the module has been moved to the ``ansible.posix`` collection.
+        A redirection is active, which will be removed in version 2.0.0 (https://github.com/ansible-collections/community.general/pull/623).
+      - gitlab_project - add support for merge_method on projects (https://github.com/ansible/ansible/pull/66813).
+      - gitlab_runners inventory plugin - permit environment variable input for ``server_url``,
+        ``api_token`` and ``filter`` options (https://github.com/ansible-collections/community.general/pull/611).
+      - haproxy - add options to dis/enable health and agent checks.  When health
+        and agent checks are enabled for a service, a disabled service will re-enable
+        itself automatically.  These options also change the state of the agent checks
+        to match the requested state for the backend (https://github.com/ansible-collections/community.general/issues/684).
+      - log_plays callback - use v2 methods (https://github.com/ansible-collections/community.general/pull/442).
+      - logstash callback - add ini config (https://github.com/ansible-collections/community.general/pull/610).
+      - lxd_container - added support of ``--target`` flag for cluster deployments
+        (https://github.com/ansible-collections/community.general/issues/637).
+      - parted - accept negative numbers in ``part_start`` and ``part_end``
+      - pkgng - added ``stdout`` and ``stderr`` attributes to the result (https://github.com/ansible-collections/community.general/pull/560).
+      - 'pkgng - added support for upgrading all packages using ``name: *, state:
+        latest``, similar to other package providers (https://github.com/ansible-collections/community.general/pull/569).'
+      - postgresql_query - add search_path parameter (https://github.com/ansible-collections/community.general/issues/625).
+      - rundeck_acl_policy - add check for rundeck_acl_policy name parameter (https://github.com/ansible-collections/community.general/pull/612).
+      - slack - add support for sending messages built with block kit (https://github.com/ansible-collections/community.general/issues/380).
+      - splunk callback - add an option to allow not to validate certificate from
+        HEC (https://github.com/ansible-collections/community.general/pull/596).
+      - xfconf - add arrays support (https://github.com/ansible/ansible/issues/46308).
+      - xfconf - add support for ``uint`` type (https://github.com/ansible-collections/community.general/pull/696).
+      release_summary: 'This is release 1.0.0 of ``community.general``, released on
+        2020-07-31.
+
+        '
+      removed_features:
+      - conjur_variable lookup - has been moved to the ``cyberark.conjur`` collection.
+        A redirection is active, which will be removed in version 2.0.0 (https://github.com/ansible-collections/community.general/pull/570).
+      - digital_ocean_* - all DigitalOcean modules have been moved to the ``community.digitalocean``
+        collection. A redirection is active, which will be removed in version 2.0.0
+        (https://github.com/ansible-collections/community.general/pull/622).
+      - infini_* - all infinidat modules have been moved to the ``infinidat.infinibox``
+        collection. A redirection is active, which will be removed in version 2.0.0
+        (https://github.com/ansible-collections/community.general/pull/607).
+      - logicmonitor - the module has been removed in 1.0.0 since it is unmaintained
+        and the API used by the module has been turned off in 2017 (https://github.com/ansible-collections/community.general/issues/539,
+        https://github.com/ansible-collections/community.general/pull/541).
+      - logicmonitor_facts - the module has been removed in 1.0.0 since it is unmaintained
+        and the API used by the module has been turned off in 2017 (https://github.com/ansible-collections/community.general/issues/539,
+        https://github.com/ansible-collections/community.general/pull/541).
+      - mysql_* - all MySQL modules have been moved to the ``community.mysql`` collection.
+        A redirection is active, which will be removed in version 2.0.0 (https://github.com/ansible-collections/community.general/pull/633).
+      - proxysql_* - all ProxySQL modules have been moved to the ``community.proxysql``
+        collection. A redirection is active, which will be removed in version 2.0.0
+        (https://github.com/ansible-collections/community.general/pull/624).
+    fragments:
+    - 1.0.0.yml
+    - 296-ansible-2.9.yml
+    - 303-consul_kv-fix-env-variables-handling.yaml
+    - 311-jira-error-handling.yaml
+    - 33979-xfs_growfs.yml
+    - 442-log_plays-add_playbook_task_name_and_action.yml
+    - 474-yarn_fix-outdated-fix-list.yml
+    - 547-start-service-condition.yaml
+    - 548_apk.yml
+    - 55903_kubevirt.yml
+    - 560-pkgng-add-stdout-and-stderr.yaml
+    - 562-nmcli-fix-idempotency.yaml
+    - 564-docker_container_use_config_macaddress_by_default.yaml
+    - 568_packaging.yml
+    - 569-pkgng-add-upgrade-action.yaml
+    - 596-splunk-add-option-to-not-validate-cert.yaml
+    - 610_logstash_callback_add_ini_config.yml
+    - 611-gitlab-runners-env-vars-intput-and-default-item-limit.yaml
+    - 613-snmp_facts-EndOfMibView.yml
+    - 615-digital-ocean-tag-info-bugfix.yml
+    - 63767_selective.yml
+    - 642-docker_container-python-2.yml
+    - 646-docker_swarm-remove-advertise_addr-from-join-requirement.yaml
+    - 650_pacman_support_zst_package_files.yaml
+    - 651-fix-postgresql_set-warning.yaml
+    - 653-postgresql_query_add_search_path_param.yml
+    - 656-name-with-hyphen.yml
+    - 66813_gitlab_project.yml
+    - 676-osx_defaults_fix_handling_negative_ints.yml
+    - 677-jenkins_plugins_sha1.yaml
+    - 687-fix-redfish-payload-decode-python35.yml
+    - 689-haproxy_agent_and_health.yml
+    - 693-big-revamp-on-xfconf-adding-array-values.yml
+    - 702-slack-support-for-blocks.yaml
+    - 704-doas-set-correct-default-values.yml
+    - 707-jira-error-handling.yaml
+    - 708-set-correct-default-values.yml
+    - 711-lxd-target.yml
+    - add_argument_check_for_rundeck.yaml
+    - airbrake_deployment_add_version.yml
+    - aix_filesystem-module_util-routing-issue.yml
+    - cyberarkconjur-removal.yml
+    - digital-ocean.yml
+    - firewalld_migration.yml
+    - google-modules.yml
+    - infinidat-removal.yml
+    - logicmonitor-removal.yml
+    - mysql.yml
+    - parted_negative_numbers.yml
+    - porting-guide-2.yml
+    - proxysql.yml
+    - xfconf_add_uint_type.yml
+    modules:
+    - description: Return information on a docker stack
+      name: docker_stack_info
+      namespace: cloud.docker
+    - description: Manage macOS services
+      name: launchd
+      namespace: system
+    - description: Execute SQL via ODBC
+      name: odbc
+      namespace: database.misc
+    plugins:
+      inventory:
+      - description: Cobbler inventory source
+        name: cobbler
+        namespace: null
+      lookup:
+      - description: Get secrets from Thycotic DevOps Secrets Vault
+        name: dsv
+        namespace: null
+      - description: Get secrets from Thycotic Secret Server
+        name: tss
+        namespace: null
+    release_date: '2020-07-31'
+  1.1.0:
+    changes:
+      bugfixes:
+      - cobbler inventory plugin - ``name`` needed FQCN (https://github.com/ansible-collections/community.general/pull/722).
+      - dsv lookup - use correct dict usage (https://github.com/ansible-collections/community.general/pull/743).
+      - inventory plugins - allow FQCN in ``plugin`` option (https://github.com/ansible-collections/community.general/pull/722).
+      - ipa_hostgroup - fix an issue with load-balanced ipa and cookie handling with
+        Python 3 (https://github.com/ansible-collections/community.general/issues/737).
+      - oc connection plugin - ``transport`` needed FQCN (https://github.com/ansible-collections/community.general/pull/722).
+      - postgresql_set - allow to pass an empty string to the ``value`` parameter
+        (https://github.com/ansible-collections/community.general/issues/775).
+      - xfconf - make it work in non-english locales (https://github.com/ansible-collections/community.general/pull/744).
+      minor_changes:
+      - The collection dependencies where adjusted so that ``community.kubernetes``
+        and ``google.cloud`` are required to be of version 1.0.0 or newer (https://github.com/ansible-collections/community.general/pull/774).
+      - jc - new filter to convert the output of many shell commands and file-types
+        to JSON. Uses the jc library at https://github.com/kellyjonbrazil/jc. For
+        example, filtering the STDOUT output of ``uname -a`` via ``{{ result.stdout
+        | community.general.jc('uname') }}``. Requires Python 3.6+ (https://github.com/ansible-collections/community.general/pull/750).
+      - xfconf - add support for ``double`` type (https://github.com/ansible-collections/community.general/pull/744).
+      release_summary: 'Release for Ansible 2.10.0.
+
+        '
+    fragments:
+    - 1.1.0.yml
+    - 722-plugins.yml
+    - 738-ipa-python3.yml
+    - 744-xfconf_make_locale-independent.yml
+    - 750-jc-new-filter.yaml
+    - 776-postgresql_set_allow_empty_string.yaml
+    - dsv_fix.yml
+    - galaxy-yml.yml
+    modules:
+    - description: Return information of the tasks on a docker stack
+      name: docker_stack_task_info
+      namespace: cloud.docker
+    - description: Save iptables state into a file or restore it from a file
+      name: iptables_state
+      namespace: system
+    - description: Shut down a machine
+      name: shutdown
+      namespace: system
+    - description: Manage OpenBSD system upgrades
+      name: sysupgrade
+      namespace: system
+    release_date: '2020-08-18'

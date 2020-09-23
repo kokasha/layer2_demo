@@ -2,7 +2,7 @@
  "collection_info": {
   "namespace": "ansible",
   "name": "netcommon",
-  "version": "0.0.3",
+  "version": "1.2.1",
   "authors": [
    "Ansible Network Community (ansible-network)"
   ],
@@ -16,7 +16,7 @@
    "httpapi",
    "grpc"
   ],
-  "description": null,
+  "description": "Ansible Collection with common content to help automate the management of network, security, and cloud devices.",
   "license": [],
   "license_file": "LICENSE",
   "dependencies": {},
@@ -29,7 +29,7 @@
   "name": "FILES.json",
   "ftype": "file",
   "chksum_type": "sha256",
-  "chksum_sha256": "4e196d976f8baed152696888468414244c5ac9d8493979ae0f247a99ce19273b",
+  "chksum_sha256": "37eecdfc5c96e83d5f34900b42d0682b987a7be7200282830ead4c7eddafa822",
   "format": 1
  },
  "format": 1

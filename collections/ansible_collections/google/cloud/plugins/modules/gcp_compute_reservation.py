@@ -38,7 +38,6 @@ description:
   preemptible VMs, sole tenant nodes, or other services not listed above like Cloud
   SQL and Dataflow.
 short_description: Creates a GCP Reservation
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -135,8 +134,7 @@ options:
             suboptions:
               interface:
                 description:
-                - The disk interface to use for attaching this disk, one of `SCSI`
-                  or `NVME`. The default is `SCSI`.
+                - The disk interface to use for attaching this disk.
                 - 'Some valid choices include: "SCSI", "NVME"'
                 required: false
                 default: SCSI
@@ -182,6 +180,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -325,8 +324,7 @@ specificReservation:
           contains:
             interface:
               description:
-              - The disk interface to use for attaching this disk, one of `SCSI` or
-                `NVME`. The default is `SCSI`.
+              - The disk interface to use for attaching this disk.
               returned: success
               type: str
             diskSizeGb:
@@ -410,7 +408,7 @@ def main():
     if fetch:
         if state == 'present':
             if is_different(module, fetch):
-                update(module, self_link(module))
+                update(module, self_link(module), fetch)
                 fetch = fetch_resource(module, self_link(module))
                 changed = True
         else:
@@ -434,9 +432,22 @@ def create(module, link):
     return wait_for_operation(module, auth.post(link, resource_to_request(module)))
 
 
-def update(module, link):
-    delete(module, self_link(module))
-    create(module, collection(module))
+def update(module, link, fetch):
+    update_fields(module, resource_to_request(module), response_to_hash(module, fetch))
+    return fetch_resource(module, self_link(module))
+
+
+def update_fields(module, request, response):
+    if response.get('specificReservation') != request.get('specificReservation'):
+        specific_reservation_update(module, request, response)
+
+
+def specific_reservation_update(module, request, response):
+    auth = GcpSession(module, 'compute')
+    auth.post(
+        ''.join(["https://www.googleapis.com/compute/v1/", "projects/{project}/zones/{zone}/reservations/{name}/resize"]).format(**module.params),
+        {u'specificReservation': ReservationSpecificreservation(module.params.get('specific_reservation', {}), module).to_request()},
+    )
 
 
 def delete(module, link):
@@ -582,7 +593,7 @@ class ReservationSpecificreservation(object):
         return remove_nones_from_dict(
             {
                 u'count': self.request.get(u'count'),
-                u'instanceProperties': ReservationInstanceproperties(self.request.get(u'instanceProperties', {}), self.module).from_response(),
+                u'instanceProperties': ReservationInstanceproperties(self.module.params.get('instance_properties', {}), self.module).to_request(),
             }
         )
 

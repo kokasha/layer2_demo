@@ -38,7 +38,7 @@ options:
               The definition of these objects can reference parameters defined earlier.
             - As part of the list user can pass also I(VirtualMachine) kind. When passing I(VirtualMachine)
               user must use Ansible structure of the parameters not the Kubernetes API structure. For more information
-              please take a look at M(kubevirt_vm) module and at EXAMPLES section, where you can see example.
+              please take a look at M(community.general.kubevirt_vm) module and at EXAMPLES section, where you can see example.
         type: list
     merge_type:
         description:
@@ -144,7 +144,7 @@ requirements:
 
 EXAMPLES = '''
 - name: Create template 'mytemplate'
-  kubevirt_template:
+  community.general.kubevirt_template:
     state: present
     name: myvmtemplate
     namespace: templates
@@ -182,7 +182,7 @@ EXAMPLES = '''
         value: 1Gi
 
 - name: Remove template 'myvmtemplate'
-  kubevirt_template:
+  community.general.kubevirt_template:
     state: absent
     name: myvmtemplate
     namespace: templates

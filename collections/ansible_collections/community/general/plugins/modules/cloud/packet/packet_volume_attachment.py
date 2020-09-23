@@ -38,7 +38,7 @@ options:
 
   auth_token:
     description:
-      - Packet api token. You can also supply it in env var C(PACKET_API_TOKEN).
+      - Packet API token. You can also supply it in env var C(PACKET_API_TOKEN).
     type: str
 
   project_id:
@@ -100,13 +100,13 @@ EXAMPLES = '''
         state: present
 
     - name: Attach testvol to testdev
-      packet_volume_attachment:
+      community.general.packet_volume_attachment:
         project_id: "{{ project_id }}"
         volume: "{{ volname }}"
         device: "{{ devname }}"
 
     - name: Detach testvol from testdev
-      packet_volume_attachment:
+      community.general.packet_volume_attachment:
         project_id: "{{ project_id }}"
         volume: "{{ volname }}"
         device: "{{ devname }}"

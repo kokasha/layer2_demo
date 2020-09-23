@@ -1,0 +1,216 @@
+- name: Populate NetBox DataBase
+  hosts: all
+  gather_facts: no
+  collections:
+    - netbox.netbox
+  vars:
+    ansible_python_interpreter: ~/.ansible/bin/python
+    ansible_connection: local
+    netbox_state: present
+    netbox_url: http://192.168.0.142:8080
+    netbox_token: 0123456789abcdef0123456789abcdef01234567
+  tasks:
+    - name: Collect Network Topology
+      run_once: yes
+      set_fact:
+        net_topo: "{{ lookup('file','network_topology.yml') | from_yaml }}"
+
+    - name: Get all NetBox Data
+      run_once: yes
+      set_fact:
+        netbox_info: "{{ net_topo.netbox_data }}"
+    
+    - name: Stage NetBox Data
+      set_fact:
+        all_models: "{{ netbox_info | json_query('*.model') | list | unique }}"
+        all_roles: "{{ netbox_info | json_query('*.role') | list | unique }}"
+        all_sites: "{{ netbox_info | json_query('*.site') | list | unique }}"
+        all_vendors: "{{ netbox_info | json_query('*.vendor') | list | unique }}"
+
+    - debug:
+        msg:
+          - "{{ all_models }}"
+          - "{{ all_roles }}"
+          - "{{ all_sites }}"
+
+    - name: Create All NetBox sites
+      netbox_site:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ netbox_info[inventory_hostname].site }}"
+        state: present
+
+    - name: Create manufacturer 
+      run_once: yes
+      netbox_manufacturer:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ item }}"
+        state: present
+      loop: "{{ all_vendors }}"
+
+    - name: Create device role
+      run_once: yes
+      netbox_device_role:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ item }}"
+          color: FFF000
+        state: present
+      loop: "{{ all_roles }}"
+
+    - name: Create device type
+      netbox_device_type:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          # slug: test-device-type
+          model: "{{ netbox_info[inventory_hostname].model }}"
+          manufacturer: "{{ netbox_info[inventory_hostname].vendor }}"
+        state: present
+
+    - name: Add All platforms within netbox
+      netbox_platform:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ netbox_info[inventory_hostname].os }}"
+          manufacturer: "{{ netbox_info[inventory_hostname].vendor }}"
+          napalm_driver: "{{ netbox_info[inventory_hostname].os }}"
+        state: present
+
+    - name: Create device with tags
+      netbox_device:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ inventory_hostname }}"
+          device_type: "{{ netbox_info[inventory_hostname].model }}"
+          device_role: "{{ netbox_info[inventory_hostname].role }}"
+          site: "{{ netbox_info[inventory_hostname].site }}"
+          local_context_data:
+            bgp: "{{ bgp_asn | default('omit') }}"
+          # tags:
+          #   - Schnozzberry
+        state: present
+
+    - name: Create All CoreInterface on a Device
+      netbox_device_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          device: "{{ inventory_hostname }}"
+          name: "{{ item.port }}"
+          type: 1000Base-T (1GE)
+          description: "type=CORE|Peer:{{ item.peer }}:{{ item.pport }}"
+          mgmt_only: false
+          mode: Access
+          enabled: true
+        state: present
+      loop: "{{ p2p_ip[inventory_hostname] }}"
+      loop_control:
+        label: "{{ item.port }}"
+
+    - name: Create All Mgmt Interface on a Device
+      netbox_device_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          device: "{{ inventory_hostname }}"
+          name: "{{  mgmt_net[inventory_hostname].port }}"
+          type: 1000Base-T (1GE)
+          description: "{{ inventory_hostname }}:OOB"
+          mgmt_only: true
+          mode: Access
+          enabled: true
+        state: present
+
+    - name: Create Loopback Interface on a Device
+      netbox_device_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          device: "{{ inventory_hostname }}"
+          name: "lo0.0"
+          type: Virtual
+          description: "{{ inventory_hostname }}:LOOPBACK"
+          mgmt_only: false
+          mode: Access
+          enabled: true
+        state: present
+
+    - name: Create IPAM Roles
+      tags: prefix
+      run_once: yes
+      netbox_ipam_role:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          name: "{{ item }}"
+        state: present
+      loop:
+        - core
+        - loopback
+
+    - name: Create Prefix
+      tags: prefix
+      run_once: yes
+      netbox_prefix:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          prefix: "{{ item }}"
+        state: present
+      loop:
+        - "{{ global.core_subnet }}"
+        - "{{ global.loopback_subnet }}"
+
+    - name: Create Core IP Addresses
+      tags: ip
+      netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          address: "{{ item.ip }}"
+          description: "{{inventory_hostname}}:{{ item.port }}"
+          # interface:
+          #   name: "{{ item.port }}"
+          #   device: "{{ inventory_hostname }}"
+        state: present
+      loop: "{{ p2p_ip[inventory_hostname] }}"
+      loop_control:
+        label: "{{ item.port }}"
+
+
+    - name: Attach Core IP Address
+      tags: ip
+      netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          address: "{{ item.ip }}"
+          # prefix: "{{ global.core_subnet }}"
+          # vrf: global
+          interface:
+            name: "{{ item.port }}"
+            device: "{{ inventory_hostname }}"
+        state: present
+      loop: "{{ p2p_ip[inventory_hostname] }}"
+      loop_control:
+        label: "{{ item.port }}"
+
+    # - name: Add New Device
+    #   delegate_to: localhost
+    #   netbox_device:
+    #     netbox_url: http://netbox.local
+    #     netbox_token: thisIsMyToken
+    #     data:
+    #       name: Test Device
+    #       device_type: C9410R
+    #       device_role: Core Switch
+    #       site: Main
+    #     state: present
+

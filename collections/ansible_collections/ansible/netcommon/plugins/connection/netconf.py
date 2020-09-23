@@ -1,7 +1,6 @@
 # (c) 2016 Red Hat Inc.
 # (c) 2017 Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-# pylint: skip-file
 
 from __future__ import absolute_import, division, print_function
 
@@ -187,7 +186,10 @@ from ansible.plugins.connection import NetworkConnectionBase, ensure_connect
 try:
     from ncclient import manager
     from ncclient.operations import RPCError
-    from ncclient.transport.errors import SSHUnknownHostError
+    from ncclient.transport.errors import (
+        AuthenticationError,
+        SSHUnknownHostError,
+    )
     from ncclient.xml_ import to_ele, to_xml
 
     HAS_NCCLIENT = True
@@ -375,6 +377,14 @@ class Connection(NetworkConnectionBase):
             )
         except SSHUnknownHostError as exc:
             raise AnsibleConnectionFailure(to_native(exc))
+        except AuthenticationError as exc:
+            if str(exc).startswith("FileNotFoundError"):
+                raise AnsibleError(
+                    "Encountered FileNotFoundError in ncclient connect. Does {0} exist?".format(
+                        self.key_filename
+                    )
+                )
+            raise
         except ImportError:
             raise AnsibleError(
                 "connection=netconf is not supported on {0}".format(

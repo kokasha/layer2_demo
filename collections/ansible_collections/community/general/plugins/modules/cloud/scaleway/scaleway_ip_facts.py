@@ -13,7 +13,7 @@ module: scaleway_ip_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favour of C(_info) module.
-  alternative: Use M(scaleway_ip_info) instead.
+  alternative: Use M(community.general.scaleway_ip_info) instead.
 short_description: Gather facts about the Scaleway ips available.
 description:
   - Gather facts about the Scaleway ips available.
@@ -37,7 +37,7 @@ options:
 
 EXAMPLES = r'''
 - name: Gather Scaleway ips facts
-  scaleway_ip_facts:
+  community.general.scaleway_ip_facts:
     region: par1
 '''
 

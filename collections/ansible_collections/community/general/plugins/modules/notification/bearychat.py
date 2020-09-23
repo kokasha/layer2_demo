@@ -25,7 +25,7 @@ DOCUMENTATION = '''
 module: bearychat
 short_description: Send BearyChat notifications
 description:
-    - The M(bearychat) module sends notifications to U(https://bearychat.com)
+    - The M(community.general.bearychat) module sends notifications to U(https://bearychat.com)
       via the Incoming Robot integration.
 author: "Jiangge Zhang (@tonyseek)"
 options:
@@ -152,7 +152,7 @@ def main():
     module = AnsibleModule(argument_spec={
         'url': dict(type='str', required=True, no_log=True),
         'text': dict(type='str'),
-        'markdown': dict(default='yes', type='bool'),
+        'markdown': dict(default=True, type='bool'),
         'channel': dict(type='str'),
         'attachments': dict(type='list'),
     })

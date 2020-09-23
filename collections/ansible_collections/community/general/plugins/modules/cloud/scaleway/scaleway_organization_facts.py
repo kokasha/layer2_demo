@@ -13,7 +13,7 @@ module: scaleway_organization_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favour of C(_info) module.
-  alternative: Use M(scaleway_organization_info) instead.
+  alternative: Use M(community.general.scaleway_organization_info) instead.
 short_description: Gather facts about the Scaleway organizations available.
 description:
   - Gather facts about the Scaleway organizations available.
@@ -33,7 +33,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Gather Scaleway organizations facts
-  scaleway_organization_facts:
+  community.general.scaleway_organization_facts:
 '''
 
 RETURN = r'''

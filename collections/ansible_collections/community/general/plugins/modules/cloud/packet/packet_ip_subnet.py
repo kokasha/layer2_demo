@@ -30,7 +30,7 @@ author:
 options:
   auth_token:
     description:
-      - Packet api token. You can also supply it in env var C(PACKET_API_TOKEN).
+      - Packet API token. You can also supply it in env var C(PACKET_API_TOKEN).
     type: str
 
   hostname:
@@ -80,7 +80,7 @@ requirements:
 '''
 
 EXAMPLES = '''
-# All the examples assume that you have your Packet api token in env var PACKET_API_TOKEN.
+# All the examples assume that you have your Packet API token in env var PACKET_API_TOKEN.
 # You can also pass it to the auth_token parameter of the module instead.
 
 - name: Create 1 device and assign an arbitrary public IPv4 subnet to it
@@ -97,7 +97,7 @@ EXAMPLES = '''
 
 # Pick an IPv4 address from a block allocated to your project.
 
-  - packet_ip_subnet:
+  - community.general.packet_ip_subnet:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       hostname: myserver
       cidr: "147.75.201.78/32"
@@ -107,7 +107,7 @@ EXAMPLES = '''
 - name: Unassign IP address from any device in your project
   hosts: localhost
   tasks:
-  - packet_ip_subnet:
+  - community.general.packet_ip_subnet:
       project_id: 89b497ee-5afc-420a-8fb5-56984898f4df
       cidr: "147.75.201.78/32"
       state: absent

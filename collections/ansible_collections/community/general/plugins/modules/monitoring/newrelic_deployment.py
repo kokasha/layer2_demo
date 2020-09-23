@@ -65,7 +65,7 @@ requirements: []
 
 EXAMPLES = '''
 - name:  Notify newrelic about an app deployment
-  newrelic_deployment:
+  community.general.newrelic_deployment:
     token: AAAAAA
     app_name: myapp
     user: ansible deployment
@@ -94,7 +94,7 @@ def main():
             user=dict(required=False),
             appname=dict(required=False),
             environment=dict(required=False),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
         ),
         required_one_of=[['app_name', 'application_id']],
         supports_check_mode=True

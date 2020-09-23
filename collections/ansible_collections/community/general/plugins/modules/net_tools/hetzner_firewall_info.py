@@ -21,7 +21,7 @@ seealso:
   - name: Firewall documentation
     description: Hetzner's documentation on the stateless firewall for dedicated servers
     link: https://wiki.hetzner.de/index.php/Robot_Firewall/en
-  - module: hetzner_firewall
+  - module: community.general.hetzner_firewall
     description: Configure firewall.
 extends_documentation_fragment:
 - community.general.hetzner
@@ -40,7 +40,7 @@ options:
         the status changes to C(active) or C(disabled).
       - Please note that there is a request limit. If you have to do multiple
         updates, it can be better to disable waiting, and regularly use
-        M(hetzner_firewall_info) to query status.
+        M(community.general.hetzner_firewall_info) to query status.
     type: bool
     default: yes
   wait_delay:
@@ -58,13 +58,13 @@ options:
 
 EXAMPLES = r'''
 - name: Get firewall configuration for server with main IP 1.2.3.4
-  hetzner_firewall_info:
+  community.general.hetzner_firewall_info:
     hetzner_user: foo
     hetzner_password: bar
     server_ip: 1.2.3.4
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.firewall }}"
 '''
 

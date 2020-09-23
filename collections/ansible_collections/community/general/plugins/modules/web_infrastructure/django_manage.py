@@ -98,18 +98,18 @@ author: "Scott Anderson (@tastychutney)"
 
 EXAMPLES = """
 - name: Run cleanup on the application installed in django_dir
-  django_manage:
+  community.general.django_manage:
     command: cleanup
     app_path: "{{ django_dir }}"
 
 - name: Load the initial_data fixture into the application
-  django_manage:
+  community.general.django_manage:
     command: loaddata
     app_path: "{{ django_dir }}"
     fixtures: "{{ initial_data }}"
 
 - name: Run syncdb on the application
-  django_manage:
+  community.general.django_manage:
     command: syncdb
     app_path: "{{ django_dir }}"
     settings: "{{ settings_app_name }}"
@@ -117,13 +117,13 @@ EXAMPLES = """
     virtualenv: "{{ virtualenv_dir }}"
 
 - name: Run the SmokeTest test case from the main app. Useful for testing deploys
-  django_manage:
+  community.general.django_manage:
     command: test
     app_path: "{{ django_dir }}"
     apps: main.SmokeTest
 
 - name: Create an initial superuser
-  django_manage:
+  community.general.django_manage:
     command: "createsuperuser --noinput --username=admin --email=admin@example.com"
     app_path: "{{ django_dir }}"
 """
@@ -234,7 +234,7 @@ def main():
             cache_table=dict(default=None, required=False),
             clear=dict(default=None, required=False, type='bool'),
             database=dict(default=None, required=False),
-            failfast=dict(default='no', required=False, type='bool', aliases=['fail_fast']),
+            failfast=dict(default=False, required=False, type='bool', aliases=['fail_fast']),
             fixtures=dict(default=None, required=False),
             liveserver=dict(default=None, required=False, aliases=['live_server']),
             testrunner=dict(default=None, required=False, aliases=['test_runner']),

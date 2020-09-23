@@ -22,7 +22,7 @@ options:
     choices: ['present', 'absent']
   auth_token:
     description:
-     - Packet api token. You can also supply it in env var C(PACKET_API_TOKEN).
+     - Packet API token. You can also supply it in env var C(PACKET_API_TOKEN).
   label:
      description:
      - Label for the key. If you keep it empty, it will be read from key string.
@@ -52,20 +52,20 @@ EXAMPLES = '''
 - name: Create sshkey from string
   hosts: localhost
   tasks:
-    packet_sshkey:
+    community.general.packet_sshkey:
       key: "{{ lookup('file', 'my_packet_sshkey.pub') }}"
 
 - name: Create sshkey from file
   hosts: localhost
   tasks:
-    packet_sshkey:
+    community.general.packet_sshkey:
       label: key from file
       key_file: ~/ff.pub
 
 - name: Remove sshkey by id
   hosts: localhost
   tasks:
-    packet_sshkey:
+    community.general.packet_sshkey:
       state: absent
       id: eef49903-7a09-4ca1-af67-4087c29ab5b6
 '''
@@ -77,7 +77,7 @@ changed:
     sample: True
     returned: always
 sshkeys:
-    description: Information about sshkeys that were createe/removed.
+    description: Information about sshkeys that were created/removed.
     type: list
     sample: [
         {

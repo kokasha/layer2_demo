@@ -33,7 +33,6 @@ module: gcp_redis_instance
 description:
 - A Google Cloud Redis instance.
 short_description: Creates a GCP Instance
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -63,13 +62,11 @@ options:
     type: str
   connect_mode:
     description:
-    - The connection mode of the Redis instance. Can be either `DIRECT_PEERING` or
-      `PRIVATE_SERVICE_ACCESS`. The default connect mode if not provided is `DIRECT_PEERING`.
+    - The connection mode of the Redis instance.
     - 'Some valid choices include: "DIRECT_PEERING", "PRIVATE_SERVICE_ACCESS"'
     required: false
     default: DIRECT_PEERING
     type: str
-    version_added: '2.10'
   display_name:
     description:
     - An arbitrary and optional user-provided name for the instance.
@@ -109,8 +106,9 @@ options:
   redis_version:
     description:
     - 'The version of Redis software. If not provided, latest supported version will
-      be used. Currently, the supported values are: - REDIS_4_0 for Redis 4.0 compatibility
-      - REDIS_3_2 for Redis 3.2 compatibility .'
+      be used. Currently, the supported values are: - REDIS_5_0 for Redis 5.0 compatibility
+      - REDIS_4_0 for Redis 4.0 compatibility - REDIS_3_2 for Redis 3.2 compatibility
+      .'
     required: false
     type: str
   reserved_ip_range:
@@ -165,6 +163,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -231,8 +230,7 @@ authorizedNetwork:
   type: str
 connectMode:
   description:
-  - The connection mode of the Redis instance. Can be either `DIRECT_PEERING` or `PRIVATE_SERVICE_ACCESS`.
-    The default connect mode if not provided is `DIRECT_PEERING`.
+  - The connection mode of the Redis instance.
   returned: success
   type: str
 createTime:
@@ -295,11 +293,20 @@ port:
   - The port number of the exposed Redis endpoint.
   returned: success
   type: int
+persistenceIamIdentity:
+  description:
+  - Output only. Cloud IAM identity used by import / export operations to transfer
+    data to/from Cloud Storage. Format is "serviceAccount:".
+  - The value may change over time for a given instance so should be checked before
+    each import/export operation.
+  returned: success
+  type: str
 redisVersion:
   description:
   - 'The version of Redis software. If not provided, latest supported version will
-    be used. Currently, the supported values are: - REDIS_4_0 for Redis 4.0 compatibility
-    - REDIS_3_2 for Redis 3.2 compatibility .'
+    be used. Currently, the supported values are: - REDIS_5_0 for Redis 5.0 compatibility
+    - REDIS_4_0 for Redis 4.0 compatibility - REDIS_3_2 for Redis 3.2 compatibility
+    .'
   returned: success
   type: str
 reservedIpRange:
@@ -515,6 +522,7 @@ def response_to_hash(module, response):
         u'name': module.params.get('name'),
         u'memorySizeGb': response.get(u'memorySizeGb'),
         u'port': response.get(u'port'),
+        u'persistenceIamIdentity': response.get(u'persistenceIamIdentity'),
         u'redisVersion': module.params.get('redis_version'),
         u'reservedIpRange': module.params.get('reserved_ip_range'),
         u'tier': module.params.get('tier'),

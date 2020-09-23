@@ -33,7 +33,6 @@ module: gcp_pubsub_subscription_info
 description:
 - Gather info for GCP Subscription
 short_description: Gather info for GCP Subscription
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -71,6 +70,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -236,12 +236,47 @@ resources:
           - Example - "3.5s".
           returned: success
           type: str
+    deadLetterPolicy:
+      description:
+      - A policy that specifies the conditions for dead lettering messages in this
+        subscription. If dead_letter_policy is not set, dead lettering is disabled.
+      - The Cloud Pub/Sub service account associated with this subscriptions's parent
+        project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+        must have permission to Acknowledge() messages on this subscription.
+      returned: success
+      type: complex
+      contains:
+        deadLetterTopic:
+          description:
+          - The name of the topic to which dead letter messages should be published.
+          - Format is `projects/{project}/topics/{topic}`.
+          - The Cloud Pub/Sub service account associated with the enclosing subscription's
+            parent project (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+            must have permission to Publish() to this topic.
+          - The operation will fail if the topic does not exist.
+          - Users should ensure that there is a subscription attached to this topic
+            since messages published to a topic with no subscriptions are lost.
+          returned: success
+          type: str
+        maxDeliveryAttempts:
+          description:
+          - The maximum number of delivery attempts for any message. The value must
+            be between 5 and 100.
+          - The number of delivery attempts is defined as 1 + (the sum of number of
+            NACKs and number of times the acknowledgement deadline has been exceeded
+            for the message).
+          - A NACK is any call to ModifyAckDeadline with a 0 deadline. Note that client
+            libraries may automatically extend ack_deadlines.
+          - This field will be honored on a best effort basis.
+          - If this parameter is 0, a default value of 5 is used.
+          returned: success
+          type: int
 '''
 
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

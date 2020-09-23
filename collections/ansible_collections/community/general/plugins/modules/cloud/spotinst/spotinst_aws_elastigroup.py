@@ -467,7 +467,7 @@ EXAMPLES = '''
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           state: present
           risk: 100
           availability_vs_cost: balanced
@@ -494,14 +494,14 @@ EXAMPLES = '''
             - image_id
             - target
       register: result
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
 # In this example, we create an elastigroup and wait 600 seconds to retrieve the instances, and use their private ips
 
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           state: present
           account_id: act-1a9dd2b
           risk: 100
@@ -538,9 +538,9 @@ EXAMPLES = '''
       register: result
 
     - name: Store private ips to file
-      shell: echo {{ item.private_ip }}\\n >> list-of-private-ips
+      ansible.builtin.shell: echo {{ item.private_ip }}\\n >> list-of-private-ips
       with_items: "{{ result.instances }}"
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
 # In this example, we create an elastigroup with multiple block device mappings, tags, and also an account id
 # In organizations with more than one account, it is required to specify an account_id
@@ -548,7 +548,7 @@ EXAMPLES = '''
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           state: present
           account_id: act-1a9dd2b
           risk: 100
@@ -589,16 +589,16 @@ EXAMPLES = '''
       register: result
 
     - name: Store private ips to file
-      shell: echo {{ item.private_ip }}\\n >> list-of-private-ips
+      ansible.builtin.shell: echo {{ item.private_ip }}\\n >> list-of-private-ips
       with_items: "{{ result.instances }}"
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
 # In this example we have set up block device mapping with ephemeral devices
 
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           state: present
           risk: 100
           availability_vs_cost: balanced
@@ -630,7 +630,7 @@ EXAMPLES = '''
             - image_id
             - target
       register: result
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
 # In this example we create a basic group configuration with a network interface defined.
 # Each network interface must have a device index
@@ -638,7 +638,7 @@ EXAMPLES = '''
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           state: present
           risk: 100
           availability_vs_cost: balanced
@@ -668,7 +668,7 @@ EXAMPLES = '''
             - image_id
             - target
       register: result
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 
 
 # In this example we create a basic group configuration with a target tracking scaling policy defined
@@ -676,7 +676,7 @@ EXAMPLES = '''
 - hosts: localhost
   tasks:
     - name: Create elastigroup
-      spotinst_aws_elastigroup:
+      community.general.spotinst_aws_elastigroup:
           account_id: act-92d45673
           state: present
           risk: 100
@@ -713,7 +713,7 @@ EXAMPLES = '''
           do_not_update:
             - image_id
       register: result
-    - debug: var=result
+    - ansible.builtin.debug: var=result
 '''
 
 RETURN = '''

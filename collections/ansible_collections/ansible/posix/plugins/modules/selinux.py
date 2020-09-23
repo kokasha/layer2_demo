@@ -16,6 +16,7 @@ description:
   - Configures the SELinux mode and policy.
   - A reboot may be required after usage.
   - Ansible will not issue this reboot but will let you know when it is required.
+version_added: "1.0.0"
 options:
   policy:
     description:
@@ -125,8 +126,14 @@ def set_config_state(module, state, configfile):
     tmpfd, tmpfile = tempfile.mkstemp()
 
     with open(tmpfile, "w") as write_file:
+        line_found = False
         for line in lines:
+            if re.match(r'^SELINUX=.*$', line):
+                line_found = True
             write_file.write(re.sub(r'^SELINUX=.*', stateline, line) + '\n')
+
+        if not line_found:
+            write_file.write('SELINUX=%s\n' % state)
 
     module.atomic_move(tmpfile, configfile)
 
@@ -155,8 +162,14 @@ def set_config_policy(module, policy, configfile):
     tmpfd, tmpfile = tempfile.mkstemp()
 
     with open(tmpfile, "w") as write_file:
+        line_found = False
         for line in lines:
+            if re.match(r'^SELINUXTYPE=.*$', line):
+                line_found = True
             write_file.write(re.sub(r'^SELINUXTYPE=.*', policyline, line) + '\n')
+
+        if not line_found:
+            write_file.write('SELINUXTYPE=%s\n' % policy)
 
     module.atomic_move(tmpfile, configfile)
 

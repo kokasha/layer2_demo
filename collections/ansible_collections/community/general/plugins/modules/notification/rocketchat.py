@@ -84,14 +84,14 @@ options:
 
 EXAMPLES = """
 - name: Send notification message via Rocket Chat
-  rocketchat:
+  community.general.rocketchat:
     token: thetoken/generatedby/rocketchat
     domain: chat.example.com
     msg: '{{ inventory_hostname }} completed'
   delegate_to: localhost
 
 - name: Send notification message via Rocket Chat all options
-  rocketchat:
+  community.general.rocketchat:
     domain: chat.example.com
     token: thetoken/generatedby/rocketchat
     msg: '{{ inventory_hostname }} completed'
@@ -102,7 +102,7 @@ EXAMPLES = """
   delegate_to: localhost
 
 - name: Insert a color bar in front of the message for visibility purposes and use the default webhook icon and name configured in rocketchat
-  rocketchat:
+  community.general.rocketchat:
     token: thetoken/generatedby/rocketchat
     domain: chat.example.com
     msg: '{{ inventory_hostname }} is alive!'
@@ -112,7 +112,7 @@ EXAMPLES = """
   delegate_to: localhost
 
 - name: Use the attachments API
-  rocketchat:
+  community.general.rocketchat:
     token: thetoken/generatedby/rocketchat
     domain: chat.example.com
     attachments:
@@ -202,7 +202,7 @@ def main():
             icon_url=dict(type='str', default='https://www.ansible.com/favicon.ico'),
             icon_emoji=dict(type='str', default=None),
             link_names=dict(type='int', default=1, choices=[0, 1]),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
             color=dict(type='str', default='normal', choices=['normal', 'good', 'warning', 'danger']),
             attachments=dict(type='list', required=False, default=None)
         )

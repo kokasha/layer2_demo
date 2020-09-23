@@ -33,7 +33,6 @@ module: gcp_compute_network_endpoint_group_info
 description:
 - Gather info for GCP NetworkEndpointGroup
 short_description: Gather info for GCP NetworkEndpointGroup
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   zone:
     description:
     - Zone where the network endpoint group is located.
@@ -82,6 +82,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -141,8 +142,7 @@ resources:
       type: str
     networkEndpointType:
       description:
-      - Type of network endpoints in this network endpoint group. Currently the only
-        supported value is GCE_VM_IP_PORT.
+      - Type of network endpoints in this network endpoint group.
       returned: success
       type: str
     size:
@@ -176,7 +176,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

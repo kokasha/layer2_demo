@@ -43,7 +43,6 @@ description:
 - Add a persistent disk to your instance when you need reliable and affordable storage
   with consistent performance characteristics.
 short_description: Creates a GCP RegionDisk
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -195,6 +194,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -202,7 +202,7 @@ options:
     - This only alters the User Agent string for any API requests.
     type: str
 notes:
-- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/beta/regionDisks)'
+- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/v1/regionDisks)'
 - 'Adding or Resizing Regional Persistent Disks: U(https://cloud.google.com/compute/docs/disks/regional-persistent-disk)'
 - for authentication, you can set service_account_file using the C(gcp_service_account_file)
   env variable.

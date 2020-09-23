@@ -20,7 +20,7 @@ seealso:
   - name: Failover IP documentation
     description: Hetzner's documentation on failover IPs.
     link: https://wiki.hetzner.de/index.php/Failover/en
-  - module: hetzner_failover_ip
+  - module: community.general.hetzner_failover_ip
     description: Manage failover IPs.
 extends_documentation_fragment:
 - community.general.hetzner
@@ -34,7 +34,7 @@ options:
 
 EXAMPLES = r'''
 - name: Get value of failover IP 1.2.3.4
-  hetzner_failover_ip_info:
+  community.general.hetzner_failover_ip_info:
     hetzner_user: foo
     hetzner_password: bar
     failover_ip: 1.2.3.4
@@ -42,7 +42,7 @@ EXAMPLES = r'''
   register: result
 
 - name: Print value of failover IP 1.2.3.4 in case it is routed
-  debug:
+  ansible.builtin.debug:
     msg: "1.2.3.4 routes to {{ result.value }}"
   when: result.state == 'routed'
 '''

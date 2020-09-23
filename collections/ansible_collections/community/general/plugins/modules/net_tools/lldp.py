@@ -23,10 +23,10 @@ notes:
 EXAMPLES = '''
 # Retrieve switch/port information
  - name: Gather information from lldp
-   lldp:
+   community.general.lldp:
 
  - name: Print each switch/port
-   debug:
+   ansible.builtin.debug:
     msg: "{{ lldp[item]['chassis']['name'] }} / {{ lldp[item]['port']['ifname'] }}"
    with_items: "{{ lldp.keys() }}"
 

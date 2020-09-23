@@ -3,6 +3,9 @@
 # Copyright 2019 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
 """
 The facts base class
 this contains methods common to all facts subsets
@@ -78,10 +81,7 @@ class FactsBase(object):
             if subset not in valid_subsets:
                 self._module.fail_json(
                     msg="Subset must be one of [%s], got %s"
-                    % (
-                        ", ".join(sorted([item for item in valid_subsets])),
-                        subset,
-                    )
+                    % (", ".join(sorted(valid_subsets)), subset)
                 )
 
             if exclude:

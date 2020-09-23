@@ -55,23 +55,23 @@ options:
 
 EXAMPLES = '''
 - name: Get all current balancer pool members attributes
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: 10.0.0.2
 
 - name: Get a specific member attributes
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: myws.mydomain.org
     balancer_suffix: /lb/
     member_host: node1.myws.mydomain.org
 
 # Enable all balancer pool members:
 - name: Get attributes
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: '{{ myloadbalancer_host }}'
   register: result
 
 - name: Enable all balancer pool members
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: '{{ myloadbalancer_host }}'
     member_host: '{{ item.host }}'
     state: present
@@ -79,21 +79,21 @@ EXAMPLES = '''
 
 # Gracefully disable a member from a loadbalancer node:
 - name: Step 1
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: '{{ vhost_host }}'
     member_host: '{{ member.host }}'
     state: drained
   delegate_to: myloadbalancernode
 
 - name: Step 2
-  wait_for:
+  ansible.builtin.wait_for:
     host: '{{ member.host }}'
     port: '{{ member.port }}'
     state: drained
   delegate_to: myloadbalancernode
 
 - name: Step 3
-  apache2_mod_proxy:
+  community.general.apache2_mod_proxy:
     balancer_vhost: '{{ vhost_host }}'
     member_host: '{{ member.host }}'
     state: absent

@@ -41,7 +41,6 @@ description:
   successfully to some number of consecutive probes, it is marked healthy again and
   can receive new connections.
 short_description: Creates a GCP RegionHealthCheck
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -150,7 +149,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -211,7 +210,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -265,7 +264,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -319,7 +318,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -380,7 +379,7 @@ options:
       proxy_header:
         description:
         - Specifies the type of proxy header to append before sending data to the
-          backend, either NONE or PROXY_V1. The default is NONE.
+          backend.
         - 'Some valid choices include: "NONE", "PROXY_V1"'
         required: false
         default: NONE
@@ -435,6 +434,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -442,7 +442,7 @@ options:
     - This only alters the User Agent string for any API requests.
     type: str
 notes:
-- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/beta/regionHealthChecks)'
+- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/v1/regionHealthChecks)'
 - 'Official Documentation: U(https://cloud.google.com/load-balancing/docs/health-checks)'
 - for authentication, you can set service_account_file using the C(gcp_service_account_file)
   env variable.
@@ -573,8 +573,7 @@ httpHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -629,8 +628,7 @@ httpsHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -679,8 +677,7 @@ tcpHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -729,8 +726,7 @@ sslHealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -785,8 +781,7 @@ http2HealthCheck:
       type: str
     proxyHeader:
       description:
-      - Specifies the type of proxy header to append before sending data to the backend,
-        either NONE or PROXY_V1. The default is NONE.
+      - Specifies the type of proxy header to append before sending data to the backend.
       returned: success
       type: str
     portSpecification:
@@ -901,8 +896,7 @@ def main():
                 ),
             ),
             region=dict(type='str'),
-        ),
-        mutually_exclusive=[['http2_health_check', 'http_health_check', 'https_health_check', 'ssl_health_check', 'tcp_health_check']],
+        )
     )
 
     if not module.params['scopes']:

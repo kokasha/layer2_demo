@@ -36,7 +36,7 @@ options:
     default: yes
     version_added: '0.2.0'
 seealso:
-- module: postgresql_info
+- module: community.general.postgresql_info
 author:
 - Andrew Klychkov (@Andersson007)
 extends_documentation_fragment:
@@ -51,7 +51,7 @@ EXAMPLES = r'''
 # In the example below you need to generate certificates previously.
 # See https://www.postgresql.org/docs/current/libpq-ssl.html for more information.
 - name: PostgreSQL ping dbsrv server using not default credentials and ssl
-  postgresql_ping:
+  community.general.postgresql_ping:
     db: protected_db
     login_host: dbsrv
     login_user: secret

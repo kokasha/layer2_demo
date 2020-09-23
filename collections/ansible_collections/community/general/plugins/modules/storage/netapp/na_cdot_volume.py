@@ -20,7 +20,7 @@ author: Sumit Kumar (@timuster) <sumit4@netapp.com>
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: Updated modules released with increased functionality
-  alternative: Use M(na_ontap_volume) instead.
+  alternative: Use M(netapp.ontap.na_ontap_volume) instead.
 
 description:
 - Create or destroy volumes on NetApp cDOT
@@ -91,7 +91,7 @@ options:
 EXAMPLES = """
 
     - name: Create FlexVol
-      na_cdot_volume:
+      community.general.na_cdot_volume:
         state: present
         name: ansibleVolume
         infinite: False
@@ -107,7 +107,7 @@ EXAMPLES = """
         snapshot_policy: daily
 
     - name: Make FlexVol offline
-      na_cdot_volume:
+      community.general.na_cdot_volume:
         state: present
         name: ansibleVolume
         infinite: False

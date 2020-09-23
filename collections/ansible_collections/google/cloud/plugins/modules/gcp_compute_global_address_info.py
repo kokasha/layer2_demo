@@ -33,7 +33,6 @@ module: gcp_compute_global_address_info
 description:
 - Gather info for GCP GlobalAddress
 short_description: Gather info for GCP GlobalAddress
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -77,6 +77,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -145,8 +146,7 @@ resources:
       type: str
     ipVersion:
       description:
-      - The IP Version that will be used by this address. Valid options are `IPV4`
-        or `IPV6`. The default value is `IPV4`.
+      - The IP Version that will be used by this address. The default value is `IPV4`.
       returned: success
       type: str
     region:
@@ -163,7 +163,7 @@ resources:
       type: int
     addressType:
       description:
-      - The type of the address to reserve, default is EXTERNAL.
+      - The type of the address to reserve.
       - "* EXTERNAL indicates public/external single IP address."
       - "* INTERNAL indicates internal IP ranges belonging to some network."
       returned: success
@@ -187,7 +187,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

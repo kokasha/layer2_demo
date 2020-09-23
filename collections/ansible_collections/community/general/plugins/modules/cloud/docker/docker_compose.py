@@ -168,56 +168,56 @@ EXAMPLES = '''
   gather_facts: no
   tasks:
     - name: Tear down existing services
-      docker_compose:
+      community.general.docker_compose:
         project_src: flask
         state: absent
 
     - name: Create and start services
-      docker_compose:
+      community.general.docker_compose:
         project_src: flask
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
     - name: Run `docker-compose up` again
-      docker_compose:
+      community.general.docker_compose:
         project_src: flask
         build: no
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
-    - assert:
+    - ansible.builtin.assert:
         that: "not output.changed "
 
     - name: Stop all services
-      docker_compose:
+      community.general.docker_compose:
         project_src: flask
         build: no
         stopped: yes
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - "not web.flask_web_1.state.running"
           - "not db.flask_db_1.state.running"
 
     - name: Restart services
-      docker_compose:
+      community.general.docker_compose:
         project_src: flask
         build: no
         restarted: yes
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - "web.flask_web_1.state.running"
           - "db.flask_db_1.state.running"
@@ -226,24 +226,24 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: no
   tasks:
-    - docker_compose:
+    - community.general.docker_compose:
         project_src: flask
         scale:
           web: 2
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
 - name: Run with inline v2 compose
   hosts: localhost
   gather_facts: no
   tasks:
-    - docker_compose:
+    - community.general.docker_compose:
         project_src: flask
         state: absent
 
-    - docker_compose:
+    - community.general.docker_compose:
         project_name: flask
         definition:
           version: '2'
@@ -261,10 +261,10 @@ EXAMPLES = '''
                 - db
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - "web.flask_web_1.state.running"
           - "db.flask_db_1.state.running"
@@ -273,11 +273,11 @@ EXAMPLES = '''
   hosts: localhost
   gather_facts: no
   tasks:
-    - docker_compose:
+    - community.general.docker_compose:
         project_src: flask
         state: absent
 
-    - docker_compose:
+    - community.general.docker_compose:
         project_name: flask
         definition:
             db:
@@ -293,10 +293,10 @@ EXAMPLES = '''
                 - db
       register: output
 
-    - debug:
+    - ansible.builtin.debug:
         var: output
 
-    - assert:
+    - ansible.builtin.assert:
         that:
           - "web.flask_web_1.state.running"
           - "db.flask_db_1.state.running"
@@ -639,6 +639,9 @@ class ContainerManager(DockerBaseClass):
                              "Upgrade docker-compose to a min version of %s." %
                              (compose_version, MINIMUM_COMPOSE_VERSION, MINIMUM_COMPOSE_VERSION))
 
+        if self.restarted and self.stopped:
+            self.client.fail("Cannot use restarted and stopped at the same time.")
+
         self.log("options: ")
         self.log(self.options, pretty_print=True)
 
@@ -767,7 +770,7 @@ class ContainerManager(DockerBaseClass):
                         ))
                     result['actions'].append(result_action)
 
-        if not self.check_mode and result['changed']:
+        if not self.check_mode and result['changed'] and not self.stopped:
             out_redir_name, err_redir_name = make_redirection_tempfiles()
             try:
                 with stdout_redirector(out_redir_name):

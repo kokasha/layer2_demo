@@ -15,7 +15,7 @@ short_description: Manages GitHub service hooks.
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.12
   why: Replaced by more granular modules
-  alternative: Use M(github_webhook) and M(github_webhook_info) instead.
+  alternative: Use M(community.general.github_webhook) and M(community.general.github_webhook_info) instead.
 description:
      - Adds service hooks and removes service hooks that have an error status.
 options:
@@ -61,7 +61,7 @@ author: "Phillip Gentry, CX Inc (@pcgentry)"
 
 EXAMPLES = '''
 - name: Create a new service hook ignoring duplicates
-  github_hooks:
+  community.general.github_hooks:
     action: create
     hookurl: http://11.111.111.111:2222
     user: '{{ gituser }}'
@@ -71,7 +71,7 @@ EXAMPLES = '''
 # Cleaning all hooks for this repo that had an error on the last update.
 # Since this works for all hooks in a repo it is probably best that this would be called from a handler.
 - name: Clean all hooks
-  github_hooks:
+  community.general.github_hooks:
     action: cleanall
     user: '{{ gituser }}'
     oauthkey: '{{ oauthkey }}'
@@ -159,7 +159,7 @@ def main():
             oauthkey=dict(required=True, no_log=True),
             repo=dict(required=True),
             user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
             content_type=dict(default='json', choices=['json', 'form']),
         )
     )

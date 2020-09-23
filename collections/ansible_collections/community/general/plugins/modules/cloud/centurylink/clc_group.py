@@ -70,14 +70,14 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Create / Verify a Server Group at CenturyLink Cloud
-      clc_group:
+      community.general.clc_group:
         name: My Cool Server Group
         parent: Default Group
         state: present
       register: clc
 
     - name: Debug
-      debug:
+      ansible.builtin.debug:
         var: clc
 
 # Delete a Server Group
@@ -89,14 +89,14 @@ EXAMPLES = '''
   connection: local
   tasks:
     - name: Delete / Verify Absent a Server Group at CenturyLink Cloud
-      clc_group:
+      community.general.clc_group:
         name: My Cool Server Group
         parent: Default Group
         state: absent
       register: clc
 
     - name: Debug
-      debug:
+      ansible.builtin.debug:
         var: clc
 '''
 

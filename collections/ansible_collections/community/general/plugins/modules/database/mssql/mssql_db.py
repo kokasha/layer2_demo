@@ -51,7 +51,7 @@ options:
     default: 'no'
 notes:
    - Requires the pymssql Python package on the remote host. For Ubuntu, this
-     is as easy as pip install pymssql (See M(pip).)
+     is as easy as pip install pymssql (See M(ansible.builtin.pip).)
 requirements:
    - python >= 2.7
    - pymssql
@@ -60,18 +60,18 @@ author: Vedit Firat Arig (@vedit)
 
 EXAMPLES = '''
 - name: Create a new database with name 'jackdata'
-  mssql_db:
+  community.general.mssql_db:
     name: jackdata
     state: present
 
 # Copy database dump file to remote host and restore it to database 'my_db'
 - name: Copy database dump file to remote host
-  copy:
+  ansible.builtin.copy:
     src: dump.sql
     dest: /tmp
 
 - name: Restore the dump file to database 'my_db'
-  mssql_db:
+  community.general.mssql_db:
     name: my_db
     state: import
     target: /tmp/dump.sql

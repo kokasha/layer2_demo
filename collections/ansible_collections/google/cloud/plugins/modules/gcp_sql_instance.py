@@ -35,7 +35,6 @@ description:
   Google's cloud. The Instances resource provides methods for common configuration
   and management tasks.
 short_description: Creates a GCP Instance
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -229,7 +228,6 @@ options:
         elements: dict
         required: false
         type: list
-        version_added: '2.9'
         suboptions:
           name:
             description:
@@ -325,6 +323,34 @@ options:
             - Define the backup start time in UTC (HH:MM) .
             required: false
             type: str
+      user_labels:
+        description:
+        - User-provided labels, represented as a dictionary where each label is a
+          single key value pair.
+        required: false
+        type: dict
+  disk_encryption_configuration:
+    description:
+    - Disk encyption settings.
+    required: false
+    type: dict
+    suboptions:
+      kms_key_name:
+        description:
+        - The KMS key used to encrypt the Cloud SQL instance .
+        required: false
+        type: str
+  disk_encryption_status:
+    description:
+    - Disk encyption status.
+    required: false
+    type: dict
+    suboptions:
+      kms_key_version_name:
+        description:
+        - The KMS key version used to encrypt the Cloud SQL instance .
+        required: false
+        type: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -356,6 +382,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -687,6 +714,12 @@ settings:
         this value.
       returned: success
       type: int
+    userLabels:
+      description:
+      - User-provided labels, represented as a dictionary where each label is a single
+        key value pair.
+      returned: success
+      type: dict
 gceZone:
   description:
   - The Compute Engine zone that the instance is currently serving from. This value
@@ -699,6 +732,65 @@ state:
   - The current serving state of the database instance.
   returned: success
   type: str
+diskEncryptionConfiguration:
+  description:
+  - Disk encyption settings.
+  returned: success
+  type: complex
+  contains:
+    kmsKeyName:
+      description:
+      - The KMS key used to encrypt the Cloud SQL instance .
+      returned: success
+      type: str
+diskEncryptionStatus:
+  description:
+  - Disk encyption status.
+  returned: success
+  type: complex
+  contains:
+    kmsKeyVersionName:
+      description:
+      - The KMS key version used to encrypt the Cloud SQL instance .
+      returned: success
+      type: str
+serverCaCert:
+  description:
+  - SSL configuration.
+  returned: success
+  type: complex
+  contains:
+    cert:
+      description:
+      - PEM representation of the X.509 certificate.
+      returned: success
+      type: str
+    certSerialNumber:
+      description:
+      - Serial number, as extracted from the certificate.
+      returned: success
+      type: str
+    commonName:
+      description:
+      - User supplied name. Constrained to [a-zA-Z.-_ ]+.
+      returned: success
+      type: str
+    createTime:
+      description:
+      - The time when the certificate was created in RFC 3339 format, for example
+        2012-11-15T16:19:00.094Z.
+      returned: success
+      type: str
+    expirationTime:
+      description:
+      - The time when the certificate expires in RFC 3339 format, for example 2012-11-15T16:19:00.094Z.
+      returned: success
+      type: str
+    sha1Fingerprint:
+      description:
+      - SHA-1 fingerprint of the certificate.
+      returned: success
+      type: str
 '''
 
 ################################################################################
@@ -779,8 +871,11 @@ def main():
                     backup_configuration=dict(
                         type='dict', options=dict(enabled=dict(type='bool'), binary_log_enabled=dict(type='bool'), start_time=dict(type='str'))
                     ),
+                    user_labels=dict(type='dict'),
                 ),
             ),
+            disk_encryption_configuration=dict(type='dict', options=dict(kms_key_name=dict(type='str'))),
+            disk_encryption_status=dict(type='dict', options=dict(kms_key_version_name=dict(type='str'))),
         )
     )
 
@@ -844,6 +939,8 @@ def resource_to_request(module):
         u'region': module.params.get('region'),
         u'replicaConfiguration': InstanceReplicaconfiguration(module.params.get('replica_configuration', {}), module).to_request(),
         u'settings': InstanceSettings(module.params.get('settings', {}), module).to_request(),
+        u'diskEncryptionConfiguration': InstanceDiskencryptionconfiguration(module.params.get('disk_encryption_configuration', {}), module).to_request(),
+        u'diskEncryptionStatus': InstanceDiskencryptionstatus(module.params.get('disk_encryption_status', {}), module).to_request(),
     }
     return_vals = {}
     for k, v in request.items():
@@ -927,6 +1024,9 @@ def response_to_hash(module, response):
         u'settings': InstanceSettings(response.get(u'settings', {}), module).from_response(),
         u'gceZone': response.get(u'gceZone'),
         u'state': response.get(u'state'),
+        u'diskEncryptionConfiguration': InstanceDiskencryptionconfiguration(response.get(u'diskEncryptionConfiguration', {}), module).from_response(),
+        u'diskEncryptionStatus': InstanceDiskencryptionstatus(response.get(u'diskEncryptionStatus', {}), module).from_response(),
+        u'serverCaCert': InstanceServercacert(response.get(u'serverCaCert', {}), module).from_response(),
     }
 
 
@@ -1095,6 +1195,7 @@ class InstanceSettings(object):
                 u'tier': self.request.get('tier'),
                 u'availabilityType': self.request.get('availability_type'),
                 u'backupConfiguration': InstanceBackupconfiguration(self.request.get('backup_configuration', {}), self.module).to_request(),
+                u'userLabels': self.request.get('user_labels'),
             }
         )
 
@@ -1106,6 +1207,7 @@ class InstanceSettings(object):
                 u'tier': self.request.get(u'tier'),
                 u'availabilityType': self.request.get(u'availabilityType'),
                 u'backupConfiguration': InstanceBackupconfiguration(self.request.get(u'backupConfiguration', {}), self.module).from_response(),
+                u'userLabels': self.request.get(u'userLabels'),
             }
         )
 
@@ -1207,6 +1309,69 @@ class InstanceBackupconfiguration(object):
     def from_response(self):
         return remove_nones_from_dict(
             {u'enabled': self.request.get(u'enabled'), u'binaryLogEnabled': self.request.get(u'binaryLogEnabled'), u'startTime': self.request.get(u'startTime')}
+        )
+
+
+class InstanceDiskencryptionconfiguration(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict({u'kmsKeyName': self.request.get('kms_key_name')})
+
+    def from_response(self):
+        return remove_nones_from_dict({u'kmsKeyName': self.request.get(u'kmsKeyName')})
+
+
+class InstanceDiskencryptionstatus(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict({u'kmsKeyVersionName': self.request.get('kms_key_version_name')})
+
+    def from_response(self):
+        return remove_nones_from_dict({u'kmsKeyVersionName': self.request.get(u'kmsKeyVersionName')})
+
+
+class InstanceServercacert(object):
+    def __init__(self, request, module):
+        self.module = module
+        if request:
+            self.request = request
+        else:
+            self.request = {}
+
+    def to_request(self):
+        return remove_nones_from_dict(
+            {
+                u'cert': self.request.get('cert'),
+                u'certSerialNumber': self.request.get('cert_serial_number'),
+                u'commonName': self.request.get('common_name'),
+                u'createTime': self.request.get('create_time'),
+                u'expirationTime': self.request.get('expiration_time'),
+                u'sha1Fingerprint': self.request.get('sha1_fingerprint'),
+            }
+        )
+
+    def from_response(self):
+        return remove_nones_from_dict(
+            {
+                u'cert': self.request.get(u'cert'),
+                u'certSerialNumber': self.request.get(u'certSerialNumber'),
+                u'commonName': self.request.get(u'commonName'),
+                u'createTime': self.request.get(u'createTime'),
+                u'expirationTime': self.request.get(u'expirationTime'),
+                u'sha1Fingerprint': self.request.get(u'sha1Fingerprint'),
+            }
         )
 
 

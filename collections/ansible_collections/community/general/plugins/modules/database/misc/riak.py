@@ -55,16 +55,16 @@ options:
 
 EXAMPLES = '''
 - name: "Join's a Riak node to another node"
-  riak:
+  community.general.riak:
     command: join
     target_node: riak@10.1.1.1
 
 - name: Wait for handoffs to finish. Use with async and poll.
-  riak:
+  community.general.riak:
     wait_for_handoffs: yes
 
 - name: Wait for riak_kv service to startup
-  riak:
+  community.general.riak:
     wait_for_service: kv
 '''
 
@@ -97,7 +97,7 @@ def main():
             wait_for_ring=dict(default=False, type='int'),
             wait_for_service=dict(
                 required=False, default=None, choices=['kv']),
-            validate_certs=dict(default='yes', type='bool'))
+            validate_certs=dict(default=True, type='bool'))
     )
 
     command = module.params.get('command')

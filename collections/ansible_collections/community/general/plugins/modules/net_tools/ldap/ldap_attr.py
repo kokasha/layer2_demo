@@ -16,7 +16,7 @@ description:
   - Add or remove LDAP attribute values.
 notes:
   - This only deals with attributes on existing entries. To add or remove
-    whole entries, see M(ldap_entry).
+    whole entries, see M(community.general.ldap_entry).
   - The default authentication settings will attempt to use a SASL EXTERNAL
     bind over a UNIX domain socket. This works well with the default Ubuntu
     install for example, which includes a cn=peercred,cn=external,cn=auth ACL
@@ -35,7 +35,7 @@ notes:
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.14
   why: 'The current "ldap_attr" module does not support LDAP attribute insertions or deletions with objectClass dependencies.'
-  alternative: 'Use M(ldap_attrs) instead. Deprecated in community.general 0.2.0.'
+  alternative: 'Use M(community.general.ldap_attrs) instead. Deprecated in community.general 0.2.0.'
 author:
   - Jiri Tyr (@jtyr)
 requirements:
@@ -70,7 +70,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Configure directory number 1 for example.com
-  ldap_attr:
+  community.general.ldap_attr:
     dn: olcDatabase={1}hdb,cn=config
     name: olcSuffix
     values: dc=example,dc=com
@@ -78,7 +78,7 @@ EXAMPLES = r'''
 
 # The complex argument format is required here to pass a list of ACL strings.
 - name: Set up the ACL
-  ldap_attr:
+  community.general.ldap_attr:
     dn: olcDatabase={1}hdb,cn=config
     name: olcAccess
     values:
@@ -95,7 +95,7 @@ EXAMPLES = r'''
     state: exact
 
 - name: Declare some indexes
-  ldap_attr:
+  community.general.ldap_attr:
     dn: olcDatabase={1}hdb,cn=config
     name: olcDbIndex
     values: "{{ item }}"
@@ -104,7 +104,7 @@ EXAMPLES = r'''
     - uid eq
 
 - name: Set up a root user, which we can use later to bootstrap the directory
-  ldap_attr:
+  community.general.ldap_attr:
     dn: olcDatabase={1}hdb,cn=config
     name: "{{ item.key }}"
     values: "{{ item.value }}"
@@ -114,7 +114,7 @@ EXAMPLES = r'''
     olcRootPW: "{SSHA}tabyipcHzhwESzRaGA7oQ/SDoBZQOGND"
 
 - name: Get rid of an unneeded attribute
-  ldap_attr:
+  community.general.ldap_attr:
     dn: uid=jdoe,ou=people,dc=example,dc=com
     name: shadowExpire
     values: []
@@ -134,7 +134,7 @@ EXAMPLES = r'''
 #
 # In the example below, 'args' is a task keyword, passed at the same level as the module
 - name: Get rid of an unneeded attribute
-  ldap_attr:
+  community.general.ldap_attr:
     dn: uid=jdoe,ou=people,dc=example,dc=com
     name: shadowExpire
     values: []

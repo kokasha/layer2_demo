@@ -33,7 +33,6 @@ module: gcp_redis_instance_info
 description:
 - Gather info for GCP Instance
 short_description: Gather info for GCP Instance
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -76,6 +75,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -125,8 +125,7 @@ resources:
       type: str
     connectMode:
       description:
-      - The connection mode of the Redis instance. Can be either `DIRECT_PEERING`
-        or `PRIVATE_SERVICE_ACCESS`. The default connect mode if not provided is `DIRECT_PEERING`.
+      - The connection mode of the Redis instance.
       returned: success
       type: str
     createTime:
@@ -191,11 +190,20 @@ resources:
       - The port number of the exposed Redis endpoint.
       returned: success
       type: int
+    persistenceIamIdentity:
+      description:
+      - Output only. Cloud IAM identity used by import / export operations to transfer
+        data to/from Cloud Storage. Format is "serviceAccount:".
+      - The value may change over time for a given instance so should be checked before
+        each import/export operation.
+      returned: success
+      type: str
     redisVersion:
       description:
       - 'The version of Redis software. If not provided, latest supported version
-        will be used. Currently, the supported values are: - REDIS_4_0 for Redis 4.0
-        compatibility - REDIS_3_2 for Redis 3.2 compatibility .'
+        will be used. Currently, the supported values are: - REDIS_5_0 for Redis 5.0
+        compatibility - REDIS_4_0 for Redis 4.0 compatibility - REDIS_3_2 for Redis
+        3.2 compatibility .'
       returned: success
       type: str
     reservedIpRange:
@@ -222,7 +230,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

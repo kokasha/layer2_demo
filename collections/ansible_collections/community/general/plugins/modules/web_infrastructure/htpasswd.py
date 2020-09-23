@@ -64,7 +64,7 @@ extends_documentation_fragment: files
 
 EXAMPLES = """
 - name: Add a user to a password file and ensure permissions are set
-  htpasswd:
+  community.general.htpasswd:
     path: /etc/nginx/passwdfile
     name: janedoe
     password: '9s36?;fyNp'
@@ -73,13 +73,13 @@ EXAMPLES = """
     mode: 0640
 
 - name: Remove a user from a password file
-  htpasswd:
+  community.general.htpasswd:
     path: /etc/apache2/passwdfile
     name: foobar
     state: absent
 
 - name: Add a user to a password file suitable for use by libpam-pwdfile
-  htpasswd:
+  community.general.htpasswd:
     path: /etc/mail/passwords
     name: alex
     password: oedu2eGh
@@ -200,7 +200,7 @@ def main():
         password=dict(required=False, default=None, no_log=True),
         crypt_scheme=dict(required=False, default="apr_md5_crypt"),
         state=dict(required=False, default="present"),
-        create=dict(type='bool', default='yes'),
+        create=dict(type='bool', default=True),
 
     )
     module = AnsibleModule(argument_spec=arg_spec,

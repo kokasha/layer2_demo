@@ -106,7 +106,7 @@ options:
 EXAMPLES = '''
 # check for migrations on local node
 - name: Wait for migrations on local node before proceeding
-  aerospike_migrations:
+  community.general.aerospike_migrations:
     host: "localhost"
     connect_timeout: 2000
     consecutive_good_checks: 5
@@ -122,14 +122,14 @@ EXAMPLES = '''
   serial: 1
   tasks:
     - name: Install dependencies
-      apt:
+      ansible.builtin.apt:
         name:
             - python
             - python-pip
             - python-setuptools
         state: latest
     - name: Setup aerospike
-      pip:
+      ansible.builtin.pip:
           name: aerospike
 # check for migrations every (sleep_between_checks)
 # If at least (consecutive_good_checks) checks come back OK in a row, then return OK.
@@ -138,7 +138,7 @@ EXAMPLES = '''
 # Maximum runtime before giving up in this case will be:
 # Tries Limit * Sleep Between Checks * delay * retries
     - name: Wait for aerospike migrations
-      aerospike_migrations:
+      community.general.aerospike_migrations:
           local_only: True
           sleep_between_checks: 1
           tries_limit: 5
@@ -152,10 +152,10 @@ EXAMPLES = '''
       delay: 60
       retries: 120
     - name: Another thing
-      shell: |
+      ansible.builtin.shell: |
           echo foo
     - name: Reboot
-      reboot:
+      ansible.builtin.reboot:
 '''
 
 RETURN = '''

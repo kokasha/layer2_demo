@@ -33,7 +33,6 @@ module: gcp_compute_ssl_policy_info
 description:
 - Gather info for GCP SslPolicy
 short_description: Gather info for GCP SslPolicy
-version_added: '2.7'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -77,6 +77,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -140,16 +141,14 @@ resources:
     profile:
       description:
       - Profile specifies the set of SSL features that can be used by the load balancer
-        when negotiating SSL with clients. This can be one of `COMPATIBLE`, `MODERN`,
-        `RESTRICTED`, or `CUSTOM`. If using `CUSTOM`, the set of SSL features to enable
-        must be specified in the `customFeatures` field.
+        when negotiating SSL with clients. If using `CUSTOM`, the set of SSL features
+        to enable must be specified in the `customFeatures` field.
       returned: success
       type: str
     minTlsVersion:
       description:
       - The minimum version of SSL protocol that can be used by the clients to establish
-        a connection with the load balancer. This can be one of `TLS_1_0`, `TLS_1_1`,
-        `TLS_1_2`.
+        a connection with the load balancer.
       returned: success
       type: str
     enabledFeatures:
@@ -192,7 +191,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

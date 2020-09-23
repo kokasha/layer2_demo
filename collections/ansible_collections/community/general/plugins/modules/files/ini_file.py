@@ -17,7 +17,7 @@ short_description: Tweak settings in INI files
 extends_documentation_fragment: files
 description:
      - Manage (add, remove, change) individual settings in an INI-style file without having
-       to manage the file as a whole with, say, M(template) or M(assemble).
+       to manage the file as a whole with, say, M(ansible.builtin.template) or M(ansible.builtin.assemble).
      - Adds missing sections if they don't exist.
      - Before Ansible 2.0, comments are discarded when the source file is read, and therefore will not show up in the destination file.
      - Since Ansible 2.3, this module adds missing ending newlines to files to keep in line with the POSIX standard, even when
@@ -87,7 +87,7 @@ author:
 EXAMPLES = r'''
 # Before Ansible 2.3, option 'dest' was used instead of 'path'
 - name: Ensure "fav=lemonade is in section "[drinks]" in specified file
-  ini_file:
+  community.general.ini_file:
     path: /etc/conf
     section: drinks
     option: fav
@@ -96,7 +96,7 @@ EXAMPLES = r'''
     backup: yes
 
 - name: Ensure "temperature=cold is in section "[drinks]" in specified file
-  ini_file:
+  community.general.ini_file:
     path: /etc/anotherconf
     section: drinks
     option: temperature

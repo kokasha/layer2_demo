@@ -21,17 +21,21 @@ options:
     name:
         description:
             - A name for the repository. Not required when adding repofiles.
+        type: str
     repo:
         description:
             - URI of the repository or .repo file. Required when state=present.
+        type: str
     state:
         description:
             - A source string state.
         choices: [ "absent", "present" ]
         default: "present"
+        type: str
     description:
         description:
             - A description of the repository
+        type: str
     disable_gpg_check:
         description:
             - Whether to disable GPG signature checking of
@@ -39,24 +43,25 @@ options:
               I(present).
             - Needs zypper version >= 1.6.2.
         type: bool
-        default: 'no'
+        default: no
     autorefresh:
         description:
             - Enable autorefresh of the repository.
         type: bool
-        default: 'yes'
+        default: yes
         aliases: [ "refresh" ]
     priority:
         description:
             - Set priority of repository. Packages will always be installed
               from the repository with the smallest priority number.
             - Needs zypper version >= 1.12.25.
+        type: int
     overwrite_multiple:
         description:
             - Overwrite multiple repository entries, if repositories with both name and
               URL already exist.
         type: bool
-        default: 'no'
+        default: no
     auto_import_keys:
         description:
             - Automatically import the gpg signing key of the new or changed repository.
@@ -64,18 +69,18 @@ options:
             - Implies runrefresh.
             - Only works with C(.repo) files if `name` is given explicitly.
         type: bool
-        default: 'no'
+        default: no
     runrefresh:
         description:
             - Refresh the package list of the given repository.
             - Can be used with repo=* to refresh all repositories.
         type: bool
-        default: 'no'
+        default: no
     enabled:
         description:
             - Set repository to enabled (or disabled).
         type: bool
-        default: 'yes'
+        default: yes
 
 
 requirements:
@@ -85,33 +90,33 @@ requirements:
 
 EXAMPLES = '''
 - name: Add NVIDIA repository for graphics drivers
-  zypper_repository:
+  community.general.zypper_repository:
     name: nvidia-repo
     repo: 'ftp://download.nvidia.com/opensuse/12.2'
     state: present
 
 - name: Remove NVIDIA repository
-  zypper_repository:
+  community.general.zypper_repository:
     name: nvidia-repo
     repo: 'ftp://download.nvidia.com/opensuse/12.2'
     state: absent
 
 - name: Add python development repository
-  zypper_repository:
+  community.general.zypper_repository:
     repo: 'http://download.opensuse.org/repositories/devel:/languages:/python/SLE_11_SP3/devel:languages:python.repo'
 
 - name: Refresh all repos
-  zypper_repository:
+  community.general.zypper_repository:
     repo: '*'
     runrefresh: yes
 
 - name: Add a repo and add its gpg key
-  zypper_repository:
+  community.general.zypper_repository:
     repo: 'http://download.opensuse.org/repositories/systemsmanagement/openSUSE_Leap_42.1/'
     auto_import_keys: yes
 
 - name: Force refresh of a repository
-  zypper_repository:
+  community.general.zypper_repository:
     repo: 'http://my_internal_ci_repo/repo'
     name: my_ci_repo
     state: present
@@ -290,7 +295,7 @@ def main():
             name=dict(required=False),
             repo=dict(required=False),
             state=dict(choices=['present', 'absent'], default='present'),
-            runrefresh=dict(required=False, default='no', type='bool'),
+            runrefresh=dict(required=False, default=False, type='bool'),
             description=dict(required=False),
             disable_gpg_check=dict(required=False, default=False, type='bool'),
             autorefresh=dict(required=False, default=True, type='bool', aliases=['refresh']),

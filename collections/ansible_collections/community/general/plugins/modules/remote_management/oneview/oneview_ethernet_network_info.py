@@ -12,7 +12,7 @@ short_description: Retrieve the information about one or more of the OneView Eth
 description:
     - Retrieve the information about one or more of the Ethernet Networks from OneView.
     - This module was called C(oneview_ethernet_network_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_ethernet_network_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_ethernet_network_info) module no longer returns C(ansible_facts)!
 requirements:
     - hpOneView >= 2.0.1
 author:
@@ -35,16 +35,16 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all Ethernet Networks
-  oneview_ethernet_network_info:
+  community.general.oneview_ethernet_network_info:
     config: /etc/oneview/oneview_config.json
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.ethernet_networks }}"
 
 - name: Gather paginated and filtered information about Ethernet Networks
-  oneview_ethernet_network_info:
+  community.general.oneview_ethernet_network_info:
     config: /etc/oneview/oneview_config.json
     params:
       start: 1
@@ -54,21 +54,21 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.ethernet_networks }}"
 
 - name: Gather information about an Ethernet Network by name
-  oneview_ethernet_network_info:
+  community.general.oneview_ethernet_network_info:
     config: /etc/oneview/oneview_config.json
     name: Ethernet network name
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.ethernet_networks }}"
 
 - name: Gather information about an Ethernet Network by name with options
-  oneview_ethernet_network_info:
+  community.general.oneview_ethernet_network_info:
     config: /etc/oneview/oneview_config.json
     name: eth1
     options:
@@ -77,9 +77,9 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.enet_associated_profiles }}"
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.enet_associated_uplink_groups }}"
 '''
 

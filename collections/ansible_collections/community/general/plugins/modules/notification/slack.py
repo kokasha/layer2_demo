@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# (c) 2020, Lee Goolsbee <lgoolsbee@atlassian.com>
 # (c) 2020, Michal Middleton <mm.404@icloud.com>
 # (c) 2017, Steve Pletcher <steve@steve-pletcher.com>
 # (c) 2016, René Moser <mail@renemoser.net>
@@ -45,8 +46,7 @@ options:
         URL given to you in that section."
       - "WebAPI token:
         Slack WebAPI requires a personal, bot or work application token. These tokens start with C(xoxp-), C(xoxb-)
-        or C(xoxa-), eg. C(xoxb-1234-56789abcdefghijklmnop). WebAPI token is required if you inted to receive and use
-        thread_id.
+        or C(xoxa-), eg. C(xoxb-1234-56789abcdefghijklmnop). WebAPI token is required if you intend to receive thread_id.
         See Slack's documentation (U(https://api.slack.com/docs/token-types)) for more information."
     required: true
   msg:
@@ -100,18 +100,25 @@ options:
   attachments:
     description:
       - Define a list of attachments. This list mirrors the Slack JSON API.
-      - For more information, see also in the (U(https://api.slack.com/docs/attachments)).
+      - For more information, see U(https://api.slack.com/docs/attachments).
+  blocks:
+    description:
+      - Define a list of blocks. This list mirrors the Slack JSON API.
+      - For more information, see U(https://api.slack.com/block-kit).
+    type: list
+    elements: dict
+    version_added: 1.0.0
 """
 
 EXAMPLES = """
 - name: Send notification message via Slack
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: '{{ inventory_hostname }} completed'
   delegate_to: localhost
 
 - name: Send notification message via Slack all options
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: '{{ inventory_hostname }} completed'
     channel: '#ansible'
@@ -123,7 +130,7 @@ EXAMPLES = """
   delegate_to: localhost
 
 - name: Insert a color bar in front of the message for visibility purposes and use the default webhook icon and name configured in Slack
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: '{{ inventory_hostname }} is alive!'
     color: good
@@ -131,7 +138,7 @@ EXAMPLES = """
     icon_url: ''
 
 - name: Insert a color bar in front of the message with valid hex color value
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: 'This message uses color in hex value'
     color: '#00aacc'
@@ -139,7 +146,7 @@ EXAMPLES = """
     icon_url: ''
 
 - name: Use the attachments API
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     attachments:
       - text: Display my system load on host A and B
@@ -153,24 +160,45 @@ EXAMPLES = """
             value: 'load average: 5,16, 4,64, 2,43'
             short: True
 
+- name: Use the blocks API
+  community.general.slack:
+    token: thetoken/generatedby/slack
+    blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: |-
+            *System load*
+            Display my system load on host A and B
+      - type: context
+        elements:
+        - type: mrkdwn
+          text: |-
+            *System A*
+            load average: 0,74, 0,66, 0,63
+        - type: mrkdwn
+          text: |-
+            *System B*
+            load average: 5,16, 4,64, 2,43
+
 - name: Send a message with a link using Slack markup
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: We sent this message using <https://www.ansible.com|Ansible>!
 
 - name: Send a message with angle brackets and ampersands
-  slack:
+  community.general.slack:
     token: thetoken/generatedby/slack
     msg: This message has &lt;brackets&gt; &amp; ampersands in plain text.
 
 - name: Initial Threaded Slack message
-  slack:
+  community.general.slack:
     channel: '#ansible'
     token: xoxb-1234-56789abcdefghijklmnop
     msg: 'Starting a thread with my initial post.'
   register: slack_response
 - name: Add more info to thread
-  slack:
+  community.general.slack:
     channel: '#ansible'
     token: xoxb-1234-56789abcdefghijklmnop
     thread_id: "{{ slack_response['ts'] }}"
@@ -206,8 +234,24 @@ def escape_quotes(text):
     return "".join(escape_table.get(c, c) for c in text)
 
 
+def recursive_escape_quotes(obj, keys):
+    '''Recursively escape quotes inside supplied keys inside block kit objects'''
+    if isinstance(obj, dict):
+        escaped = {}
+        for k, v in obj.items():
+            if isinstance(v, str) and k in keys:
+                escaped[k] = escape_quotes(v)
+            else:
+                escaped[k] = recursive_escape_quotes(v, keys)
+    elif isinstance(obj, list):
+        escaped = [recursive_escape_quotes(v, keys) for v in obj]
+    else:
+        escaped = obj
+    return escaped
+
+
 def build_payload_for_slack(module, text, channel, thread_id, username, icon_url, icon_emoji, link_names,
-                            parse, color, attachments):
+                            parse, color, attachments, blocks):
     payload = {}
     if color == "normal" and text is not None:
         payload = dict(text=escape_quotes(text))
@@ -237,7 +281,7 @@ def build_payload_for_slack(module, text, channel, thread_id, username, icon_url
             payload['attachments'] = []
 
     if attachments is not None:
-        keys_to_escape = [
+        attachment_keys_to_escape = [
             'title',
             'text',
             'author_name',
@@ -245,7 +289,7 @@ def build_payload_for_slack(module, text, channel, thread_id, username, icon_url
             'fallback',
         ]
         for attachment in attachments:
-            for key in keys_to_escape:
+            for key in attachment_keys_to_escape:
                 if key in attachment:
                     attachment[key] = escape_quotes(attachment[key])
 
@@ -253,6 +297,13 @@ def build_payload_for_slack(module, text, channel, thread_id, username, icon_url
                 attachment['fallback'] = attachment['text']
 
             payload['attachments'].append(attachment)
+
+    if blocks is not None:
+        block_keys_to_escape = [
+            'text',
+            'alt_text'
+        ]
+        payload['blocks'] = recursive_escape_quotes(blocks, block_keys_to_escape)
 
     payload = module.jsonify(payload)
     return payload
@@ -308,9 +359,10 @@ def main():
             icon_emoji=dict(type='str', default=None),
             link_names=dict(type='int', default=1, choices=[0, 1]),
             parse=dict(type='str', default=None, choices=['none', 'full']),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
             color=dict(type='str', default='normal'),
-            attachments=dict(type='list', required=False, default=None)
+            attachments=dict(type='list', required=False, default=None),
+            blocks=dict(type='list', elements='dict'),
         )
     )
 
@@ -326,6 +378,7 @@ def main():
     parse = module.params['parse']
     color = module.params['color']
     attachments = module.params['attachments']
+    blocks = module.params['blocks']
 
     color_choices = ['normal', 'good', 'warning', 'danger']
     if color not in color_choices and not is_valid_hex_color(color):
@@ -333,7 +386,7 @@ def main():
                              "or any valid hex value with length 3 or 6." % color_choices)
 
     payload = build_payload_for_slack(module, text, channel, thread_id, username, icon_url, icon_emoji, link_names,
-                                      parse, color, attachments)
+                                      parse, color, attachments, blocks)
     slack_response = do_notify_slack(module, domain, token, payload)
 
     if 'ok' in slack_response:

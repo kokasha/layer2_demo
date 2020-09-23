@@ -20,9 +20,9 @@ requirements: ['git']
 short_description: Read and write git configuration
 description:
   - The C(git_config) module changes git configuration by invoking 'git config'.
-    This is needed if you don't want to use M(template) for the entire git
+    This is needed if you don't want to use M(ansible.builtin.template) for the entire git
     config file (e.g. because you need to change just C(user.email) in
-    /etc/.git/config).  Solutions involving M(command) are cumbersome or
+    /etc/.git/config).  Solutions involving M(ansible.builtin.command) are cumbersome or
     don't work correctly in check mode.
 options:
   list_all:
@@ -60,72 +60,72 @@ options:
 
 EXAMPLES = '''
 - name: Add a setting to ~/.gitconfig
-  git_config:
+  community.general.git_config:
     name: alias.ci
     scope: global
     value: commit
 
 - name: Add a setting to ~/.gitconfig
-  git_config:
+  community.general.git_config:
     name: alias.st
     scope: global
     value: status
 
 - name: Remove a setting from ~/.gitconfig
-  git_config:
+  community.general.git_config:
     name: alias.ci
     scope: global
     state: absent
 
 - name: Add a setting to ~/.gitconfig
-  git_config:
+  community.general.git_config:
     name: core.editor
     scope: global
     value: vim
 
 - name: Add a setting system-wide
-  git_config:
+  community.general.git_config:
     name: alias.remotev
     scope: system
     value: remote -v
 
 - name: Add a setting to a system scope (default)
-  git_config:
+  community.general.git_config:
     name: alias.diffc
     value: diff --cached
 
 - name: Add a setting to a system scope (default)
-  git_config:
+  community.general.git_config:
     name: color.ui
     value: auto
 
 - name: Make etckeeper not complaining when it is invoked by cron
-  git_config:
+  community.general.git_config:
     name: user.email
     repo: /etc
     scope: local
     value: 'root@{{ ansible_fqdn }}'
 
 - name: Read individual values from git config
-  git_config:
+  community.general.git_config:
     name: alias.ci
     scope: global
 
 - name: Scope system is also assumed when reading values, unless list_all=yes
-  git_config:
+  community.general.git_config:
     name: alias.diffc
 
 - name: Read all values from git config
-  git_config:
+  community.general.git_config:
     list_all: yes
     scope: global
 
 - name: When list_all is yes and no scope is specified, you get configuration from all scopes
-  git_config:
+  community.general.git_config:
     list_all: yes
 
 - name: Specify a repository to include local settings
-  git_config:
+  community.general.git_config:
     list_all: yes
     repo: /path/to/repo.git
 '''

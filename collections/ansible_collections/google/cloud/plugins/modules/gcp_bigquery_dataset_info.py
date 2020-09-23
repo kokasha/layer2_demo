@@ -33,7 +33,6 @@ module: gcp_bigquery_dataset_info
 description:
 - Gather info for GCP Dataset
 short_description: Gather info for GCP Dataset
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -71,6 +70,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -131,8 +131,7 @@ resources:
           - Describes the rights granted to the user specified by the other member
             of the access object. Primitive, Predefined and custom roles are supported.
             Predefined roles that have equivalent primitive roles are swapped by the
-            API to their Primitive counterparts, and will show a diff post-create.
-            See [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
+            API to their Primitive counterparts. See [official docs](U(https://cloud.google.com/bigquery/docs/access-control)).
           returned: success
           type: str
         specialGroup:
@@ -299,7 +298,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

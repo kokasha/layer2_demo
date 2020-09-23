@@ -27,7 +27,7 @@ options:
       - List of container names or container IDs to connect to a network.
       - Please note that the module only makes sure that these containers are connected to the network,
         but does not care about connection options. If you rely on specific IP addresses etc., use the
-        M(docker_container) module to ensure your containers are correctly connected to this network.
+        M(community.general.docker_container) module to ensure your containers are correctly connected to this network.
     type: list
     elements: str
     aliases:
@@ -180,7 +180,7 @@ notes:
   - When network options are changed, the module disconnects all containers from the network, deletes the network, and re-creates the network.
     It does not try to reconnect containers, except the ones listed in (I(connected), and even for these, it does not consider specific
     connection options like fixed IP addresses or MAC addresses. If you need more control over how the containers are connected to the
-    network, loop the M(docker_container) module to loop over your containers to make sure they are connected properly.
+    network, loop the M(community.general.docker_container) module to loop over your containers to make sure they are connected properly.
   - The module does not support Docker Swarm, i.e. it will not try to disconnect or reconnect services. If services are connected to the
     network, deleting the network will fail. When network options are changed, the network has to be deleted and recreated, so this will
     fail as well.
@@ -197,11 +197,11 @@ requirements:
 
 EXAMPLES = '''
 - name: Create a network
-  docker_network:
+  community.general.docker_network:
     name: network_one
 
 - name: Remove all but selected list of containers
-  docker_network:
+  community.general.docker_network:
     name: network_one
     connected:
       - container_a
@@ -209,25 +209,25 @@ EXAMPLES = '''
       - container_c
 
 - name: Remove a single container
-  docker_network:
+  community.general.docker_network:
     name: network_one
     connected: "{{ fulllist|difference(['container_a']) }}"
 
 - name: Add a container to a network, leaving existing containers connected
-  docker_network:
+  community.general.docker_network:
     name: network_one
     connected:
       - container_a
     appends: yes
 
 - name: Create a network with driver options
-  docker_network:
+  community.general.docker_network:
     name: network_two
     driver_options:
       com.docker.network.bridge.name: net2
 
 - name: Create a network with custom IPAM config
-  docker_network:
+  community.general.docker_network:
     name: network_three
     ipam_config:
       - subnet: 172.3.27.0/24
@@ -238,21 +238,21 @@ EXAMPLES = '''
           host2: 172.3.27.4
 
 - name: Create a network with labels
-  docker_network:
+  community.general.docker_network:
     name: network_four
     labels:
       key1: value1
       key2: value2
 
 - name: Create a network with IPv6 IPAM config
-  docker_network:
+  community.general.docker_network:
     name: network_ipv6_one
     enable_ipv6: yes
     ipam_config:
       - subnet: fdd1:ac8c:0557:7ce1::/64
 
 - name: Create a network with IPv6 and custom IPv4 IPAM config
-  docker_network:
+  community.general.docker_network:
     name: network_ipv6_two
     enable_ipv6: yes
     ipam_config:
@@ -260,7 +260,7 @@ EXAMPLES = '''
       - subnet: fdd1:ac8c:0557:7ce2::/64
 
 - name: Delete a network, disconnecting all containers
-  docker_network:
+  community.general.docker_network:
     name: network_one
     state: absent
     force: yes

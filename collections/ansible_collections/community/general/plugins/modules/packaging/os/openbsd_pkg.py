@@ -24,6 +24,8 @@ options:
         description:
         - A name or a list of names of the packages.
         required: yes
+        type: list
+        elements: str
     state:
         description:
           - C(present) will make sure the package is installed.
@@ -31,6 +33,7 @@ options:
             C(absent) will make sure the specified package is not installed.
         choices: [ absent, latest, present ]
         default: present
+        type: str
     build:
         description:
           - Build the package from source instead of downloading and installing
@@ -38,25 +41,26 @@ options:
             Automatically builds and installs the 'sqlports' package, if it is
             not already installed.
         type: bool
-        default: 'no'
+        default: no
     ports_dir:
         description:
           - When used in combination with the C(build) option, allows overriding
             the default ports source directory.
         default: /usr/ports
+        type: path
     clean:
         description:
           - When updating or removing packages, delete the extra configuration
             file(s) in the old packages which are annotated with @extra in
             the packaging-list.
         type: bool
-        default: 'no'
+        default: no
     quick:
         description:
           - Replace or delete packages quickly; do not bother with checksums
             before removing normal files.
         type: bool
-        default: 'no'
+        default: no
 notes:
   - When used with a `loop:` each package will be processed individually,
     it is much more efficient to pass the list directly to the `name` option.
@@ -64,54 +68,54 @@ notes:
 
 EXAMPLES = '''
 - name: Make sure nmap is installed
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: nmap
     state: present
 
 - name: Make sure nmap is the latest version
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: nmap
     state: latest
 
 - name: Make sure nmap is not installed
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: nmap
     state: absent
 
 - name: Make sure nmap is installed, build it from source if it is not
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: nmap
     state: present
     build: yes
 
 - name: Specify a pkg flavour with '--'
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: vim--no_x11
     state: present
 
 - name: Specify the default flavour to avoid ambiguity errors
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: vim--
     state: present
 
 - name: Specify a package branch (requires at least OpenBSD 6.0)
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: python%3.5
     state: present
 
 - name: Update all packages on the system
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: '*'
     state: latest
 
 - name: Purge a package and it's configuration files
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: mpd
     clean: yes
     state: absent
 
 - name: Quickly remove a package without checking checksums
-  openbsd_pkg:
+  community.general.openbsd_pkg:
     name: qt5
     quick: yes
     state: absent
@@ -513,7 +517,7 @@ def upgrade_packages(pkg_spec, module):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            name=dict(type='list', required=True),
+            name=dict(type='list', elements='str', required=True),
             state=dict(type='str', default='present', choices=['absent', 'installed', 'latest', 'present', 'removed']),
             build=dict(type='bool', default=False),
             ports_dir=dict(type='path', default='/usr/ports'),

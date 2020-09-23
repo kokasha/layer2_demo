@@ -33,7 +33,6 @@ module: gcp_compute_region_autoscaler_info
 description:
 - Gather info for GCP RegionAutoscaler
 short_description: Gather info for GCP RegionAutoscaler
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   region:
     description:
     - URL of the region where the instance group resides.
@@ -82,6 +82,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -177,6 +178,11 @@ resources:
             To do this, create an instance and time the startup process.
           returned: success
           type: int
+        mode:
+          description:
+          - Defines operating mode for this policy.
+          returned: success
+          type: str
         cpuUtilization:
           description:
           - Defines the CPU utilization policy that allows the autoscaler to scale
@@ -225,7 +231,7 @@ resources:
             utilizationTargetType:
               description:
               - Defines how target utilization value is expressed for a Stackdriver
-                Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.
+                Monitoring metric.
               returned: success
               type: str
         loadBalancingUtilization:
@@ -256,7 +262,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

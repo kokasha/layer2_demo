@@ -33,11 +33,11 @@ options:
 
 EXAMPLES = r'''
 - name: Gather Scaleway ips information
-  scaleway_ip_info:
+  community.general.scaleway_ip_info:
     region: par1
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.scaleway_ip_info }}"
 '''
 

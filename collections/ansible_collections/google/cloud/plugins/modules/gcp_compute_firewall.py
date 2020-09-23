@@ -40,7 +40,6 @@ description:
   incoming traffic. For all networks except the default network, you must create any
   firewall rules you need.
 short_description: Creates a GCP Firewall
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -67,8 +66,8 @@ options:
         description:
         - The IP protocol to which this rule applies. The protocol type is required
           when creating a firewall rule. This value can either be one of the following
-          well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol
-          number.
+          well known protocol strings (tcp, udp, icmp, esp, ah, sctp, ipip), or the
+          IP protocol number.
         required: true
         type: str
       ports:
@@ -88,14 +87,13 @@ options:
     elements: dict
     required: false
     type: list
-    version_added: '2.8'
     suboptions:
       ip_protocol:
         description:
         - The IP protocol to which this rule applies. The protocol type is required
           when creating a firewall rule. This value can either be one of the following
-          well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol
-          number.
+          well known protocol strings (tcp, udp, icmp, esp, ah, sctp, ipip), or the
+          IP protocol number.
         required: true
         type: str
       ports:
@@ -122,7 +120,6 @@ options:
     elements: str
     required: false
     type: list
-    version_added: '2.8'
   direction:
     description:
     - 'Direction of traffic to which this firewall applies; default is INGRESS. Note:
@@ -131,7 +128,6 @@ options:
     - 'Some valid choices include: "INGRESS", "EGRESS"'
     required: false
     type: str
-    version_added: '2.8'
   disabled:
     description:
     - Denotes whether the firewall rule is disabled, i.e not applied to the network
@@ -140,21 +136,25 @@ options:
       rule will be enabled.
     required: false
     type: bool
-    version_added: '2.8'
   log_config:
     description:
-    - This field denotes whether to enable logging for a particular firewall rule.
-      If logging is enabled, logs will be exported to Stackdriver.
+    - This field denotes the logging options for a particular firewall rule.
+    - If logging is enabled, logs will be exported to Cloud Logging.
     required: false
     type: dict
-    version_added: '2.10'
     suboptions:
-      enable_logging:
+      enable:
         description:
         - This field denotes whether to enable logging for a particular firewall rule.
           If logging is enabled, logs will be exported to Stackdriver.
         required: false
         type: bool
+      metadata:
+        description:
+        - This field denotes whether to include or exclude metadata for firewall logs.
+        - 'Some valid choices include: "EXCLUDE_ALL_METADATA", "INCLUDE_ALL_METADATA"'
+        required: false
+        type: str
   name:
     description:
     - Name of the resource. Provided by the client when the resource is created. The
@@ -192,7 +192,6 @@ options:
     required: false
     default: '1000'
     type: int
-    version_added: '2.8'
   source_ranges:
     description:
     - If source ranges are specified, the firewall will apply only to traffic that
@@ -219,7 +218,6 @@ options:
     elements: str
     required: false
     type: list
-    version_added: '2.8'
   source_tags:
     description:
     - If source tags are specified, the firewall will apply only to traffic with source
@@ -243,7 +241,6 @@ options:
     elements: str
     required: false
     type: list
-    version_added: '2.8'
   target_tags:
     description:
     - A list of instance tags indicating sets of instances located in the network
@@ -284,6 +281,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -336,8 +334,8 @@ allowed:
       description:
       - The IP protocol to which this rule applies. The protocol type is required
         when creating a firewall rule. This value can either be one of the following
-        well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol
-        number.
+        well known protocol strings (tcp, udp, icmp, esp, ah, sctp, ipip), or the
+        IP protocol number.
       returned: success
       type: str
     ports:
@@ -364,8 +362,8 @@ denied:
       description:
       - The IP protocol to which this rule applies. The protocol type is required
         when creating a firewall rule. This value can either be one of the following
-        well known protocol strings (tcp, udp, icmp, esp, ah, sctp), or the IP protocol
-        number.
+        well known protocol strings (tcp, udp, icmp, esp, ah, sctp, ipip), or the
+        IP protocol number.
       returned: success
       type: str
     ports:
@@ -406,17 +404,22 @@ disabled:
   type: bool
 logConfig:
   description:
-  - This field denotes whether to enable logging for a particular firewall rule. If
-    logging is enabled, logs will be exported to Stackdriver.
+  - This field denotes the logging options for a particular firewall rule.
+  - If logging is enabled, logs will be exported to Cloud Logging.
   returned: success
   type: complex
   contains:
-    enableLogging:
+    enable:
       description:
       - This field denotes whether to enable logging for a particular firewall rule.
         If logging is enabled, logs will be exported to Stackdriver.
       returned: success
       type: bool
+    metadata:
+      description:
+      - This field denotes whether to include or exclude metadata for firewall logs.
+      returned: success
+      type: str
 id:
   description:
   - The unique identifier for the resource.
@@ -539,7 +542,7 @@ def main():
             destination_ranges=dict(type='list', elements='str'),
             direction=dict(type='str'),
             disabled=dict(type='bool'),
-            log_config=dict(type='dict', options=dict(enable_logging=dict(type='bool'))),
+            log_config=dict(type='dict', options=dict(enable=dict(type='bool'), metadata=dict(type='str'))),
             name=dict(required=True, type='str'),
             network=dict(default=dict(selfLink='global/networks/default'), type='dict'),
             priority=dict(default=1000, type='int'),
@@ -550,7 +553,6 @@ def main():
             target_tags=dict(type='list', elements='str'),
         ),
         mutually_exclusive=[
-            ['allowed', 'denied'],
             ['destination_ranges', 'source_ranges', 'source_tags'],
             ['destination_ranges', 'source_ranges'],
             ['source_service_accounts', 'source_tags', 'target_tags'],
@@ -818,10 +820,10 @@ class FirewallLogconfig(object):
             self.request = {}
 
     def to_request(self):
-        return remove_nones_from_dict({u'enable': self.request.get('enable_logging')})
+        return remove_nones_from_dict({u'enable': self.request.get('enable'), u'metadata': self.request.get('metadata')})
 
     def from_response(self):
-        return remove_nones_from_dict({u'enable': self.request.get(u'enable')})
+        return remove_nones_from_dict({u'enable': self.request.get(u'enable'), u'metadata': self.request.get(u'metadata')})
 
 
 if __name__ == '__main__':

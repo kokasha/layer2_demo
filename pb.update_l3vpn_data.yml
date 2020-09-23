@@ -5,7 +5,7 @@
   collections:
     - awx.awx
   vars:
-    netbox_url: http://192.168.0.188
+    netbox_url: http://192.168.0.142:8080
     netbox_token: 0123456789abcdef0123456789abcdef01234567
 
   tasks:
@@ -21,7 +21,7 @@
 
     - name: Update Job Template
       tower_job_template:
-        name: 'countrytell.l3vpn_deployment'
+        name: 'layer2.l3vpn_deployment'
         tower_config_file: 'tower_cli.cfg'
         validate_certs: no
         survey_spec: "{{ lookup('template','templates/l3vpn_survey.j2') }}"

@@ -20,7 +20,7 @@ author: Sumit Kumar (@timuster) <sumit4@netapp.com>
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: Updated modules released with increased functionality
-  alternative: Use M(na_ontap_user_role) instead.
+  alternative: Use M(netapp.ontap.na_ontap_user_role) instead.
 
 description:
 - Create or destroy user roles
@@ -59,7 +59,7 @@ options:
 EXAMPLES = """
 
     - name: Create User Role
-      na_cdot_user_role:
+      community.general.na_cdot_user_role:
         state: present
         name: ansibleRole
         command_directory_name: DEFAULT

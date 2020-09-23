@@ -33,7 +33,6 @@ module: gcp_dns_managed_zone_info
 description:
 - Gather info for GCP ManagedZone
 short_description: Gather info for GCP ManagedZone
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -44,6 +43,7 @@ options:
     description:
     - Restricts the list to return only zones with this domain name.
     type: list
+    elements: str
   project:
     description:
     - The Google Cloud Platform project to use.
@@ -75,6 +75,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -135,6 +136,7 @@ resources:
           description:
           - Specifies the mechanism used to provide authenticated denial-of-existence
             responses.
+          - non_existence can only be updated when the state is `off`.
           returned: success
           type: str
         state:
@@ -147,6 +149,7 @@ resources:
           - Specifies parameters that will be used for generating initial DnsKeys
             for this ManagedZone. If you provide a spec for keySigning or zoneSigning,
             you must also provide one for the other.
+          - default_key_specs can only be updated when the state is `off`.
           returned: success
           type: complex
           contains:
@@ -213,7 +216,6 @@ resources:
       description:
       - 'The zone''s visibility: public zones are exposed to the Internet, while private
         zones are visible only to Virtual Private Cloud resources.'
-      - 'Must be one of: `public`, `private`.'
       returned: success
       type: str
     privateVisibilityConfig:
@@ -236,12 +238,61 @@ resources:
                 .
               returned: success
               type: str
+    forwardingConfig:
+      description:
+      - The presence for this field indicates that outbound forwarding is enabled
+        for this zone. The value of this field contains the set of destinations to
+        forward to.
+      returned: success
+      type: complex
+      contains:
+        targetNameServers:
+          description:
+          - List of target name servers to forward to. Cloud DNS will select the best
+            available name server if more than one target is given.
+          returned: success
+          type: complex
+          contains:
+            ipv4Address:
+              description:
+              - IPv4 address of a target name server.
+              returned: success
+              type: str
+            forwardingPath:
+              description:
+              - Forwarding path for this TargetNameServer. If unset or `default` Cloud
+                DNS will make forwarding decision based on address ranges, i.e. RFC1918
+                addresses go to the VPC, Non-RFC1918 addresses go to the Internet.
+                When set to `private`, Cloud DNS will always send queries through
+                VPC for this target .
+              returned: success
+              type: str
+    peeringConfig:
+      description:
+      - The presence of this field indicates that DNS Peering is enabled for this
+        zone. The value of this field contains the network to peer with.
+      returned: success
+      type: complex
+      contains:
+        targetNetwork:
+          description:
+          - The network with which to peer.
+          returned: success
+          type: complex
+          contains:
+            networkUrl:
+              description:
+              - The fully qualified URL of the VPC network to forward queries to.
+              - This should be formatted like `U(https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}`)
+                .
+              returned: success
+              type: str
 '''
 
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

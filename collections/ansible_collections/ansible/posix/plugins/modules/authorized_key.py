@@ -14,6 +14,7 @@ module: authorized_key
 short_description: Adds or removes an SSH authorized key
 description:
     - Adds or removes SSH authorized keys for particular user accounts.
+version_added: "1.0.0"
 options:
   user:
     description:
@@ -326,7 +327,10 @@ def keyfile(module, user, write=False, path=None, manage_dir=True, follow=False)
 
     if manage_dir:
         if not os.path.exists(sshdir):
-            os.mkdir(sshdir, int('0700', 8))
+            try:
+                os.mkdir(sshdir, int('0700', 8))
+            except OSError as e:
+                module.fail_json(msg="Failed to create directory %s : %s" % (sshdir, to_native(e)))
             if module.selinux_enabled():
                 module.set_default_selinux_context(sshdir, False)
         os.chown(sshdir, uid, gid)
@@ -383,10 +387,12 @@ def parsekey(module, raw_key, rank=None):
     '''
 
     VALID_SSH2_KEY_TYPES = [
-        'ssh-ed25519',
+        'sk-ecdsa-sha2-nistp256@openssh.com',
         'ecdsa-sha2-nistp256',
         'ecdsa-sha2-nistp384',
         'ecdsa-sha2-nistp521',
+        'sk-ssh-ed25519@openssh.com',
+        'ssh-ed25519',
         'ssh-dss',
         'ssh-rsa',
     ]
@@ -462,15 +468,14 @@ def parsekeys(module, lines):
 
 
 def writefile(module, filename, content):
-
-    fd, tmp_path = tempfile.mkstemp('', 'tmp', os.path.dirname(filename))
-    f = open(tmp_path, "w")
+    dummy, tmp_path = tempfile.mkstemp()
 
     try:
-        f.write(content)
+        with open(tmp_path, "w") as f:
+            f.write(content)
     except IOError as e:
+        module.add_cleanup_file(tmp_path)
         module.fail_json(msg="Failed to write to file %s: %s" % (tmp_path, to_native(e)))
-    f.close()
     module.atomic_move(tmp_path, filename)
 
 
@@ -631,13 +636,9 @@ def enforce_state(module, params):
             }
             params['diff'] = diff
 
-        if module.check_mode:
-            module.exit_json(changed=True, diff=diff)
-        writefile(module, filename, new_content)
+        if not module.check_mode:
+            writefile(module, filename, new_content)
         params['changed'] = True
-    else:
-        if module.check_mode:
-            module.exit_json(changed=False)
 
     return params
 

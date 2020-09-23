@@ -16,8 +16,8 @@ description:
 - Users are roles with login privilege.
 - Groups are PostgreSQL roles usually without LOGIN privilege.
 - "Common use case:"
-- 1) add a new group (groups) by M(postgresql_user) module with I(role_attr_flags=NOLOGIN)
-- 2) grant them desired privileges by M(postgresql_privs) module
+- 1) add a new group (groups) by M(community.general.postgresql_user) module with I(role_attr_flags=NOLOGIN)
+- 2) grant them desired privileges by M(community.general.postgresql_privs) module
 - 3) add desired PostgreSQL users to the new group (groups) by this module
 options:
   groups:
@@ -75,9 +75,9 @@ options:
     default: yes
     version_added: '0.2.0'
 seealso:
-- module: postgresql_user
-- module: postgresql_privs
-- module: postgresql_owner
+- module: community.general.postgresql_user
+- module: community.general.postgresql_privs
+- module: community.general.postgresql_owner
 - name: PostgreSQL role membership reference
   description: Complete reference of the PostgreSQL role membership documentation.
   link: https://www.postgresql.org/docs/current/role-membership.html
@@ -93,7 +93,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Grant role read_only to alice and bob
-  postgresql_membership:
+  community.general.postgresql_membership:
     group: read_only
     target_roles:
     - alice
@@ -103,7 +103,7 @@ EXAMPLES = r'''
 # you can also use target_roles: alice,bob,etc to pass the role list
 
 - name: Revoke role read_only and exec_func from bob. Ignore if roles don't exist
-  postgresql_membership:
+  community.general.postgresql_membership:
     groups:
     - read_only
     - exec_func

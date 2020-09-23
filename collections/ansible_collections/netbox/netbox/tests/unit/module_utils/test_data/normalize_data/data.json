@@ -298,6 +298,16 @@
     {
         "before": {
             "interface": {
+                "id": "123"
+            }
+        },
+        "after": {
+            "interface": 123
+        }
+    },
+    {
+        "before": {
+            "interface": {
                 "vrf": "Test VRF"
             }
         },
@@ -317,6 +327,22 @@
             "vlan": {
                 "vlan_group": "test-vlan-group"
             }
+        }
+    },
+    {
+        "before": {
+            "description": "White space       "
+        },
+        "after": {
+            "description": "White space"
+        }
+    },
+    {
+        "before": {
+            "mac_address": "aa:bb:cc:dd:ee:ff"
+        },
+        "after": {
+            "mac_address": "AA:BB:CC:DD:EE:FF"
         }
     }
 ]

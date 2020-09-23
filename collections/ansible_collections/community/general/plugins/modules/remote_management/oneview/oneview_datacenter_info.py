@@ -12,7 +12,7 @@ short_description: Retrieve information about the OneView Data Centers
 description:
     - Retrieve information about the OneView Data Centers.
     - This module was called C(oneview_datacenter_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_datacenter_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_datacenter_info) module no longer returns C(ansible_facts)!
 requirements:
     - "hpOneView >= 2.0.1"
 author:
@@ -36,18 +36,18 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all Data Centers
-  oneview_datacenter_info:
+  community.general.oneview_datacenter_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
     api_version: 500
   delegate_to: localhost
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.datacenters }}"
 
 - name: Gather paginated, filtered and sorted information about Data Centers
-  oneview_datacenter_info:
+  community.general.oneview_datacenter_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -58,11 +58,11 @@ EXAMPLES = '''
       sort: 'name:descending'
       filter: 'state=Unmanaged'
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.datacenters }}"
 
 - name: Gather information about a Data Center by name
-  oneview_datacenter_info:
+  community.general.oneview_datacenter_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -70,11 +70,11 @@ EXAMPLES = '''
     name: "My Data Center"
   delegate_to: localhost
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.datacenters }}"
 
 - name: Gather information about the Data Center Visual Content
-  oneview_datacenter_info:
+  community.general.oneview_datacenter_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -84,9 +84,9 @@ EXAMPLES = '''
       - visualContent
   delegate_to: localhost
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.datacenters }}"
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.datacenter_visual_content }}"
 '''
 

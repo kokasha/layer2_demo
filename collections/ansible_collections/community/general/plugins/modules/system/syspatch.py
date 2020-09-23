@@ -35,25 +35,25 @@ author:
 
 EXAMPLES = '''
 - name: Apply all available system patches
-  syspatch:
+  community.general.syspatch:
     apply: true
 
 - name: Revert last patch
-  syspatch:
+  community.general.syspatch:
     revert: one
 
 - name: Revert all patches
-  syspatch:
+  community.general.syspatch:
     revert: all
 
 # NOTE: You can reboot automatically if a patch requires it:
 - name: Apply all patches and store result
-  syspatch:
+  community.general.syspatch:
     apply: true
   register: syspatch
 
 - name: Reboot if patch requires it
-  reboot:
+  ansible.builtin.reboot:
   when: syspatch.reboot_needed
 '''
 

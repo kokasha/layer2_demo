@@ -66,30 +66,30 @@ author:
 
 EXAMPLES = '''
 - name: Gather facts about all images
-  one_image_info:
+  community.general.one_image_info:
   register: result
 
 - name: Print all images facts
-  debug:
+  ansible.builtin.debug:
     msg: result
 
 - name: Gather facts about an image using ID
-  one_image_info:
+  community.general.one_image_info:
     ids:
       - 123
 
 - name: Gather facts about an image using the name
-  one_image_info:
+  community.general.one_image_info:
     name: 'foo-image'
   register: foo_image
 
 - name: Gather facts about all IMAGEs whose name matches regex 'app-image-.*'
-  one_image_info:
+  community.general.one_image_info:
     name: '~app-image-.*'
   register: app_images
 
 - name: Gather facts about all IMAGEs whose name matches regex 'foo-image-.*' ignoring cases
-  one_image_info:
+  community.general.one_image_info:
     name: '~*foo-image-.*'
   register: foo_images
 '''

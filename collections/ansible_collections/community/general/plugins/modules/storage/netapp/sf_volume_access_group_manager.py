@@ -13,7 +13,7 @@ module: sf_volume_access_group_manager
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: This Module has been replaced
-  alternative: please use M(na_elementsw_access_group)
+  alternative: please use M(netapp.elementsw.na_elementsw_access_group)
 short_description: Manage SolidFire Volume Access Groups
 extends_documentation_fragment:
 - community.general._netapp.solidfire
@@ -62,7 +62,7 @@ options:
 
 EXAMPLES = """
    - name: Create Volume Access Group
-     sf_volume_access_group_manager:
+     community.general.sf_volume_access_group_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"
@@ -71,7 +71,7 @@ EXAMPLES = """
        volumes: [7,8]
 
    - name: Modify Volume Access Group
-     sf_volume_access_group_manager:
+     community.general.sf_volume_access_group_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"
@@ -81,7 +81,7 @@ EXAMPLES = """
        attributes: {"volumes": [1,2,3], "virtual_network_id": 12345}
 
    - name: Delete Volume Access Group
-     sf_volume_access_group_manager:
+     community.general.sf_volume_access_group_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"

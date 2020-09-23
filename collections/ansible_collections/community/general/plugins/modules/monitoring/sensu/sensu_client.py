@@ -83,13 +83,13 @@ notes:
 EXAMPLES = '''
 # Minimum possible configuration
 - name: Configure Sensu client
-  sensu_client:
+  community.general.sensu_client:
     subscriptions:
       - default
 
 # With customization
 - name: Configure Sensu client
-  sensu_client:
+  community.general.sensu_client:
     name: "{{ ansible_fqdn }}"
     address: "{{ ansible_default_ipv4['address'] }}"
     subscriptions:
@@ -114,14 +114,14 @@ EXAMPLES = '''
     - Restart sensu-client
 
 - name: Secure Sensu client configuration file
-  file:
+  ansible.builtin.file:
     path: "{{ client['file'] }}"
     owner: "sensu"
     group: "sensu"
     mode: "0600"
 
 - name: Delete the Sensu client configuration
-  sensu_client:
+  community.general.sensu_client:
     state: "absent"
 '''
 

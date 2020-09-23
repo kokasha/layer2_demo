@@ -21,7 +21,7 @@ description:
    - The module allows to reset parameter to boot_val (cluster initial value) by I(reset=yes) or remove parameter
      string from postgresql.auto.conf and reload I(value=default) (for settings with postmaster context restart is required).
    - After change you can see in the ansible output the previous and
-     the new parameter value and other information using returned values and M(debug) module.
+     the new parameter value and other information using returned values and M(ansible.builtin.debug) module.
 options:
   name:
     description:
@@ -71,7 +71,7 @@ notes:
 - For some parameters restart of PostgreSQL server is required.
   See official documentation U(https://www.postgresql.org/docs/current/view-pg-settings.html).
 seealso:
-- module: postgresql_info
+- module: community.general.postgresql_info
 - name: PostgreSQL server configuration
   description: General information about PostgreSQL server configuration.
   link: https://www.postgresql.org/docs/current/runtime-config.html
@@ -90,19 +90,19 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Restore wal_keep_segments parameter to initial state
-  postgresql_set:
+  community.general.postgresql_set:
     name: wal_keep_segments
     reset: yes
 
 # Set work_mem parameter to 32MB and show what's been changed and restart is required or not
 # (output example: "msg": "work_mem 4MB >> 64MB restart_req: False")
 - name: Set work mem parameter
-  postgresql_set:
+  community.general.postgresql_set:
     name: work_mem
     value: 32mb
   register: set
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ set.name }} {{ set.prev_val_pretty }} >> {{ set.value_pretty }} restart_req: {{ set.restart_required }}"
   when: set.changed
 # Ensure that the restart of PostgreSQL server must be required for some parameters.
@@ -110,12 +110,12 @@ EXAMPLES = r'''
 # (If you passed the value that was different from the current server setting).
 
 - name: Set log_min_duration_statement parameter to 1 second
-  postgresql_set:
+  community.general.postgresql_set:
     name: log_min_duration_statement
     value: 1s
 
 - name: Set wal_log_hints parameter to default value (remove parameter from postgresql.auto.conf)
-  postgresql_set:
+  community.general.postgresql_set:
     name: wal_log_hints
     value: default
 '''
@@ -314,10 +314,10 @@ def main():
             if value[:-2].isdigit() and unit in value[-2:]:
                 value = value.upper()
 
-    if value and reset:
+    if value is not None and reset:
         module.fail_json(msg="%s: value and reset params are mutually exclusive" % name)
 
-    if not value and not reset:
+    if value is None and not reset:
         module.fail_json(msg="%s: at least one of value or reset param must be specified" % name)
 
     conn_params = get_conn_params(module, module.params, warn_db_default=False)
@@ -388,8 +388,8 @@ def main():
         kw['restart_required'] = restart_required
         module.exit_json(**kw)
 
-    # Set param:
-    if value and value != current_value:
+    # Set param (value can be an empty string):
+    if value is not None and value != current_value:
         changed = param_set(cursor, module, name, value, context)
 
         kw['value_pretty'] = value
@@ -405,9 +405,6 @@ def main():
             module.exit_json(**kw)
 
         changed = param_set(cursor, module, name, boot_val, context)
-
-    if restart_required:
-        module.warn("Restart of PostgreSQL is required for setting %s" % name)
 
     cursor.close()
     db_connection.close()
@@ -439,6 +436,10 @@ def main():
 
     kw['changed'] = changed
     kw['restart_required'] = restart_required
+
+    if restart_required and changed:
+        module.warn("Restart of PostgreSQL is required for setting %s" % name)
+
     module.exit_json(**kw)
 
 

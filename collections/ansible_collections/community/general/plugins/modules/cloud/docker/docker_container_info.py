@@ -15,7 +15,7 @@ short_description: Retrieves facts about docker container
 
 description:
   - Retrieves facts about a docker container.
-  - Essentially returns the output of C(docker inspect <name>), similar to what M(docker_container)
+  - Essentially returns the output of C(docker inspect <name>), similar to what M(community.general.docker_container)
     returns for a non-absent container.
 
 
@@ -41,16 +41,16 @@ requirements:
 
 EXAMPLES = '''
 - name: Get infos on container
-  docker_container_info:
+  community.general.docker_container_info:
     name: mydata
   register: result
 
 - name: Does container exist?
-  debug:
+  ansible.builtin.debug:
     msg: "The container {{ 'exists' if result.exists else 'does not exist' }}"
 
 - name: Print information about container
-  debug:
+  ansible.builtin.debug:
     var: result.container
   when: result.exists
 '''

@@ -33,7 +33,6 @@ module: gcp_compute_resource_policy_info
 description:
 - Gather info for GCP ResourcePolicy
 short_description: Gather info for GCP ResourcePolicy
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -46,6 +45,7 @@ options:
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
     type: list
+    elements: str
   region:
     description:
     - Region where resource policy resides.
@@ -82,6 +82,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -217,7 +218,6 @@ resources:
               description:
               - Specifies the behavior to apply to scheduled snapshots when the source
                 disk is deleted.
-              - Valid options are KEEP_AUTO_SNAPSHOTS and APPLY_RETENTION_POLICY .
               returned: success
               type: str
         snapshotProperties:
@@ -242,6 +242,34 @@ resources:
               - Whether to perform a 'guest aware' snapshot.
               returned: success
               type: bool
+    groupPlacementPolicy:
+      description:
+      - Policy for creating snapshots of persistent disks.
+      returned: success
+      type: complex
+      contains:
+        vmCount:
+          description:
+          - Number of vms in this placement group.
+          returned: success
+          type: int
+        availabilityDomainCount:
+          description:
+          - The number of availability domains instances will be spread across. If
+            two instances are in different availability domain, they will not be put
+            in the same low latency network .
+          returned: success
+          type: int
+        collocation:
+          description:
+          - Collocation specifies whether to place VMs inside the same availability
+            domain on the same low-latency network.
+          - Specify `COLLOCATED` to enable collocation. Can only be specified with
+            `vm_count`. If compute instances are created with a COLLOCATED policy,
+            then exactly `vm_count` instances must be created at the same time with
+            the resource policy attached.
+          returned: success
+          type: str
     region:
       description:
       - Region where resource policy resides.
@@ -252,7 +280,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
 import json
 
 ################################################################################

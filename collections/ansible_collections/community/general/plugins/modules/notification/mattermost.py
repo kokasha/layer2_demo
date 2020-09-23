@@ -57,13 +57,13 @@ options:
 
 EXAMPLES = """
 - name: Send notification message via Mattermost
-  mattermost:
+  community.general.mattermost:
     url: http://mattermost.example.com
     api_key: my_api_key
     text: '{{ inventory_hostname }} completed'
 
 - name: Send notification message via Mattermost all options
-  mattermost:
+  community.general.mattermost:
     url: http://mattermost.example.com
     api_key: my_api_key
     text: '{{ inventory_hostname }} completed'
@@ -97,7 +97,7 @@ def main():
             channel=dict(type='str', default=None),
             username=dict(type='str', default='Ansible'),
             icon_url=dict(type='str', default='https://www.ansible.com/favicon.ico'),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
         )
     )
     # init return dict

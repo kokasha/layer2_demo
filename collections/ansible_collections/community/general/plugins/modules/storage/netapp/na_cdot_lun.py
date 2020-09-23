@@ -20,7 +20,7 @@ author: Sumit Kumar (@timuster) <sumit4@netapp.com>
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: Updated modules released with increased functionality
-  alternative: Use M(na_ontap_lun) instead.
+  alternative: Use M(netapp.ontap.na_ontap_lun) instead.
 
 description:
 - Create, destroy, resize luns on NetApp cDOT.
@@ -81,7 +81,7 @@ options:
 
 EXAMPLES = """
 - name: Create LUN
-  na_cdot_lun:
+  community.general.na_cdot_lun:
     state: present
     name: ansibleLUN
     flexvol_name: ansibleVolume
@@ -93,7 +93,7 @@ EXAMPLES = """
     password: "{{ netapp_password }}"
 
 - name: Resize Lun
-  na_cdot_lun:
+  community.general.na_cdot_lun:
     state: present
     name: ansibleLUN
     force_resize: True

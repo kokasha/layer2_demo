@@ -39,6 +39,7 @@ options:
     - A list of field names for every column.
     - This is needed if the CSV does not have a header.
     type: list
+    elements: str
   unique:
     description:
     - Whether the C(key) used is expected to be unique.
@@ -75,23 +76,23 @@ EXAMPLES = r'''
 
 # Read a CSV file and access user 'dag'
 - name: Read users from CSV file and return a dictionary
-  read_csv:
+  community.general.read_csv:
     path: users.csv
     key: name
   register: users
   delegate_to: localhost
 
-- debug:
+- ansible.builtin.debug:
     msg: 'User {{ users.dict.dag.name }} has UID {{ users.dict.dag.uid }} and GID {{ users.dict.dag.gid }}'
 
 # Read a CSV file and access the first item
 - name: Read users from CSV file and return a list
-  read_csv:
+  community.general.read_csv:
     path: users.csv
   register: users
   delegate_to: localhost
 
-- debug:
+- ansible.builtin.debug:
     msg: 'User {{ users.list.1.name }} has UID {{ users.list.1.uid }} and GID {{ users.list.1.gid }}'
 
 # Example CSV file without header and semi-colon delimiter
@@ -101,7 +102,7 @@ EXAMPLES = r'''
 
 # Read a CSV file without headers
 - name: Read users from CSV file and return a list
-  read_csv:
+  community.general.read_csv:
     path: users.csv
     fieldnames: name,uid,gid
     delimiter: ';'
@@ -164,7 +165,7 @@ def main():
             path=dict(type='path', required=True, aliases=['filename']),
             dialect=dict(type='str', default='excel'),
             key=dict(type='str'),
-            fieldnames=dict(type='list'),
+            fieldnames=dict(type='list', elements='str'),
             unique=dict(type='bool', default=True),
             delimiter=dict(type='str'),
             skipinitialspace=dict(type='bool'),

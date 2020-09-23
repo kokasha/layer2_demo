@@ -22,12 +22,12 @@ options:
 EXAMPLES = '''
 # Pass the process name
 - name: Getting process IDs of the process
-  pids:
+  community.general.pids:
       name: python
   register: pids_of_python
 
 - name: Printing the process IDs obtained
-  debug:
+  ansible.builtin.debug:
     msg: "PIDS of python:{{pids_of_python.pids|join(',')}}"
 '''
 

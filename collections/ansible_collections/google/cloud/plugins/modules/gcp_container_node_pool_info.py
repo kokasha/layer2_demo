@@ -33,7 +33,6 @@ module: gcp_container_node_pool_info
 description:
 - Gather info for GCP NodePool
 short_description: Gather info for GCP NodePool
-version_added: '2.8'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -48,7 +47,6 @@ options:
     aliases:
     - region
     - zone
-    version_added: '2.8'
   cluster:
     description:
     - The cluster this node pool belongs to.
@@ -90,6 +88,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -272,6 +271,29 @@ resources:
               - Effect for taint.
               returned: success
               type: str
+        shieldedInstanceConfig:
+          description:
+          - Shielded Instance options.
+          returned: success
+          type: complex
+          contains:
+            enableSecureBoot:
+              description:
+              - Defines whether the instance has Secure Boot enabled.
+              - Secure Boot helps ensure that the system only runs authentic software
+                by verifying the digital signature of all boot components, and halting
+                the boot process if signature verification fails.
+              returned: success
+              type: bool
+            enableIntegrityMonitoring:
+              description:
+              - Defines whether the instance has integrity monitoring enabled.
+              - Enables monitoring and attestation of the boot integrity of the instance.
+              - The attestation is performed against the integrity policy baseline.
+                This baseline is initially derived from the implicitly trusted boot
+                image when the instance is created.
+              returned: success
+              type: bool
     initialNodeCount:
       description:
       - The initial node count for the pool. You must ensure that your Compute Engine
@@ -399,7 +421,7 @@ resources:
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest, replace_resource_dict
+from ansible_collections.google.cloud.plugins.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest, replace_resource_dict
 import json
 
 ################################################################################

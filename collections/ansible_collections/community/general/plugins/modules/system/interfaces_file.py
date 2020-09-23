@@ -15,7 +15,7 @@ short_description: Tweak settings in /etc/network/interfaces files
 extends_documentation_fragment: files
 description:
      - Manage (add, remove, change) individual interface options in an interfaces-style file without having
-       to manage the file as a whole with, say, M(template) or M(assemble). Interface has to be presented in a file.
+       to manage the file as a whole with, say, M(ansible.builtin.template) or M(ansible.builtin.assemble). Interface has to be presented in a file.
      - Read information about interfaces from interfaces-styled files
 options:
   dest:
@@ -124,7 +124,7 @@ ifaces:
 
 EXAMPLES = '''
 - name: Set eth1 mtu configuration value to 8000
-  interfaces_file:
+  community.general.interfaces_file:
     dest: /etc/network/interfaces.d/eth1.cfg
     iface: eth1
     option: mtu

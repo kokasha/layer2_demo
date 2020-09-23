@@ -13,7 +13,7 @@ module: online_server_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favour of C(_info) module.
-  alternative: Use M(online_server_info) instead.
+  alternative: Use M(community.general.online_server_info) instead.
 short_description: Gather facts about Online servers.
 description:
   - Gather facts about the servers.
@@ -27,7 +27,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Gather Online server facts
-  online_server_facts:
+  community.general.online_server_facts:
     api_token: '0d1627e8-bbf0-44c5-a46f-5c4d3aef033f'
 '''
 

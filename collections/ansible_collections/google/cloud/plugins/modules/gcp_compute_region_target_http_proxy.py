@@ -34,7 +34,6 @@ description:
 - Represents a RegionTargetHttpProxy resource, which is used by one or more forwarding
   rules to route incoming HTTP requests to a URL map.
 short_description: Creates a GCP RegionTargetHttpProxy
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -111,6 +110,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -118,7 +118,7 @@ options:
     - This only alters the User Agent string for any API requests.
     type: str
 notes:
-- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/beta/regionTargetHttpProxies)'
+- 'API Reference: U(https://cloud.google.com/compute/docs/reference/rest/v1/regionTargetHttpProxies)'
 - 'Official Documentation: U(https://cloud.google.com/compute/docs/load-balancing/http/target-proxies)'
 - for authentication, you can set service_account_file using the C(gcp_service_account_file)
   env variable.

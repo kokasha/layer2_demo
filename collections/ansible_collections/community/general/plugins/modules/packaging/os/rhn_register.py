@@ -16,7 +16,7 @@ description:
 author:
 - James Laska (@jlaska)
 notes:
-    - This is for older Red Hat products. You probably want the M(redhat_subscription) module instead.
+    - This is for older Red Hat products. You probably want the M(community.general.redhat_subscription) module instead.
     - In order to register a system, C(rhnreg_ks) requires either a username and password, or an activationkey.
 requirements:
     - rhnreg_ks
@@ -62,6 +62,7 @@ options:
         description:
             - Optionally specify a list of channels to subscribe to upon successful registration.
         type: list
+        elements: str
         default: []
     enable_eus:
         description:
@@ -77,38 +78,38 @@ options:
 
 EXAMPLES = r'''
 - name: Unregister system from RHN
-  rhn_register:
+  community.general.rhn_register:
     state: absent
     username: joe_user
     password: somepass
 
 - name: Register as user with password and auto-subscribe to available content
-  rhn_register:
+  community.general.rhn_register:
     state: present
     username: joe_user
     password: somepass
 
 - name: Register with activationkey and enable extended update support
-  rhn_register:
+  community.general.rhn_register:
     state: present
     activationkey: 1-222333444
     enable_eus: yes
 
 - name: Register with activationkey and set a profilename which may differ from the hostname
-  rhn_register:
+  community.general.rhn_register:
     state: present
     activationkey: 1-222333444
     profilename: host.example.com.custom
 
 - name: Register as user with password against a satellite server
-  rhn_register:
+  community.general.rhn_register:
     state: present
     username: joe_user
     password: somepass
     server_url: https://xmlrpc.my.satellite/XMLRPC
 
 - name: Register as user with password and enable channels
-  rhn_register:
+  community.general.rhn_register:
     state: present
     username: joe_user
     password: somepass
@@ -346,7 +347,7 @@ def main():
             systemorgid=dict(type='str'),
             enable_eus=dict(type='bool', default=False),
             nopackages=dict(type='bool', default=False),
-            channels=dict(type='list', default=[]),
+            channels=dict(type='list', elements='str', default=[]),
         ),
         # username/password is required for state=absent, or if channels is not empty
         # (basically anything that uses self.api requires username/password) but it doesn't

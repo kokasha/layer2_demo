@@ -23,7 +23,7 @@ requirements:
 deprecated:
     removed_in: 2.0.0  # was Ansible 2.12
     why: Updated modules released with increased functionality
-    alternative: Use M(gcp_compute_target_http_proxy) instead.
+    alternative: Use M(google.cloud.gcp_compute_target_http_proxy) instead.
 notes:
   - Currently only supports global HTTP proxy.
 author:
@@ -45,7 +45,7 @@ options:
 
 EXAMPLES = '''
 - name: Create Minimum HTTP Target_Proxy
-  gcp_target_proxy:
+  community.general.gcp_target_proxy:
     service_account_email: "{{ service_account_email }}"
     credentials_file: "{{ credentials_file }}"
     project_id: "{{ project_id }}"

@@ -28,7 +28,7 @@ author:
 deprecated:
     removed_in: 2.0.0  # was Ansible 2.12
     why: Updated modules released with increased functionality
-    alternative: Use M(gcp_compute_url_map) instead.
+    alternative: Use M(google.cloud.gcp_compute_url_map) instead.
 options:
   url_map_name:
     description:
@@ -70,7 +70,7 @@ options:
 
 EXAMPLES = '''
 - name: Create Minimal Url_Map
-  gcp_url_map:
+  community.general.gcp_url_map:
     service_account_email: "{{ service_account_email }}"
     credentials_file: "{{ credentials_file }}"
     project_id: "{{ project_id }}"
@@ -78,7 +78,7 @@ EXAMPLES = '''
     default_service: my-backend-service
     state: present
 - name: Create UrlMap with pathmatcher
-  gcp_url_map:
+  community.general.gcp_url_map:
     service_account_email: "{{ service_account_email }}"
     credentials_file: "{{ credentials_file }}"
     project_id: "{{ project_id }}"

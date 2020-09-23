@@ -12,7 +12,7 @@ short_description: Retrieve information about the OneView Network Sets
 description:
     - Retrieve information about the Network Sets from OneView.
     - This module was called C(oneview_network_set_facts) before Ansible 2.9, returning C(ansible_facts).
-      Note that the M(oneview_network_set_info) module no longer returns C(ansible_facts)!
+      Note that the M(community.general.oneview_network_set_info) module no longer returns C(ansible_facts)!
 requirements:
     - hpOneView >= 2.0.1
 author:
@@ -38,7 +38,7 @@ extends_documentation_fragment:
 
 EXAMPLES = '''
 - name: Gather information about all Network Sets
-  oneview_network_set_info:
+  community.general.oneview_network_set_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -47,11 +47,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.network_sets }}"
 
 - name: Gather paginated, filtered, and sorted information about Network Sets
-  oneview_network_set_info:
+  community.general.oneview_network_set_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -65,11 +65,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.network_sets }}"
 
 - name: Gather information about all Network Sets, excluding Ethernet networks
-  oneview_network_set_info:
+  community.general.oneview_network_set_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -80,11 +80,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.network_sets }}"
 
 - name: Gather information about a Network Set by name
-  oneview_network_set_info:
+  community.general.oneview_network_set_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -94,11 +94,11 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.network_sets }}"
 
 - name: Gather information about a Network Set by name, excluding Ethernet networks
-  oneview_network_set_info:
+  community.general.oneview_network_set_info:
     hostname: 172.16.101.48
     username: administrator
     password: my_password
@@ -110,7 +110,7 @@ EXAMPLES = '''
   delegate_to: localhost
   register: result
 
-- debug:
+- ansible.builtin.debug:
     msg: "{{ result.network_sets }}"
 '''
 

@@ -30,8 +30,8 @@ DOCUMENTATION = '''
 '''
 
 EXAMPLES = """
-  - debug: msg="This will not be printed"
-  - debug: msg="But this will"
+  - ansible.builtin.debug: msg="This will not be printed"
+  - ansible.builtin.debug: msg="But this will"
     tags: [print_action]
 """
 
@@ -201,7 +201,7 @@ class CallbackModule(CallbackBase):
                                      )
             if 'results' in result._result:
                 for r in result._result['results']:
-                    failed = 'failed' in r
+                    failed = 'failed' in r and r['failed']
 
                     stderr = [r.get('exception', None), r.get('module_stderr', None)]
                     stderr = "\n".join([e for e in stderr if e]).strip()

@@ -14,7 +14,7 @@ module: purefb_facts
 deprecated:
   removed_in: 3.0.0  # was Ansible 2.13
   why: Deprecated in favor of C(_info) module.
-  alternative: Use M(purefb_info) instead.
+  alternative: Use M(purestorage.flashblade.purefb_info) instead.
 short_description: Collect facts from Pure Storage FlashBlade
 description:
   - Collect facts information from a Pure Storage FlashBlade running the
@@ -40,12 +40,12 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Collect default set of facts
-  purefb_facts:
+  community.general.purefb_facts:
     fb_url: 10.10.10.2
     api_token: T-55a68eb5-c785-4720-a2ca-8b03903bf641
 
 - name: Collect configuration and capacity facts
-  purefb_facts:
+  community.general.purefb_facts:
     gather_subset:
       - config
       - capacity
@@ -53,7 +53,7 @@ EXAMPLES = r'''
     api_token: T-55a68eb5-c785-4720-a2ca-8b03903bf641
 
 - name: Collect all facts
-  purefb_facts:
+  community.general.purefb_facts:
     gather_subset:
       - all
     fb_url: 10.10.10.2

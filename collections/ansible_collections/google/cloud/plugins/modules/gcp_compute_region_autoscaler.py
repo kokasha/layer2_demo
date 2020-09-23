@@ -35,7 +35,6 @@ description:
 - Autoscalers allow you to automatically scale virtual machine instances in managed
   instance groups according to an autoscaling policy that you define.
 short_description: Creates a GCP RegionAutoscaler
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -99,6 +98,13 @@ options:
         required: false
         default: '60'
         type: int
+      mode:
+        description:
+        - Defines operating mode for this policy.
+        - 'Some valid choices include: "OFF", "ONLY_UP", "ON"'
+        required: false
+        default: 'ON'
+        type: str
       cpu_utilization:
         description:
         - Defines the CPU utilization policy that allows the autoscaler to scale based
@@ -148,7 +154,7 @@ options:
           utilization_target_type:
             description:
             - Defines how target utilization value is expressed for a Stackdriver
-              Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.
+              Monitoring metric.
             - 'Some valid choices include: "GAUGE", "DELTA_PER_SECOND", "DELTA_PER_MINUTE"'
             required: false
             type: str
@@ -206,6 +212,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -358,6 +365,11 @@ autoscalingPolicy:
         do this, create an instance and time the startup process.
       returned: success
       type: int
+    mode:
+      description:
+      - Defines operating mode for this policy.
+      returned: success
+      type: str
     cpuUtilization:
       description:
       - Defines the CPU utilization policy that allows the autoscaler to scale based
@@ -404,7 +416,7 @@ autoscalingPolicy:
         utilizationTargetType:
           description:
           - Defines how target utilization value is expressed for a Stackdriver Monitoring
-            metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.
+            metric.
           returned: success
           type: str
     loadBalancingUtilization:
@@ -467,6 +479,7 @@ def main():
                     min_num_replicas=dict(type='int'),
                     max_num_replicas=dict(required=True, type='int'),
                     cool_down_period_sec=dict(default=60, type='int'),
+                    mode=dict(default='ON', type='str'),
                     cpu_utilization=dict(type='dict', options=dict(utilization_target=dict(type='str'))),
                     custom_metric_utilizations=dict(
                         type='list',
@@ -658,6 +671,7 @@ class RegionAutoscalerAutoscalingpolicy(object):
                 u'minNumReplicas': self.request.get('min_num_replicas'),
                 u'maxNumReplicas': self.request.get('max_num_replicas'),
                 u'coolDownPeriodSec': self.request.get('cool_down_period_sec'),
+                u'mode': self.request.get('mode'),
                 u'cpuUtilization': RegionAutoscalerCpuutilization(self.request.get('cpu_utilization', {}), self.module).to_request(),
                 u'customMetricUtilizations': RegionAutoscalerCustommetricutilizationsArray(
                     self.request.get('custom_metric_utilizations', []), self.module
@@ -674,6 +688,7 @@ class RegionAutoscalerAutoscalingpolicy(object):
                 u'minNumReplicas': self.request.get(u'minNumReplicas'),
                 u'maxNumReplicas': self.request.get(u'maxNumReplicas'),
                 u'coolDownPeriodSec': self.request.get(u'coolDownPeriodSec'),
+                u'mode': self.request.get(u'mode'),
                 u'cpuUtilization': RegionAutoscalerCpuutilization(self.request.get(u'cpuUtilization', {}), self.module).from_response(),
                 u'customMetricUtilizations': RegionAutoscalerCustommetricutilizationsArray(
                     self.request.get(u'customMetricUtilizations', []), self.module

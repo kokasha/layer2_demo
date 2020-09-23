@@ -184,7 +184,7 @@ author: "Brice Burgess (@briceburg)"
 
 EXAMPLES = '''
 - name: Fetch my.com domain records
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -192,7 +192,7 @@ EXAMPLES = '''
   register: response
 
 - name: Create a record
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -202,7 +202,7 @@ EXAMPLES = '''
     record_value: 127.0.0.1
 
 - name: Update the previously created record
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -211,7 +211,7 @@ EXAMPLES = '''
     record_value: 192.0.2.23
 
 - name: Fetch a specific record
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -220,7 +220,7 @@ EXAMPLES = '''
   register: response
 
 - name: Delete a record
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -229,7 +229,7 @@ EXAMPLES = '''
     record_name: test
 
 - name: Add a failover
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -242,7 +242,7 @@ EXAMPLES = '''
     ip2: 127.0.0.3
 
 - name: Add a failover
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -258,7 +258,7 @@ EXAMPLES = '''
     ip5: 127.0.0.6
 
 - name: Add a monitor
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -275,7 +275,7 @@ EXAMPLES = '''
     contactList: my contact list
 
 - name: Add a monitor with http options
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -295,7 +295,7 @@ EXAMPLES = '''
     httpQueryString: some string
 
 - name: Add a monitor and a failover
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -314,7 +314,7 @@ EXAMPLES = '''
     contactList: emergencycontacts
 
 - name: Remove a failover
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -325,7 +325,7 @@ EXAMPLES = '''
     failover: no
 
 - name: Remove a monitor
-  dnsmadeeasy:
+  community.general.dnsmadeeasy:
     account_key: key
     account_secret: secret
     domain: my.com
@@ -530,14 +530,14 @@ def main():
             account_key=dict(required=True),
             account_secret=dict(required=True, no_log=True),
             domain=dict(required=True),
-            sandbox=dict(default='no', type='bool'),
+            sandbox=dict(default=False, type='bool'),
             state=dict(required=True, choices=['present', 'absent']),
             record_name=dict(required=False),
             record_type=dict(required=False, choices=[
                              'A', 'AAAA', 'CNAME', 'ANAME', 'HTTPRED', 'MX', 'NS', 'PTR', 'SRV', 'TXT']),
             record_value=dict(required=False),
             record_ttl=dict(required=False, default=1800, type='int'),
-            monitor=dict(default='no', type='bool'),
+            monitor=dict(default=False, type='bool'),
             systemDescription=dict(default=''),
             maxEmails=dict(default=1, type='int'),
             protocol=dict(default='HTTP', choices=['TCP', 'UDP', 'HTTP', 'DNS', 'SMTP', 'HTTPS']),
@@ -547,14 +547,14 @@ def main():
             httpFqdn=dict(required=False),
             httpFile=dict(required=False),
             httpQueryString=dict(required=False),
-            failover=dict(default='no', type='bool'),
-            autoFailover=dict(default='no', type='bool'),
+            failover=dict(default=False, type='bool'),
+            autoFailover=dict(default=False, type='bool'),
             ip1=dict(required=False),
             ip2=dict(required=False),
             ip3=dict(required=False),
             ip4=dict(required=False),
             ip5=dict(required=False),
-            validate_certs=dict(default='yes', type='bool'),
+            validate_certs=dict(default=True, type='bool'),
         ),
         required_together=[
             ['record_value', 'record_ttl', 'record_type']

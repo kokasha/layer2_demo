@@ -21,12 +21,15 @@ options:
     name:
         description:
             - name of package to install/remove
+        aliases: [pkg]
         required: true
+        type: str
     state:
         description:
             - state of the package
         choices: [ 'present', 'absent' ]
         default: present
+        type: str
     force:
         description:
             - opkg --force parameter used
@@ -43,9 +46,11 @@ options:
             - "checksum"
             - "removal-of-dependent-packages"
         default: absent
+        type: str
     update_cache:
         description:
             - update the package db first
+        aliases: ['update-cache']
         default: "no"
         type: bool
 requirements:
@@ -54,28 +59,28 @@ requirements:
 '''
 EXAMPLES = '''
 - name: Install foo
-  opkg:
+  community.general.opkg:
     name: foo
     state: present
 
 - name: Update cache and install foo
-  opkg:
+  community.general.opkg:
     name: foo
     state: present
     update_cache: yes
 
 - name: Remove foo
-  opkg:
+  community.general.opkg:
     name: foo
     state: absent
 
 - name: Remove foo and bar
-  opkg:
+  community.general.opkg:
     name: foo,bar
     state: absent
 
 - name: Install foo using overwrite option forcibly
-  opkg:
+  community.general.opkg:
     name: foo
     state: present
     force: overwrite

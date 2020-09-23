@@ -35,7 +35,6 @@ description:
   virtual machines to forward a packet to if it matches the given [IPAddress, IPProtocol,
   portRange] tuple.
 short_description: Creates a GCP ForwardingRule
-version_added: '2.6'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -81,8 +80,7 @@ options:
     type: str
   ip_protocol:
     description:
-    - The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP,
-      AH, SCTP or ICMP.
+    - The IP protocol to which this rule applies.
     - When the load balancing scheme is INTERNAL, only TCP and UDP are valid.
     - 'Some valid choices include: "TCP", "UDP", "ESP", "AH", "SCTP", "ICMP"'
     required: false
@@ -178,14 +176,12 @@ options:
     - The forwarded traffic must be of a type appropriate to the target object.
     required: false
     type: str
-    version_added: '2.7'
   allow_global_access:
     description:
     - If true, clients can access ILB from all regions.
     - Otherwise only allows from the local region the ILB is located at.
     required: false
     type: bool
-    version_added: '2.10'
   all_ports:
     description:
     - For internal TCP/UDP load balancing (i.e. load balancing scheme is INTERNAL
@@ -194,16 +190,13 @@ options:
       Used with backend service. Cannot be set if port or portRange are set.
     required: false
     type: bool
-    version_added: '2.8'
   network_tier:
     description:
-    - 'The networking tier used for configuring this address. This field can take
-      the following values: PREMIUM or STANDARD. If this field is not specified, it
-      is assumed to be PREMIUM.'
+    - The networking tier used for configuring this address. If this field is not
+      specified, it is assumed to be PREMIUM.
     - 'Some valid choices include: "PREMIUM", "STANDARD"'
     required: false
     type: str
-    version_added: '2.8'
   service_label:
     description:
     - An optional prefix to the service name for this Forwarding Rule.
@@ -216,7 +209,6 @@ options:
     - This field is only used for INTERNAL load balancing.
     required: false
     type: str
-    version_added: '2.8'
   region:
     description:
     - A reference to the region where the regional forwarding rule resides.
@@ -254,6 +246,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -352,8 +345,7 @@ IPAddress:
   type: str
 IPProtocol:
   description:
-  - The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH,
-    SCTP or ICMP.
+  - The IP protocol to which this rule applies.
   - When the load balancing scheme is INTERNAL, only TCP and UDP are valid.
   returned: success
   type: str
@@ -446,9 +438,8 @@ allPorts:
   type: bool
 networkTier:
   description:
-  - 'The networking tier used for configuring this address. This field can take the
-    following values: PREMIUM or STANDARD. If this field is not specified, it is assumed
-    to be PREMIUM.'
+  - The networking tier used for configuring this address. If this field is not specified,
+    it is assumed to be PREMIUM.
   returned: success
   type: str
 serviceLabel:

@@ -13,7 +13,7 @@ module: sf_account_manager
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: This Module has been replaced
-  alternative: please use M(na_elementsw_account)
+  alternative: please use M(netapp.elementsw.na_elementsw_account)
 short_description: Manage SolidFire accounts
 extends_documentation_fragment:
 - community.general._netapp.solidfire
@@ -67,7 +67,7 @@ options:
 
 EXAMPLES = """
 - name: Create Account
-  sf_account_manager:
+  community.general.sf_account_manager:
     hostname: "{{ solidfire_hostname }}"
     username: "{{ solidfire_username }}"
     password: "{{ solidfire_password }}"
@@ -75,7 +75,7 @@ EXAMPLES = """
     name: TenantA
 
 - name: Modify Account
-  sf_account_manager:
+  community.general.sf_account_manager:
     hostname: "{{ solidfire_hostname }}"
     username: "{{ solidfire_username }}"
     password: "{{ solidfire_password }}"
@@ -84,7 +84,7 @@ EXAMPLES = """
     new_name: TenantA-Renamed
 
 - name: Delete Account
-  sf_account_manager:
+  community.general.sf_account_manager:
     hostname: "{{ solidfire_hostname }}"
     username: "{{ solidfire_username }}"
     password: "{{ solidfire_password }}"

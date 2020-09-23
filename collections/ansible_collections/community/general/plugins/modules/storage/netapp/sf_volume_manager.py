@@ -13,7 +13,7 @@ module: sf_volume_manager
 deprecated:
   removed_in: 2.0.0  # was Ansible 2.11
   why: This Module has been replaced
-  alternative: please use M(na_elementsw_volume)
+  alternative: please use M(netapp.elementsw.na_elementsw_volume)
 short_description: Manage SolidFire volumes
 extends_documentation_fragment:
 - community.general._netapp.solidfire
@@ -83,7 +83,7 @@ options:
 
 EXAMPLES = """
    - name: Create Volume
-     sf_volume_manager:
+     community.general.sf_volume_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"
@@ -96,7 +96,7 @@ EXAMPLES = """
        size_unit: gb
 
    - name: Update Volume
-     sf_volume_manager:
+     community.general.sf_volume_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"
@@ -106,7 +106,7 @@ EXAMPLES = """
        access: readWrite
 
    - name: Delete Volume
-     sf_volume_manager:
+     community.general.sf_volume_manager:
        hostname: "{{ solidfire_hostname }}"
        username: "{{ solidfire_username }}"
        password: "{{ solidfire_password }}"

@@ -53,8 +53,8 @@ notes:
 - For tracking function statistics the PostgreSQL C(track_functions) parameter must be enabled.
   See U(https://www.postgresql.org/docs/current/runtime-config-statistics.html) for more information.
 seealso:
-- module: postgresql_info
-- module: postgresql_ping
+- module: community.general.postgresql_info
+- module: community.general.postgresql_ping
 - name: PostgreSQL statistics collector reference
   description: Complete reference of the PostgreSQL statistics collector documentation.
   link: https://www.postgresql.org/docs/current/monitoring-stats.html
@@ -68,16 +68,16 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Collect information about all supported user objects of the acme database
-  postgresql_user_obj_stat_info:
+  community.general.postgresql_user_obj_stat_info:
     db: acme
 
 - name: Collect information about all supported user objects in the custom schema of the acme database
-  postgresql_user_obj_stat_info:
+  community.general.postgresql_user_obj_stat_info:
     db: acme
     schema: custom
 
 - name: Collect information about user tables and indexes in the acme database
-  postgresql_user_obj_stat_info:
+  community.general.postgresql_user_obj_stat_info:
     db: acme
     filter: tables, indexes
 '''

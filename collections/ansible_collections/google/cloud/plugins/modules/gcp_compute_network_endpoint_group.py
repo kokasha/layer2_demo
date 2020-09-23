@@ -40,7 +40,6 @@ description:
   you can distribute traffic in a granular fashion among applications or containers
   running within VM instances.
 short_description: Creates a GCP NetworkEndpointGroup
-version_added: '2.10'
 author: Google Inc. (@googlecloudplatform)
 requirements:
 - python >= 2.6
@@ -73,8 +72,7 @@ options:
     type: str
   network_endpoint_type:
     description:
-    - Type of network endpoints in this network endpoint group. Currently the only
-      supported value is GCE_VM_IP_PORT.
+    - Type of network endpoints in this network endpoint group.
     - 'Some valid choices include: "GCE_VM_IP_PORT"'
     required: false
     default: GCE_VM_IP_PORT
@@ -141,6 +139,7 @@ options:
     description:
     - Array of scopes to be used
     type: list
+    elements: str
   env_type:
     description:
     - Specifies which Ansible environment you're running this module within.
@@ -222,8 +221,7 @@ description:
   type: str
 networkEndpointType:
   description:
-  - Type of network endpoints in this network endpoint group. Currently the only supported
-    value is GCE_VM_IP_PORT.
+  - Type of network endpoints in this network endpoint group.
   returned: success
   type: str
 size:
