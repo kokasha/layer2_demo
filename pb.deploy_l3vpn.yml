@@ -7,7 +7,7 @@
   vars:
     AS_NUMBER: '65000'
     l3vpn_vlan_range: "{{ range(100,200) | list }}"
-    netbox_url: http://192.168.0.188
+    netbox_url: http://192.168.0.142:8080
     netbox_token: 0123456789abcdef0123456789abcdef01234567
     #interface: GigabitEthernet0/0/0/0
 
