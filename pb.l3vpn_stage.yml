@@ -32,3 +32,4 @@
           - set interfaces ge-0/0/2 flexible-vlan-tagging
       vars:
         ansible_connection: netconf
+        ansible_network_os: junos
