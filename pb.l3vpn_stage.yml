@@ -1,0 +1,34 @@
+- name: Populate NetBox DataBase
+  hosts: all
+  gather_facts: no
+  collections:
+    - netbox.netbox
+  vars:
+    ansible_python_interpreter: ~/.ansible/bin/python
+    ansible_connection: local
+    netbox_url: http://192.168.0.142:8080
+    netbox_token: 0123456789abcdef0123456789abcdef01234567
+  tasks:
+
+    - name: Deploy Access Interfaces
+      delegate_to: localhost
+      netbox_device_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_token }}"
+        data:
+          device: "{{ inventory_hostname }}"
+          name: ge-0/0/5
+          type: 1000Base-T (1GE)
+          description: "type=Access"
+          mgmt_only: false
+          mode: Tagged
+          enabled: true
+        state: present
+    
+    - name: Prepare Config on Juniper
+      junos_config:
+        lines:
+          - set interfaces ge-0/0/2 description Access
+          - set interfaces ge-0/0/2 flexible-vlan-tagging
+      vars:
+        ansible_connection: netconf
