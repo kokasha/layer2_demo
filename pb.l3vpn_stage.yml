@@ -24,7 +24,17 @@
           mode: Tagged
           enabled: true
         state: present
-    
+
+    - name: test
+      junos_command:
+        commands:
+          - show interfaces
+      vars:
+        ansible_connection: netconf
+        ansible_network_os: junos
+        ansible_user: ansible
+        ansible_password: ansible123
+
     - name: Prepare Config on Juniper
       junos_config:
         lines:
